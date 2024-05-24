@@ -5,7 +5,7 @@ const BEARER_TOKEN = import.meta.env.VITE_BEARERTOKEN;
 
 export const fetchAdminPortalUsers = async () => {
    try{
-      const response = await axios.get(`${HOST}/get-portal-users`,{
+      const response = await axios.get(`${HOST}/get-web-users`,{
          headers: {
            'Authorization': `Bearer ${BEARER_TOKEN}`,
            'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ export const fetchAdminPortalUsers = async () => {
 
 export const createAdminPortalUser = async (payload) => {
    try{
-      await axios.post(`${HOST}/web_register`, payload, {
+      await axios.post(`${HOST}/create-web-user`, payload, {
          headers: {
            'Authorization': `Bearer ${BEARER_TOKEN}`,
            'Content-Type': 'application/json',
