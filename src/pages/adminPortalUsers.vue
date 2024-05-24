@@ -1,9 +1,10 @@
 <script setup>
-   import { ref, onMounted } from 'vue';
+   import { ref, onMounted, vModelCheckbox } from 'vue';
    import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser } from '../api/adminPortalUsers';
 
-   const users = ref(null);
+   const users = ref([{'email':'hello','is_admin':true,'password':'ghcfh',active:0}]);
    const user = ref(null);
+   const addUsersDialog = ref(false);
    const editDialog = ref(false);
    const saved = ref(false);
 
@@ -13,22 +14,39 @@
       });
    });
 
+   const usersForm = ref({
+      email:"",
+      password:"",
+      admin:false
+   })
+
+
    const editUser = (data) => {
       user.value = {...data};
       editDialog.value = true;
    };
 
-   const saveUser = () => {
-      saved.value = true;
-
-      if (user.value.first_name.trim()) {
-         if (user.value.sid) {
-            userData.value[findIndexById(user.value.id)] = user.value;
-            toast.add({severity:'success', summary: 'Successful', detail: 'User Updated', life: 3000});
-         }
-         editDialog.value = false;
-         user.value = {};
+   const saveUser = async() => {
+        try {
+         await createAdminPortalUser({
+            email: usersForm.email.value,
+            password: usersForm.password.value,
+            is_admin: usersForm.admin.value,
+         });
+         const data = await fetchAdminPortalUsers();
+         news.value = data;
+      } 
+      catch (error) {
+        console.error("Error in saveUser:", error);
+      } 
+      finally {
+        spinner.value = false;
+        newDialog.value = false;
+        toast.add({ severity: 'success', summary: 'Success', detail: 'News Created', life: 3000 });
+        newsForm.value = intialNewsForm();
       }
+
+      
    };
 
    const closeDialog = () => {
@@ -42,7 +60,19 @@
 	<div class="p-grid">
 		<div class="p-col-12">
 			<Card>
-            <template #title> Admin Portal Users </template>
+            <template #title> 
+            
+               <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>User Management</span>
+                  <Button 
+                     label="Create User" 
+                     icon="pi pi-plus" 
+                     severity="info" 
+                     @click="addUsersDialog=true"
+                  />
+               </div>
+            
+            </template>
                <template #content>
                   <DataTable 
                      :value="users"
@@ -50,20 +80,11 @@
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
                   >
-                     <Column field="sid" header="ID"></Column>
-                     <Column field="first_name" header="Name"></Column>
-                     <Column field="last_name" header="Surname"></Column>
-                     <Column field="admin" header="User Level">
-                        <template #body="slotProps">
-                           <span>{{ slotProps.data.admin === 1 ? 'Admin' : 'Standard' }}</span>
-                        </template>
-                     </Column>
-                     <Column field="active" header="Status">
-                        <template #body="slotProps">
-                           <span>{{ slotProps.data.active === 1 ? 'Active' : 'Deactivated' }}</span>
-                        </template>
-                     </Column>
-                     <Column :exportable="false" style="min-width:8rem">
+                     
+                     <Column field="email" header="Email"></Column>
+                     <Column field="password" header="Password"></Column>
+                    
+                     <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">
                            <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editUser(slotProps.data)" />
                            <Button :icon="slotProps.data.active === 1 ? 'pi pi-times' : 'pi pi-check'" outlined rounded :severity="slotProps.data.active === 1 ? danger : success" @click="confirmDeleteProduct(slotProps.data)" />
@@ -71,53 +92,49 @@
                      </Column>
                   </DataTable>
 
-                  <Dialog :dismissableMask="true" v-model:visible="editDialog" :style="{width: '450px'}" header="User Details" :modal="true" class="p-fluid">
+                  <Dialog :dismissableMask="true" v-model:visible="addUsersDialog" :style="{width: '450px'}" header="Create User" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
                         <div class="field col">
-                           <label for="name" class="bold-label">Name</label>
-                           <InputText id="name" v-model.trim="user.first_name" required="true" autofocus :class="{'p-invalid': saved && !user.first_name}" />
-                           <small class="p-error" v-if="saved && !user.first_name">Name is required.</small>
+                           <label for="email" class="bold-label">Email</label>
+                           <InputText id="name" v-model.trim="usersForm.email" required="true" autofocus :class="{'p-invalid': saved && !usersForm.email}" />
+                           <small class="p-error" v-if="saved && !usersForm.email">email is required.</small>
                         </div>
-                        <div class="field col">
-                           <label for="surname" class="bold-label">Surname</label>
-                           <InputText id="name" v-model.trim="user.last_name" required="true" autofocus :class="{'p-invalid': saved && !user.last_name}" />
-                           <small class="p-error" v-if="saved && !user.last_name">Surname is required.</small>
+                        <div class="field col-12">
+                           <label for="password" class="bold-label">Password</label>
+                           <Password id="password" type v-model.trim="usersForm.password" toggleMask required="true" autofocus :class="{'p-invalid': saved && !usersForm.password}" />
+                           <small class="p-error" v-if="saved && !usersForm.password">Password is required.</small>
                         </div>
+                        
+                           <div class="flex align-items-center justify-center">
+                              <label for="admin" class="bold-label">Admin</label>
+                              <Checkbox id="admin" type v-model="usersForm.is_admin" :binary="true"  autofocus  />
+                           </div>
                      </div>
-                     <div class="field">
-                        <label for="email" class="bold-label">Email</label>
-                        <InputText id="email" v-model.trim="user.email" required="true" autofocus :class="{'p-invalid': saved && !user.email}" />
-                        <small class="p-error" v-if="saved && !user.email">Email is required.</small>
-                     </div>
+                     
+                     <template #footer>
+                        <Button label="Cancel" icon="pi pi-times" text @click="addUsersDialog=false"/>
+                        <Button label="Save" icon="pi pi-check" text @click="saveUser" />
+                     </template>
+               </Dialog>
+
+
+                  <Dialog :dismissableMask="true" v-model:visible="editDialog" :style="{width: '450px'}" header="Edit User" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
                         <div class="field col">
-                           <label for="id" class="bold-label">ID</label>
-                           <InputText id="id" v-model.trim="user.id" required="true" autofocus :class="{'p-invalid': saved && !user.id}" />
-                           <small class="p-error" v-if="saved && !user.id">ID is required.</small>
+                           <label for="title" class="bold-label">Email</label>
+                           <InputText id="name" v-model.trim="user.email" required="true" autofocus :class="{'p-invalid': saved && !usersForm.email}" />
+                           <small class="p-error" v-if="saved && !user.email">email is required.</small>
                         </div>
-                        <div class="field col">
-                           <label for="contact_number" class="bold-label">Contact Number</label>
-                           <InputText id="contact_number" v-model.trim="user.contact_number" required="true" autofocus :class="{'p-invalid': saved && !user.contact_number}" />
-                           <small class="p-error" v-if="saved && !user.contact_number">Contact Number is required.</small>
+                        <div class="field col-12">
+                           <label for="password" class="bold-label">Password</label>
+                           <Password id="password" type v-model.trim="user.password" required="true" toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
+                           <small class="p-error" v-if="saved && !user.password">Password is required.</small>
                         </div>
-                     </div>
-                     <div class="field">
-                        <label for="organisation" class="bold-label">Organisation</label>
-                        <InputText id="organisation" v-model.trim="user.organisation" required="true" autofocus :class="{'p-invalid': saved && !user.organisation}" />
-                        <small class="p-error" v-if="saved && !user.organisation">Organisation is required.</small>
-                     </div>
-                     <div class="field">
-                        <DataTable 
-                           :value="[user][0].active_policy"
-                           tableStyle="width: 390px"
-                        >
-                           <Column field="policy_name" header="Policy"></Column>
-                           <Column :exportable="false" style="min-width:8rem">
-                              <template #body="slotProps">
-                                 <Button icon="pi pi-trash" class="p-button-outlined p-button-rounded" severity="danger" />
-                              </template>
-                           </Column>
-                        </DataTable>
+                        
+                           <div class="flex align-items-center">
+                              <label for="title" class="bold-label">Admin</label>
+                              <Checkbox id="name" type v-model="user.is_admin" :binary="true"  autofocus  />
+                           </div>
                      </div>
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="closeDialog"/>

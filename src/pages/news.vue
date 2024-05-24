@@ -244,35 +244,7 @@
                      </template>
                </Dialog>
 
-               <Dialog :dismissableMask="true" v-model:visible="addUsersDialog" :style="{width: '450px'}" header="Add Users" :modal="true" class="p-fluid">
-                  <DataTable 
-                     :value="users"
-                     paginator :rows="5" 
-                     :rowsPerPageOptions="[5, 10, 20, 50]"
-                     tableStyle="min-width: 10rem"
-                  >
-                     <Column field="user_sid" header="ID"></Column>
-                     <Column field="Name" header="Name">
-                        <template #body="slotProps">
-                           {{ slotProps.data.first_name }} {{ slotProps.data.last_name }}
-                        </template>
-                     </Column>
-                     <Column header="Select" style="min-width:8rem">
-                        <template #body="slotProps">
-                           <Checkbox 
-                              v-model="selectedUsers" 
-                              :value="slotProps.data.user_sid" 
-                              @change="handleUserCheck(slotProps.data.user_sid)" 
-                           />
-                        </template>
-                     </Column>
-                  </DataTable>
-                     
-                     <template #footer>
-                        <Button label="Cancel" icon="pi pi-times" text @click="addUsersDialog=false"/>
-                        <Button label="Save" icon="pi pi-check" text @click="addUsersDialog=false" />
-                     </template>
-               </Dialog>
+       
                <Toast />
                </template>
                

@@ -94,6 +94,8 @@ import ToggleButton from 'primevue/togglebutton';
 import Tree from 'primevue/tree';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
+import vueFaker from 'vue-faker';
+
 
 
 import CodeHighlight from './AppCodeHighlight';
@@ -104,6 +106,8 @@ router.beforeEach(function(to, from, next) {
 });
 
 const app = createApp(App);
+
+
 
 app.config.globalProperties.$appState = reactive({ inputStyle: 'outlined' });
 
@@ -128,7 +132,6 @@ app.component('Badge', Badge);
 app.component('Breadcrumb', Breadcrumb);
 app.component('BlockUI', BlockUI);
 app.component('Button', Button);
-app.component('Calendar', Calendar);
 app.component('Calendar', Calendar);
 app.component('Card', Card);
 app.component('Carousel', Carousel);
@@ -199,5 +202,6 @@ app.component('ToggleButton', ToggleButton);
 app.component('Tree', Tree);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
+app.component('spinner',ProgressSpinner);
 
 app.mount('#app');
