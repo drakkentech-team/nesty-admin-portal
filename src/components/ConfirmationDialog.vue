@@ -8,8 +8,8 @@
           <p>{{body}}</p>
         </div>
         <div class="confirm-dialog-footer">
-          <button @click="onCancel">Cancel</button>
-          <button @click="onConfirm">Confirm</button>
+          <Button @click="onCancel">Cancel</button>
+          <Button @click="onConfirm">Confirm</button>
         </div>
       </div>
     </div>
@@ -107,6 +107,15 @@
 
 .confirm-dialog-footer button:nth-child(2):hover {
   background-color: #15aabf; 
+}
+
+.confirm-dialog-body {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.confirm-dialog-header {
+  text-decoration: solid;
 }
   </style>
   

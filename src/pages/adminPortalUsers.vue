@@ -1,7 +1,7 @@
 <script setup>
    
    import { ref, onMounted, vModelCheckbox } from 'vue';
-   import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser } from '../api/adminPortalUsers';
+   import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser ,deleteAdminPortalUser} from '../api/adminPortalUsers';
    import { useToast } from "primevue/usetoast";
    import ConfirmationDialogClose from '../components/ConfirmationDialogClose.vue';
    import ConfirmationDialog from '../components/ConfirmationDialog.vue'
@@ -49,16 +49,29 @@
    const confirmDeleteUser=(data)=>{
       console.log(data);
       confirmationDialogTitle.value = "Delete User";
-      confirmationDialogBody.value = "Are you Sure you want to delete";
+      confirmationDialogBody.value = "Are you Sure you want to delete?";
       confirmationDialog.value= true;
 
    }
 
-   const deleteUser=(data)=>{
-      console.log(data);
-      confirmationDialogTitle.value = "Deleted successfully!";
-      confirmationDialog.value = false;
-      confirmationDialogClose.value= true;
+   const deleteUser=async(data)=>{
+      
+      try {
+         await deleteAdminPortalUser(2);
+            const data = await fetchAdminPortalUsers();
+            users.value = data;
+      } 
+      catch (error) {
+        console.error("Error in saveUser:", error);
+        confirmationDialogClose.value= true;
+        confirmationDialogTitle.value = "Error. Please try again!";
+      } finally {
+
+         confirmationDialogTitle.value = "Deleted successfully!";
+         confirmationDialog.value = false;
+         confirmationDialogClose.value= true;
+         spinner.value = false;
+      }
 
    }
 
@@ -74,6 +87,8 @@
       } 
       catch (error) {
         console.error("Error in saveUser:", error);
+        confirmationDialogClose.value= true;
+        confirmationDialogTitle.value = "Error Please try again!";
       } 
       finally {
         spinner.value = false;
@@ -147,8 +162,8 @@
                            <small class="p-error" v-if="saved && !usersForm.password">Password is required.</small>
                         </div>
                         
-                           <div class="flex align-items-center justify-center">
-                              <label for="admin" class="bold-label">Admin</label>
+                           <div class="field col flex align-items-center justify-center">
+                              <label for="admin" class="bold-label mr-3">Admin</label>
                               <Checkbox id="admin" type v-model="usersForm.is_admin" :binary="true"  autofocus  />
                            </div>
                      </div>
@@ -173,8 +188,8 @@
                            <small class="p-error" v-if="saved && !user.password">Password is required.</small>
                         </div>
                         
-                           <div class="flex align-items-center">
-                              <label for="title" class="bold-label">Admin</label>
+                           <div class="field col flex align-items-center justify-center">
+                              <label for="title" class="bold-label mr-4">Admin </label>
                               <Checkbox id="name" type v-model="user.is_admin" :binary="true"  autofocus  />
                            </div>
 

@@ -62,3 +62,22 @@ export const updateAdminPortalUser = async (sid, payload) => {
       throw error;
    }
 };
+
+
+export const deleteAdminPortalUser = async (sid) => {
+   try {
+      await axios.put(`${HOST}/delete-web-user=${sid}`,  {
+         headers: {
+           'Authorization': `Bearer ${BEARER_TOKEN}`,
+           'Content-Type': 'application/json',
+           'app-id': 1
+         }
+      });
+      return "Successfully updated admin portal user";
+   } 
+   catch (error) {
+      console.error("Error updating admin portal user:", error);
+      throw error;
+   }
+};
+
