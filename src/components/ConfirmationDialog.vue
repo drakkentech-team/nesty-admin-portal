@@ -1,121 +1,79 @@
 <template>
-    <div class="confirm-dialog-overlay" v-if="show">
-      <div class="confirm-dialog">
-        <div class="confirm-dialog-header">
-          <h3>{{title}}</h3>
+  <ConfirmDialog group="headless">
+    <template #container="{ message, acceptCallback, rejectCallback }">
+      <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+        <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
+          <i class="pi pi-question text-5xl"></i>
         </div>
-        <div class="confirm-dialog-body">
-          <p>{{body}}</p>
-        </div>
-        <div class="confirm-dialog-footer">
-          <Button @click="onCancel">Cancel</button>
-          <Button @click="onConfirm">Confirm</button>
+        <span class="font-bold text-2xl block mb-2 mt-4">{{ title }}</span>
+        <p class="mb-0">{{ body }}</p>
+        <div class="flex align-items-center gap-2 mt-4">
+          <Button label="Save" @click="handleAccept(acceptCallback)"></Button>
+          <Button label="Cancel" outlined @click="handleReject(rejectCallback)"></Button>
         </div>
       </div>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    props: {
-      show: {
-        type: Boolean,
-        required: true,
-      },
-      title:{
-        type: String,
-        required: true,
-        default: 'Confirm Logout'
-      },
-      body:{
-        type: String,
-        required: true,
-        default: 'Are you sure you want to logout?'
-      }
-    },
-    emits: ['confirm', 'cancel'],
-    methods: {
-      onConfirm() {
-        this.$emit('confirm');
-      },
-      onCancel() {
-        this.$emit('cancel');
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .confirm-dialog-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9;
+    </template>
+  </ConfirmDialog>
+
+  <Toast />
+</template>
+
+<script setup>
+import { defineProps, defineEmits, watch } from 'vue';
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+
+const props = defineProps({
+  title: {
+    type: String,
+    default: 'Are you sure?'
+  },
+  body: {
+    type: String,
+    default: 'Please confirm to proceed.'
+  },
+  show : {
+    type:Boolean,
+    default: false
   }
-  
-  .confirm-dialog {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 300px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+});
+
+const emit = defineEmits(['confirm', 'cancel']);
+
+const confirm = useConfirm();
+const toast = useToast();
+
+const closeDialog = () => {
+  confirm.close();
+};
+
+watch(() => props.show, (newValue) => {
+  if (newValue) {
+    requireConfirmation();
+  } else {
+    closeDialog();
   }
-  
-  .confirm-dialog-header,
-  .confirm-dialog-footer {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  button {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 0.3s ease;
-}
+});
 
-.confirm-dialog-footer button {
-  margin: 0 10px;
-  color: #fff; 
-  background-color: #5c7cfa;
-}
+const handleAccept = (acceptCallback) => {
+  toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+  emit('confirm');
+  closeDialog();
+};
 
-.confirm-dialog-footer button:hover {
-  background-color: #4b6cb7;
-}
+const handleReject = (rejectCallback) => {
+  toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+  emit('cancel');
+  closeDialog();
+};
 
-.confirm-dialog-footer button:nth-child(1) {
-  background-color: #f03e3e; 
-}
-
-.confirm-dialog-footer button:nth-child(1):hover {
-  background-color: #c92a2a; 
-}
-
-.confirm-dialog-footer button:nth-child(2) {
-  background-color: #22b8cf;
-}
-
-.confirm-dialog-footer button:nth-child(2):hover {
-  background-color: #15aabf; 
-}
-
-.confirm-dialog-body {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.confirm-dialog-header {
-  text-decoration: solid;
-}
-  </style>
-  
+const requireConfirmation = () => {
+  confirm.require({
+    group: 'headless',
+    header: props.title,
+    message: props.body,
+    accept: () => handleAccept(() => {}),
+    reject: () => handleReject(() => {})
+  });
+};
+</script>

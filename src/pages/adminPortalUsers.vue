@@ -16,8 +16,8 @@
    const toast = useToast();
    const confirmationDialog = ref(false);
    const confirmationDialogClose = ref(false);
-   const confirmationDialogTitle = ref('');
-   const confirmationDialogBody = ref('');
+   const confirmationDialogTitle = ref('Are you sure?');
+   const confirmationDialogBody = ref('Please confirm to proceed.');
 
    components:['ConfirmationDialogClose', 'ConfirmationDialog']
 
@@ -94,7 +94,6 @@
         spinner.value = false;
         addUsersDialog.value = false;
         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created', life: 3000 });
-        //newsForm.value = intialNewsForm();
         confirmationDialogClose.value= true;
         confirmationDialogTitle.value = "User Created successfully!";
       }
@@ -146,7 +145,11 @@
                      </Column>
                   </DataTable>
 
-                  <ProgressSpinner v-model:visible="spinner"/>
+                  <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
+            animationDuration=".5s" aria-label="Custom ProgressSpinner" />
+
+                  <ProgressSpinner style="z-index: 999;"/>
+                  
 
                   <Dialog :dismissableMask="true" v-model:visible="addUsersDialog" :style="{width: '450px'}" header="Create User" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
@@ -205,7 +208,7 @@
 		</div>
 	</div>
 
-   <ConfirmationDialogClose :title="confirmationDialogTitle" :show="confirmationDialogClose" @cancel ="confirmationDialogClose=false"/>
+   <ConfirmationDialogClose :title="confirmationDialogTitle" :show="confirmationDialogClose" @confirm ="confirmationDialogClose=false"/>
    <ConfirmationDialog :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="deleteUser"/>
 </template>
 
