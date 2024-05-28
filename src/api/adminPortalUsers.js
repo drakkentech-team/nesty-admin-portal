@@ -21,7 +21,7 @@ export const fetchAdminPortalUsers = async () => {
       
    }
    catch (error) {
-      console.error("Error retrieving payment account details:", error);
+      console.error("Error retrieving Admin Portal Users:", error);
       throw error;
    }
 };
@@ -47,8 +47,10 @@ export const createAdminPortalUser = async (payload) => {
 
 
 export const updateAdminPortalUser = async (sid, payload) => {
+
+   console.log(payload, sid)
    try {
-      await axios.put(`${HOST}/web_user_profile?user_id=${sid}`, payload, {
+      await axios.put(`${HOST}/edit-web-user/${sid}`, payload, {
          headers: {
            'Authorization': `Bearer ${BEARER_TOKEN}`,
            'Content-Type': 'application/json',
@@ -64,9 +66,9 @@ export const updateAdminPortalUser = async (sid, payload) => {
 };
 
 
-export const deleteAdminPortalUser = async (sid) => {
+export const deleteAdminPortalUser = async (sid, payload) => {
    try {
-      await axios.put(`${HOST}/delete-web-user=${sid}`,  {
+      await axios.put(`${HOST}/edit-web-user/${sid}`,payload,  {
          headers: {
            'Authorization': `Bearer ${BEARER_TOKEN}`,
            'Content-Type': 'application/json',
