@@ -5,7 +5,7 @@ const BEARER_TOKEN = import.meta.env.VITE_BEARERTOKEN;
 
 export const fetchAdminPortalUsers = async () => {
    try{
-      const response = await axios.get(`${HOST}/get-portal-users`,{
+      const response = await axios.get(`${HOST}/get-web-users`,{
          headers: {
            'Authorization': `Bearer ${BEARER_TOKEN}`,
            'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export const fetchAdminPortalUsers = async () => {
       
    }
    catch (error) {
-      console.error("Error retrieving payment account details:", error);
+      console.error("Error retrieving Admin Portal Users:", error);
       throw error;
    }
 };
@@ -29,7 +29,7 @@ export const fetchAdminPortalUsers = async () => {
 
 export const createAdminPortalUser = async (payload) => {
    try{
-      await axios.post(`${HOST}/web_register`, payload, {
+      await axios.post(`${HOST}/create-web-user`, payload, {
          headers: {
            'Authorization': `Bearer ${BEARER_TOKEN}`,
            'Content-Type': 'application/json',
@@ -47,8 +47,10 @@ export const createAdminPortalUser = async (payload) => {
 
 
 export const updateAdminPortalUser = async (sid, payload) => {
+
+   console.log(payload, sid)
    try {
-      await axios.put(`${HOST}/web_user_profile?user_id=${sid}`, payload, {
+      await axios.put(`${HOST}/edit-web-user/${sid}`, payload, {
          headers: {
            'Authorization': `Bearer ${BEARER_TOKEN}`,
            'Content-Type': 'application/json',
@@ -62,3 +64,22 @@ export const updateAdminPortalUser = async (sid, payload) => {
       throw error;
    }
 };
+
+
+export const deleteAdminPortalUser = async (sid, payload) => {
+   try {
+      await axios.put(`${HOST}/edit-web-user/${sid}`,payload,  {
+         headers: {
+           'Authorization': `Bearer ${BEARER_TOKEN}`,
+           'Content-Type': 'application/json',
+           'app-id': 1
+         }
+      });
+      return "Successfully updated admin portal user";
+   } 
+   catch (error) {
+      console.error("Error updating admin portal user:", error);
+      throw error;
+   }
+};
+

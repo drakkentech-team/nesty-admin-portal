@@ -98,8 +98,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
    const user = useStore()
-   const userIsLoggedIn = user.user ? true : false
-   //const userIsLoggedIn =  true;
+   //const userIsLoggedIn = user.user ? true : false
+   const userIsLoggedIn =  true;
 
  
    if (to.path === '/login' && userIsLoggedIn) {

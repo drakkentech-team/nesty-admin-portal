@@ -202,6 +202,6 @@ app.component('ToggleButton', ToggleButton);
 app.component('Tree', Tree);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
-app.component('spinner',ProgressSpinner);
+
 
 app.mount('#app');

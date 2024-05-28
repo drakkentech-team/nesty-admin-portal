@@ -1,12 +1,28 @@
 <script setup>
+   
    import { ref, onMounted, vModelCheckbox } from 'vue';
-   import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser } from '../api/adminPortalUsers';
+   import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser ,deleteAdminPortalUser} from '../api/adminPortalUsers';
+   import { useToast } from "primevue/usetoast";
+   import ConfirmationDialogClose from '../components/ConfirmationDialogClose.vue';
+   import ConfirmationDialog from '../components/ConfirmationDialog.vue'
 
-   const users = ref([{'email':'hello','is_admin':true,'password':'ghcfh',active:0}]);
+
+   const users = ref([]);
    const user = ref(null);
    const addUsersDialog = ref(false);
    const editDialog = ref(false);
    const saved = ref(false);
+   const spinner = ref(false);
+   const toast = useToast();
+   const confirmationDialog = ref(false);
+   const confirmationDialogClose = ref(false);
+   const confirmationDialogTitle = ref('Are you sure?');
+   const confirmationDialogBody = ref('Please confirm to proceed.');
+   const callback = ref()
+
+   components:['ConfirmationDialogClose', 'ConfirmationDialog']
+
+
 
    onMounted(() => {
       fetchAdminPortalUsers().then((data) => {
@@ -15,38 +31,132 @@
    });
 
    const usersForm = ref({
-      email:"",
-      password:"",
-      admin:false
+      email: "",
+      password: "",
+      is_admin: 0
    })
 
 
-   const editUser = (data) => {
+   const isValidEmail = (email) =>{
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailPattern.test(email);
+    }
+
+   const editUser= async ()=>{
+      
+      try {
+         
+         const payload ={
+            email: user.value.email,
+            password: user.value.password,
+            is_admin: (usersForm.value.is_admin)? 1:0,
+            is_active : 1
+         }
+
+
+         await updateAdminPortalUser(user.value['sid'],payload);
+         const data = await fetchAdminPortalUsers();
+         users.value = data;
+      } 
+      catch (error) {
+        console.error("Error in saveUser:", error);
+        //confirmationDialogClose.value= true;
+        //confirmationDialogTitle.value = "Error. Please try again!";
+        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
+      } finally {
+         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created', life: 3000 });
+         //confirmationDialogTitle.value = "Deleted successfully!";
+         //confirmationDialog.value = false;
+         //confirmationDialogClose.value= true;
+         spinner.value = false;
+      }
+
+   }
+
+
+   const confirmEditUser = (data) => {
       user.value = {...data};
       editDialog.value = true;
+      
    };
+
+   const saveEditUser = () => {
+      editDialog.value = false;
+      confirmationDialogTitle.value = "Update User";
+      confirmationDialogBody.value = "Are you Sure you want to update user?";
+      callback.value = editUser;
+      confirmationDialog.value= true;
+   
+   };
+
+   const confirmDeleteUser=(data)=>{
+      user.value = {...data}
+      confirmationDialogTitle.value = "Delete User";
+      confirmationDialogBody.value = "Are you Sure you want to delete?";
+      callback.value = deleteUser;
+      confirmationDialog.value= true;
+   
+   }
+
+   const deleteUser=async()=>{
+      console.log(user.value);
+      try {
+         
+         const payload ={
+            email: user.value.email,
+            password: "",
+            is_active : 0
+         }
+
+         await deleteAdminPortalUser(user.value['sid'],payload);
+            const data = await fetchAdminPortalUsers();
+            users.value = data;
+      } 
+      catch (error) {
+        console.error("Error in saveUser:", error);
+        //confirmationDialogClose.value= true;
+        //confirmationDialogTitle.value = "Error. Please try again!";
+        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
+      } finally {
+         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created', life: 3000 });
+         confirmationDialogTitle.value = "Deleted successfully!";
+         confirmationDialog.value = false;
+         confirmationDialogClose.value= true;
+         spinner.value = false;
+      }
+
+   }
+
+   const confirmSaveUser = () => {
+      //confirmationDialog.value= true;
+      //callback.value = saveUser;
+      saveUser()
+   }
 
    const saveUser = async() => {
         try {
          await createAdminPortalUser({
-            email: usersForm.email.value,
-            password: usersForm.password.value,
-            is_admin: usersForm.admin.value,
+            email: usersForm.value.email,
+            password: usersForm.value.password,
+            is_admin: usersForm.value.is_admin,
          });
+         console.log(usersForm.value);
          const data = await fetchAdminPortalUsers();
-         news.value = data;
+         users.value = data;
       } 
       catch (error) {
         console.error("Error in saveUser:", error);
+        //confirmationDialogClose.value= true;
+        //confirmationDialogTitle.value = "Error Please try again!";
+        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
       } 
       finally {
         spinner.value = false;
-        newDialog.value = false;
-        toast.add({ severity: 'success', summary: 'Success', detail: 'News Created', life: 3000 });
-        newsForm.value = intialNewsForm();
+        addUsersDialog.value = false;
+        toast.add({ severity: 'success', summary: 'Success', detail: 'User Created', life: 3000 });
+        //confirmationDialogClose.value= true;
+        //confirmationDialogTitle.value = "User Created successfully!";
       }
-
-      
    };
 
    const closeDialog = () => {
@@ -82,48 +192,58 @@
                   >
                      
                      <Column field="email" header="Email"></Column>
-                     <Column field="password" header="Password"></Column>
+                     <Column field="is_admin" header="User Role">
+
+                        <template #body="slotProps">
+                           {{ (slotProps.data.is_admin==1)? 'Admin': 'Standard' }}
+                        </template>
+                     
+                     </Column>
+                     <Column field="last_login" header="Last Login"></Column>
                     
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">
-                           <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editUser(slotProps.data)" />
-                           <Button :icon="slotProps.data.active === 1 ? 'pi pi-times' : 'pi pi-check'" outlined rounded :severity="slotProps.data.active === 1 ? danger : success" @click="confirmDeleteProduct(slotProps.data)" />
+                           <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="confirmEditUser(slotProps.data)" />
+                           <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteUser(slotProps.data)" />
                         </template>
                      </Column>
                   </DataTable>
+
+               
 
                   <Dialog :dismissableMask="true" v-model:visible="addUsersDialog" :style="{width: '450px'}" header="Create User" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
                         <div class="field col">
                            <label for="email" class="bold-label">Email</label>
-                           <InputText id="name" v-model.trim="usersForm.email" required="true" autofocus :class="{'p-invalid': saved && !usersForm.email}" />
-                           <small class="p-error" v-if="saved && !usersForm.email">email is required.</small>
+                           <InputText id="email" v-model.trim="usersForm.email" required="true" autofocus :class="{'p-invalid':  !isValidEmail(usersForm.email)}" />
+                           <small class="p-error" v-if=" !isValidEmail(usersForm.email)">email is required.</small>
                         </div>
+            
                         <div class="field col-12">
                            <label for="password" class="bold-label">Password</label>
                            <Password id="password" type v-model.trim="usersForm.password" toggleMask required="true" autofocus :class="{'p-invalid': saved && !usersForm.password}" />
                            <small class="p-error" v-if="saved && !usersForm.password">Password is required.</small>
                         </div>
                         
-                           <div class="flex align-items-center justify-center">
-                              <label for="admin" class="bold-label">Admin</label>
+                           <div class="field col flex align-items-center justify-center">
+                              <label for="admin" class="bold-label mr-3">Admin</label>
                               <Checkbox id="admin" type v-model="usersForm.is_admin" :binary="true"  autofocus  />
                            </div>
                      </div>
                      
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="addUsersDialog=false"/>
-                        <Button label="Save" icon="pi pi-check" text @click="saveUser" />
+                        <Button label="Save" icon="pi pi-check" text @click="confirmSaveUser" />
                      </template>
-               </Dialog>
+                  </Dialog>
 
 
                   <Dialog :dismissableMask="true" v-model:visible="editDialog" :style="{width: '450px'}" header="Edit User" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
                         <div class="field col">
-                           <label for="title" class="bold-label">Email</label>
-                           <InputText id="name" v-model.trim="user.email" required="true" autofocus :class="{'p-invalid': saved && !usersForm.email}" />
-                           <small class="p-error" v-if="saved && !user.email">email is required.</small>
+                           <label for="email" class="bold-label">Email</label>
+                           <InputText id="email" v-model.trim="user.email" required="true" autofocus :class="{'p-invalid': !isValidEmail(user.email)}" />
+                           <small class="p-error" v-if=" !isValidEmail(user.email)">email is required.</small>
                         </div>
                         <div class="field col-12">
                            <label for="password" class="bold-label">Password</label>
@@ -131,19 +251,24 @@
                            <small class="p-error" v-if="saved && !user.password">Password is required.</small>
                         </div>
                         
-                           <div class="flex align-items-center">
-                              <label for="title" class="bold-label">Admin</label>
-                              <Checkbox id="name" type v-model="user.is_admin" :binary="true"  autofocus  />
+                           <div class="field col flex align-items-center justify-center">
+                              <label for="admin" class="bold-label mr-4">Admin </label>
+                              <Checkbox id="admin" type v-model="user.is_admin" :binary="true"  autofocus  />
                            </div>
+
                      </div>
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="closeDialog"/>
-                        <Button label="Save" icon="pi pi-check" text @click="saveUser" />
+                        <Button label="Save" icon="pi pi-check" text @click="saveEditUser" />
                      </template>
-               </Dialog>
+                  </Dialog>
+
                </template>
          </Card>
 		</div>
 	</div>
+
+   <ConfirmationDialogClose :title="confirmationDialogTitle" :show="confirmationDialogClose" @confirm ="confirmationDialogClose=false"/>
+   <ConfirmationDialog :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 
