@@ -57,6 +57,8 @@
          await updateAdminPortalUser(user.value['sid'],payload);
          const data = await fetchAdminPortalUsers();
          users.value = data;
+
+         toast.add({ severity: 'success', summary: 'Success', detail: 'User Updated!!!', life: 3000 });
       } 
       catch (error) {
         console.error("Error in saveUser:", error);
@@ -64,7 +66,7 @@
         //confirmationDialogTitle.value = "Error. Please try again!";
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
       } finally {
-         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created', life: 3000 });
+        
          //confirmationDialogTitle.value = "Deleted successfully!";
          //confirmationDialog.value = false;
          //confirmationDialogClose.value= true;
@@ -76,6 +78,7 @@
 
    const confirmEditUser = (data) => {
       user.value = {...data};
+      user.value.is_admin = (data.is_admin===1)? true:false;
       editDialog.value = true;
       
    };
@@ -111,17 +114,20 @@
          await deleteAdminPortalUser(user.value['sid'],payload);
             const data = await fetchAdminPortalUsers();
             users.value = data;
+
+
+         toast.add({ severity: 'success', summary: 'Success', detail: 'User Deleted!!!', life: 3000 });
+         confirmationDialogTitle.value = "Deleted successfully!";
+         confirmationDialog.value = false;
+         confirmationDialogClose.value= true;
       } 
       catch (error) {
         console.error("Error in saveUser:", error);
         //confirmationDialogClose.value= true;
         //confirmationDialogTitle.value = "Error. Please try again!";
-        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
       } finally {
-         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created', life: 3000 });
-         confirmationDialogTitle.value = "Deleted successfully!";
-         confirmationDialog.value = false;
-         confirmationDialogClose.value= true;
+         
          spinner.value = false;
       }
 
@@ -143,6 +149,8 @@
          console.log(usersForm.value);
          const data = await fetchAdminPortalUsers();
          users.value = data;
+
+         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created!!!', life: 3000 });
       } 
       catch (error) {
         console.error("Error in saveUser:", error);
@@ -153,7 +161,7 @@
       finally {
         spinner.value = false;
         addUsersDialog.value = false;
-        toast.add({ severity: 'success', summary: 'Success', detail: 'User Created', life: 3000 });
+        
         //confirmationDialogClose.value= true;
         //confirmationDialogTitle.value = "User Created successfully!";
       }
@@ -215,13 +223,13 @@
                      <div class="formgrid grid">
                         <div class="field col">
                            <label for="email" class="bold-label">Email</label>
-                           <InputText id="email" v-model.trim="usersForm.email" required="true" autofocus :class="{'p-invalid':  !isValidEmail(usersForm.email)}" />
+                           <InputText id="email" v-model.trim="usersForm.email"  autofocus :class="{'p-invalid':  !isValidEmail(usersForm.email)}" />
                            <small class="p-error" v-if=" !isValidEmail(usersForm.email)">email is required.</small>
                         </div>
             
                         <div class="field col-12">
                            <label for="password" class="bold-label">Password</label>
-                           <Password id="password" type v-model.trim="usersForm.password" toggleMask required="true" autofocus :class="{'p-invalid': saved && !usersForm.password}" />
+                           <Password id="password"  v-model.trim="usersForm.password" toggleMask required autofocus :class="{'p-invalid': saved && !usersForm.password}" />
                            <small class="p-error" v-if="saved && !usersForm.password">Password is required.</small>
                         </div>
                         
@@ -242,13 +250,18 @@
                      <div class="formgrid grid">
                         <div class="field col">
                            <label for="email" class="bold-label">Email</label>
-                           <InputText id="email" v-model.trim="user.email" required="true" autofocus :class="{'p-invalid': !isValidEmail(user.email)}" />
-                           <small class="p-error" v-if=" !isValidEmail(user.email)">email is required.</small>
+                           <InputText disabled id="email" v-model.trim="user.email" required autofocus  />
+                        </div>
+            
+                        <div class="field col-12">
+                           <label for="password" class="bold-label">Current Password</label>
+                           <Password id="password" type v-model.trim="user.current_password" required toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
+                           <small class="p-error" v-if="saved && !user.password">Password is required.</small>
                         </div>
                         <div class="field col-12">
-                           <label for="password" class="bold-label">Password</label>
-                           <Password id="password" type v-model.trim="user.password" required="true" toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
-                           <small class="p-error" v-if="saved && !user.password">Password is required.</small>
+                           <label for="password" class="bold-label">New Password</label>
+                           <Password id="password" v-model.trim="user.password" required toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
+                           <small class="p-error" v-if="!user.password == user.current_password">Password is required.</small>
                         </div>
                         
                            <div class="field col flex align-items-center justify-center">
