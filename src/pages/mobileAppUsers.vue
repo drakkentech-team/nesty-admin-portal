@@ -1,8 +1,60 @@
 <script setup>
-   import { ref, onMounted } from 'vue';
+   import { ref, onMounted,defineAsyncComponent } from 'vue';
    import { getMobileUsers, updateMobileUser, deleteUserPolicy} from '../api/mobileAppUsers';
+   import { useDialog } from 'primevue/usedialog';
+   const userView = defineAsyncComponent(() => import('../views/UserView.vue'));
 
-   const userData = ref(null);
+   const dialog = useDialog();
+
+   
+
+   const handleRowClick = (event) => {
+      console.log(event.data.value);
+      const dialogRef = dialog.open(userView, {
+         data:{
+            user: event.data
+         },
+         props: {
+               header: 'User Management > App Users',
+               style: {
+                  width: '90vw',
+               },
+               breakpoints:{
+                  '960px': '75vw',
+                  '640px': '90vw'
+               },
+               modal: true
+         },
+         onClose: (options) => {
+            
+         }
+    });
+}
+
+
+   const userData = ref([
+      { 
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john.doe@example.com',
+        contact: '123-456-7890',
+        date_of_birth: '1990-01-01',
+        gender: 'Male',
+        username: 'johndoe',
+        province: 'California'
+      },
+      { 
+        first_name: 'Jane',
+        last_name: 'Doe',
+        email: 'jane.doe@example.com',
+        contact: '987-654-3210',
+        date_of_birth: '1992-05-15',
+        gender: 'Female',
+        username: 'janedoe',
+        province: 'New York'
+      },
+      // Add more sample data as needed
+    ]);
    const user = ref(null);
    const editDialog = ref(false);
    const saved = ref(false);
@@ -91,30 +143,29 @@
 <template>
 	<div class="p-grid">
 		<div class="p-col-12">
+         <DynamicDialog />
 			<Card>
+            
+
             <template #title> Mobile App Users </template>
                <template #content>
                   <DataTable 
                      :value="userData"
                      paginator :rows="5" 
+                     sortMode="multiple"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
-                  >
-                     <Column field="first_name" header="Name"></Column>
-                     <Column field="last_name" header="Surname"></Column>
-                     <Column field="active_policy" header="Active Products">
-                        <template #body="slotProps">
-                           <div v-for="(policy, index) in slotProps.data.active_policy" :key="index">
-                              <span v-if="slotProps.data.active_policy.length > 1">•</span> {{ policy.policy_name }}
-                           </div>
-                        </template>
-                     </Column>
+                     @row-click="handleRowClick"
+                  >  
+                     <Column sortable  field="first_name" header="Name"></Column>
+                     <Column sortable  field="last_name" header="Surname"></Column>
+                     <Column field="email" header="Email"></Column>
+                     <Column field="contact" header="Contact"></Column>
+                     <Column field="date_of_birth" header="Date Of Birth"></Column>
+                     <Column field="gender" header="Gender"></Column>
+                     <Column sortable  field="username" header="User Name"></Column>
+                     <Column sortable  field="province" header="Province"></Column>
 
-                     <Column :exportable="false" style="min-width:8rem">
-                        <template #body="slotProps">
-                           <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editUser(slotProps.data)" />
-                        </template>
-                     </Column>
                   </DataTable>
 
                   <Dialog :dismissableMask="true" v-model:visible="editDialog" :style="{width: '450px'}" header="User Details" :modal="true" class="p-fluid">

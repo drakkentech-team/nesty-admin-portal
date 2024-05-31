@@ -44,16 +44,17 @@ export default {
             overlayMenuActive: false,
             mobileMenuActive: false,
             menu : [
-               {label: 'Notifications', icon: 'pi pi-fw pi-send', to: 'notifications'},
-               {label: 'Products', icon: 'pi pi-fw pi-cart-plus', to: 'products'},
+               {label: 'Private Messages', icon: 'pi pi-fw pi-send', to: 'notifications'},
+               {label: 'Manage Groups', icon: 'pi pi-fw pi-cart-plus', to: 'products'},
                {label: 'User Management', icon: 'pi pi-fw pi-users',
                   items:[
                      {label: 'App Users', icon: 'pi pi-fw pi-phone', to: 'mobile-app-users'},
                      {label: 'Admin Portal Users', icon: 'pi pi-fw pi-user', to: 'admin-portal-users'},
                   ]
                },
-               {label: 'News', icon: 'pi pi-fw pi-book', to: 'news'},	
-               {label: 'Payment Account', icon: 'pi pi-fw pi-wallet', to: 'payment-account'},		
+               {label: 'News', icon: 'pi pi-fw pi-book', to: 'userView'},
+               /*	
+               {label: 'Payment Account', icon: 'pi pi-fw pi-wallet', to: 'payment-account'},*/	
             ]
         }
     },
