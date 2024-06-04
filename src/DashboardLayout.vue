@@ -45,6 +45,7 @@ export default {
             mobileMenuActive: false,
             menu : [
                {label: 'Private Messages', icon: 'pi pi-fw pi-send', to: 'notifications'},
+               {label: 'Moderation', icon: 'pi pi-fw pi-eraser', to: 'moderation'},
                {label: 'Manage Groups', icon: 'pi pi-fw pi-cart-plus', to: 'products'},
                {label: 'User Management', icon: 'pi pi-fw pi-users',
                   items:[
