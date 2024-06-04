@@ -71,13 +71,13 @@ const router = createRouter({
          ]
       },
       {
-         path: '/news',
+         path: '/userView',
          component: DashboardLayout,
          children: [
             {
                path: '',
                name: 'news',
-               component: () => import('../pages/news.vue'),
+               component: () => import('../pages/userView.vue'),
             },
          ]
       }, 

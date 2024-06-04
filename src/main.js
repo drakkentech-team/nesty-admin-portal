@@ -39,7 +39,8 @@ import DataView from 'primevue/dataview';
 import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions';
 import Dialog from 'primevue/dialog';
 import Divider from 'primevue/divider';
-import Dropdown from 'primevue/dropdown';
+import Dropdown from 'primevue/dropdown'
+import DynamicDialog from 'primevue/dynamicdialog';
 import Fieldset from 'primevue/fieldset';
 import FileUpload from 'primevue/fileupload';
 import InlineMessage from 'primevue/inlinemessage';
@@ -95,7 +96,7 @@ import Tree from 'primevue/tree';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import vueFaker from 'vue-faker';
-
+import DialogService from 'primevue/dialogservice';
 
 
 import CodeHighlight from './AppCodeHighlight';
@@ -116,6 +117,7 @@ app.use(ConfirmationService);
 app.use(ToastService);
 app.use(createPinia())
 app.use(router);
+app.use(DialogService);
 
 
 app.directive('tooltip', Tooltip);
@@ -148,6 +150,7 @@ app.component('ContextMenu', ContextMenu);
 app.component('DataTable', DataTable);
 app.component('DataView', DataView);
 app.component('DataViewLayoutOptions', DataViewLayoutOptions);
+app.component('DynamicDialog', DynamicDialog);
 app.component('Dialog', Dialog);
 app.component('Divider', Divider);
 app.component('Dropdown', Dropdown);
