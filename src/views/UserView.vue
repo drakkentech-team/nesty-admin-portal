@@ -8,12 +8,24 @@
    const toast = useToast();
 
    const dialogRef = inject('dialogRef');
-   const user = ref()
+   const user = ref(
+    { 
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john.doe@example.com',
+        contact: '123-456-7890',
+        date_of_birth: '1990-01-01',
+        gender: 'Male',
+        username: 'johndoe',
+        province: 'California'
+      }
+   );
 
    onMounted(() => {
         const params = dialogRef.value.data; 
         user.value = params;
     })
+
 
 
 

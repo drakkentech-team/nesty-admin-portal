@@ -33,7 +33,7 @@ const router = createRouter({
             {
                path: '/notifications',
                name: 'notifications',
-               component: () => import('../pages/notifications.vue'),
+               component: () => import('../pages/PrivateMessages.vue'),
             },
          ]
       },
@@ -82,13 +82,13 @@ const router = createRouter({
          ]
       }, 
       {
-         path: '/products',
+         path: '/manage-groups',
          component: DashboardLayout,
          children: [
             {
                path: '',
-               name: 'products',
-               component: () => import('../pages/products.vue'),
+               name: 'manage-groups',
+               component: () => import('../pages/manageGroups.vue'),
             },
          ]
       }, 

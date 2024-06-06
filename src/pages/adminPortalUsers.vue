@@ -149,8 +149,6 @@
          console.log(usersForm.value);
          const data = await fetchAdminPortalUsers();
          users.value = data;
-
-         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created!!!', life: 3000 });
       } 
       catch (error) {
         console.error("Error in saveUser:", error);
@@ -161,7 +159,7 @@
       finally {
         spinner.value = false;
         addUsersDialog.value = false;
-        
+        toast.add({ severity: 'success', summary: 'Success', detail: 'User Created!!!', life: 3000 });
         //confirmationDialogClose.value= true;
         //confirmationDialogTitle.value = "User Created successfully!";
       }

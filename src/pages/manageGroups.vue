@@ -1,0 +1,320 @@
+<script setup>
+   import { ref, onMounted, watch } from 'vue';
+   import { getProducts, updateProducts, addProduct, deleteCover } from '../api/products';
+   import { todayDate } from "../utilities/common"
+   import { useConfirm } from "primevue/useconfirm";
+  import ConfirmationDialogClose from '../components/ConfirmationDialogClose.vue';
+  import ConfirmationDialog from '../components/ConfirmationDialog.vue'
+  import { useToast } from "primevue/usetoast";
+
+
+  const toast = useToast();
+  const confirm = useConfirm();
+
+  components:['ConfirmationDialogClose', 'ConfirmationDialog']
+
+  const confirmationDialog = ref(false);
+   const confirmationDialogClose = ref(false);
+   const confirmationDialogTitle = ref('Are you sure?');
+   const confirmationDialogBody = ref('Please confirm to proceed.');
+   const callback = ref()
+
+   const confirm1 = () => {
+    confirm.require({
+        message: 'Group Created Successfully!',
+        header: 'Message Sent!',
+
+        rejectClass: 'p-button-secondary p-button-outlined',
+        rejectLabel: 'No',
+        acceptLabel: 'Close',
+        accept: () => {
+            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+            addMessage.value = true;
+
+        },
+        reject: () => {
+            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
+} ;
+
+   const searchDialog = ref(false);
+   const newDialog = ref(false);
+
+  
+
+   const groupsData = [
+  {
+    name: "Tech Enthusiasts",
+    long_description: "Public",
+    suburb: "San Francisco",
+    user_count: 120,
+    status: "Active"
+  },
+  {
+    name: "Photography Club",
+    long_description: "Private",
+    suburb: "New York",
+    user_count: 85,
+    status: "Active"
+  },
+  {
+    name: "Fitness Freaks",
+    long_description: "Public",
+    suburb: "Los Angeles",
+    user_count: 95,
+    status: "Inactive"
+  },
+  {
+    name: "Bookworms Society",
+    long_description: "Private",
+    suburb: "Chicago",
+    user_count: 60,
+    status: "Active"
+  },
+  {
+    name: "Foodies Group",
+    long_description: "Public",
+    suburb: "Austin",
+    user_count: 150,
+    status: "Active"
+  }
+];
+
+const selectedCity = ref();
+const cities = ref([
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+]);
+
+const searchForm = ref({
+  keyword_search:'',
+  name_surname:'',
+  email:'',
+  username:'',
+  group:'',
+  date:''
+})
+
+
+const createForm = ref({
+  group_name:'',
+  province:'',
+  min_age:0,
+  max_age:100,
+  region:'',
+  description:'',
+})
+
+const searchGroup= async()=>{
+
+  try {
+         
+        
+      searchDialog.value = false;
+ 
+      toast.add({ severity: 'success', summary: 'Success', detail: 'Searching!!!', life: 3000 });
+          
+       } 
+    catch (error) {
+      console.error("Error in saveUser:", error);
+      toast.add({ severity: 'error', summary: 'Danger', detail: 'Error  Searching, Please try again!!!', life: 3000 });
+    } finally {
+          
+
+  }
+}
+
+
+const createGroup=async()=>{
+  
+      try {
+         
+        
+        newDialog.value = false;
+
+         toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
+         
+      } 
+      catch (error) {
+        console.error("Error in saveUser:", error);
+        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
+      } finally {
+         
+      
+      }
+
+
+}
+
+
+const group= ref()
+
+const confirmDeleteGroup = (currGroup)=>{
+  confirmationDialogTitle.value = "Delete Group";
+  confirmationDialogBody.value = "Are you sure you want to delete?";
+  callback.value = deleteGroup;
+  confirmationDialog.value= true;
+  group.value = currGroup;
+
+}
+
+const deleteGroup=async()=>{
+  console.log(group.value);
+}
+   
+const getSeverity = (status) => {
+    switch (status) {
+        case 'Active':
+            return 'info';
+
+        case 'Inactive':
+            return 'danger';
+    }
+}
+</script>
+
+<template>
+	<div class="p-grid">
+		<div class="p-col-12">
+			<Card>
+            <template #title>
+               <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>Manage Groups</span>
+                  <div >
+                    <Button 
+                        class="mr-5"
+                        label="Search" 
+                        icon="pi pi-search" 
+                        severity="info" 
+                        @click="searchDialog=true"
+                    />
+                    <Button 
+                        label="New Group" 
+                        icon="pi pi-plus" 
+                        severity="info" 
+                        @click="newDialog=true"
+                    />
+                  </div>
+               </div>
+            </template>
+               <template #content>
+                  <DataTable 
+                     :value="groupsData"
+                     paginator :rows="5" 
+                     :rowsPerPageOptions="[5, 10, 20, 50]"
+                     tableStyle="min-width: 50rem"
+                  >
+                     <Column field="name" header="Group Name"></Column>
+                     <Column field="long_description" header="Private/Public"></Column>
+                     <Column field="suburb" header="Suburb"></Column>
+                     <Column field="user_count" header="user_count"></Column>
+                     <Column field="status" header="Group Status">
+                      <template #body="{ data }">
+                        <Tag :value="data.status" :severity="getSeverity(data.status)" />
+                      </template>
+                      <template #option="slotProps">
+                        <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                      </template>
+                    
+                    </Column>
+                     <Column header="Actions" :exportable="false" style="min-width:8rem">
+                        <template #body="slotProps">
+
+                           <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteGroup(slotProps.data)" />
+                        </template>
+                     </Column>
+                  </DataTable>
+
+                  <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '670px'}" header="Advanced Search" :modal="true" class="p-fluid">
+                    <div class="field col-12">
+                        <label for="username">Username</label>
+                       
+                        <MultiSelect v-model="searchForm.username" display="chip" :options="cities" optionLabel="name" placeholder="Select Username"  />
+                        
+                    </div>
+                    <div class="field col-12">
+                       <MultiSelect v-model="searchForm.name_surname" display="chip"  :options="cities" optionLabel="name" placeholder="Select Name " />
+
+                    </div>
+                    <div class="field col-12">
+                      <MultiSelect v-model="searchForm.email"  display="chip"  :options="cities" optionLabel="name" placeholder="Select Email" :maxSelectedLabels="3"  />
+                    </div>
+                    <div class="field col-12">
+                        <Dropdown v-model="searchForm.group"  display="chip"  :options="cities" optionLabel="name" placeholder="Select Group"  />
+                    </div>
+
+                    <div class="field col-12">
+                      <Calendar v-model="searchForm.date" selectionMode="range" :manualInput="false" showIcon iconDisplay="input" />
+                    </div>
+                    
+                    
+                     <template #footer>
+                        <Button label="Cancel" icon="pi pi-times" text @click="searchDialog=false"/>
+                        <Button label="Search" icon="pi pi-search" text @click="searchGroup" />
+                     </template>
+               </Dialog>
+
+
+               <Dialog :dismissableMask="true" v-model:visible="newDialog" :style="{}" header="Create Group" :modal="true" class="p-fluid">
+                <div class="field col-12">
+                        <label for="group_name">Group Name</label>
+                        <InputText id="group_name" v-model="createForm.group_name" aria-describedby="group-help" />
+                        <small id="group-help">Enter group name</small>
+                    </div>
+                    <div class="field col-12">
+                        <Dropdown v-model="createForm.province" :options="cities" optionLabel="province" placeholder="Select a Province" />
+                        <small id="province-help">Select Province</small>
+                    </div>
+                    
+                    <div class="field col-12">
+                        <Dropdown v-model="createForm.region" :options="cities" optionLabel="region" placeholder="Select a Religion"  />
+                    </div>
+
+                    <div class="field col-12">
+                      <label for="min_age">Min Age</label>
+                      <InputNumber  id="min_age" v-model="createForm.min_age"  showButtons buttonLayout="vertical" class="m-5" style="width: 3rem" :min="0" :max="99">
+                        <template #incrementbuttonicon>
+                            <span class="pi pi-plus" />
+                        </template>
+                        <template #decrementbuttonicon>
+                            <span class="pi pi-minus" />
+                        </template>
+                      </InputNumber>
+                      <label for="max_age">Max Age</label>
+                      <InputNumber v-model="createForm.max_age" showButtons buttonLayout="vertical" class="m-5" style="width: 3rem" :min="0" :max="99">
+                        <template #incrementbuttonicon>
+                            <span class="pi pi-plus" />
+                        </template>
+                        <template #decrementbuttonicon>
+                            <span class="pi pi-minus" />
+                        </template>
+                      </InputNumber>
+                  </div>
+
+                  <div class="field col-12">
+                    <Textarea placeholder="Group Description" v-model="createForm.description" autoResize rows="5" cols="30" />
+                  </div>
+
+
+
+
+              
+
+                     <template #footer>
+                        <Button label="Cancel" icon="pi pi-times" text @click="newDialog=false"/>
+                        <Button label="Save" icon="pi pi-check" text @click="createGroup" />
+                     </template>
+               </Dialog>
+               </template>
+         </Card>
+		</div>
+	</div>
+
+  <ConfirmationDialogClose/>
+  <ConfirmationDialog :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
+</template>
+
