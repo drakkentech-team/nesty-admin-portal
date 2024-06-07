@@ -1,8 +1,12 @@
 <script setup>
-   import { ref } from "vue";
+   import { defineAsyncComponent, ref } from "vue";
    import { FilterMatchMode } from "primevue/api";
+   import { useDialog } from "primevue/usedialog";
 
 
+   const dynamicView = defineAsyncComponent(() => import("../views/ModerationView.vue"));
+   const dialog = useDialog();
+   
    const reports = ref([]);
    reports.value =  [
       {
@@ -23,7 +27,7 @@
          type: 'Type B',
          group: 'Group 2',
          date_posted: '2024-05-04',
-         status: 'Approved'
+         status: 'Resolved'
       },
       {
          date: '2024-05-10',
@@ -33,7 +37,7 @@
          type: 'Type C',
          group: 'Group 1',
          date_posted: '2024-05-09',
-         status: 'Rejected'
+         status: 'Overruled'
       },
       {
          date: '2024-04-30',
@@ -75,12 +79,32 @@
       return -statusOrder || -dateOrder;
    }
 
+   const moderate = (event) => {
+      dialog.open(dynamicView, {
+         props: {
+            modal: true,
+            // showHeader: false,
+            style: {
+               width: '75vw',
+            }
+         },
+         data: {
+            report: event.data
+         }
+      });
+   }
+
    reports.value.sort((a, b) => defaultOrder(a, b));
+
+   const testLog = () => {
+      console.log("It works");
+   }
 </script>
 
 <template>
    <div class="p-grid">
       <div class="p-col-12">
+         <DynamicDialog />
          <Card>
             <template #title> Moderation </template>
             <template #content>
@@ -95,6 +119,8 @@
                   :globalFilterFields="['date', 'reported_by', 'posted_by', 'reason', 'type',
                      'group', 'date_posted', 'status'
                   ]"
+                  filterDisplay="menu"
+                  @row-click="moderate"
             >
                <template #header>
                   <div class="flex justify-content-end">
