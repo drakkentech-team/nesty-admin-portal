@@ -102,22 +102,22 @@
    };
 
    const searchMessages = async()=>{
-    
+
         console.log(searchForm.value);
         try {
-         
-        
+
+
          searchDialog.value = false;
-    
+
          toast.add({ severity: 'success', summary: 'Success', detail: 'Searching!!!', life: 3000 });
-             
-          } 
+
+          }
        catch (error) {
          console.error("Error in saveUser:", error);
          toast.add({ severity: 'error', summary: 'Danger', detail: 'Error  Searching, Please try again!!!', life: 3000 });
        } finally {
-             
-   
+
+
      }
 
    }
@@ -125,7 +125,7 @@
    const sendMessage=async()=>{
       console.log(user.value);
       try {
-         
+
          const payload ={
             email: user.value.email,
             password: "",
@@ -133,20 +133,20 @@
          }
 
          await deleteAdminPortalUser(user.value['sid'],payload);
-            const data = await fetchAdminPortalUsers();
-            users.value = data;
+         users.value  = await fetchAdminPortalUsers();
+
 
 
          toast.add({ severity: 'success', summary: 'Success', detail: 'User Deleted!!!', life: 3000 });
          confirmationDialogTitle.value = "Deleted successfully!";
          confirmationDialog.value = false;
          confirmationDialogClose.value= true;
-      } 
+      }
       catch (error) {
         console.error("Error in saveUser:", error);
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
       } finally {
-         
+
          spinner.value = false;
       }
 
@@ -163,22 +163,22 @@
                <div style="display: flex; align-items: center; justify-content: space-between;">
                   <span>Private Messages</span>
                   <div >
-                    <Button 
+                    <Button
                         class="mr-5"
-                        label="Search" 
-                        icon="pi pi-search" 
-                        severity="info" 
+                        label="Search"
+                        icon="pi pi-search"
+                        severity="info"
                         @click="searchDialog=true"
                     />
-                    <Button 
-                        label="New Message" 
-                        icon="pi pi-plus" 
-                        severity="info" 
+                    <Button
+                        label="New Message"
+                        icon="pi pi-plus"
+                        severity="info"
                         @click="addMessage=true"
                     />
                   </div>
                </div>
-              
+
             </template>
             <template #content>
 
@@ -194,27 +194,28 @@
                 <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '450px'}" header="Advanced Search" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
                         <div class="field col-12">
-                           
-                            <MultiSelect v-model="searchForm.username" :options="cities" optionLabel="name" placeholder="Select User Names" checkmark :highlightOnSelect="false" />
-                           
+                           <label for="username">Username</label>
+                           <MultiSelect id="username" v-model="searchForm.username" :options="cities" optionLabel="name" placeholder="Select User Names" checkmark :highlightOnSelect="false" />
+
                         </div>
                         <div class="field col-12">
-                           
-                            <MultiSelect v-model="searchForm.email" :options="cities" optionLabel="name" placeholder="Select Email"  />
-                           
+                           <label for="email">Email</label>
+                           <MultiSelect id="email" v-model="searchForm.email" :options="cities" optionLabel="name" placeholder="Select Email"  />
+
                         </div>
                         <div class="field col-12">
-                           
-                           <MultiSelect v-model="searchForm.group" :options="cities" optionLabel="name" placeholder="Select Groups"  />
-                          
+                           <label for="group">Username</label>
+                           <MultiSelect id="group" v-model="searchForm.group" :options="cities" optionLabel="name" placeholder="Select Groups"  />
+
                        </div>
-                       
+
                         <div class="field col-12">
-                            <Calendar v-model="searchForm.date" selectionMode="range" :manualInput="false" showIcon iconDisplay="input" />
+                           <label for="date_range">Date Range</label>
+                            <Calendar id="date_range" v-model="searchForm.date" selectionMode="range" :manualInput="false" showIcon iconDisplay="input" />
                         </div>
-                   
+
                      </div>
-                     
+
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="searchDialog=false"/>
                         <Button label="Search" icon="pi pi-search" text @click="searchMessages" />
@@ -225,27 +226,29 @@
 
                 <Dialog :dismissableMask="true" v-model:visible="addMessage" :style="{width: '450px'}" header="New Message" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
-                        <div class="field col-12">   
-                            <Dropdown v-model="messageForm.group" :options="cities" optionLabel="name" placeholder="Select Group" checkmark :highlightOnSelect="false" />
+                        <div class="field col-12">
+                           <label for="group_">Group</label>
+                            <Dropdown id="group_" v-model="messageForm.group" :options="cities" optionLabel="name" placeholder="Select Group" checkmark :highlightOnSelect="false" />
                         </div>
                         <div class="field col-12">
-                            <Dropdown v-model="messageForm.users" :options="cities" optionLabel="name" placeholder="Select User"  />
-                        </div>
-                        
-                        <div class="field col-12">
-                           
-                           <InputText id="group" placeholder="Subject" v-model.trim="messageForm.subject"  autofocus />
-                           
+                           <label for="user">Users</label>
+                           <Dropdown id="user" v-model="messageForm.users" :options="cities" optionLabel="name" placeholder="Select User"  />
                         </div>
 
                         <div class="field col-12">
-                           
-                            <Textarea v-model="messageForm.message_body" autoResize />
-                           
+                           <label for="subject">Subject</label>
+                           <InputText id="subject" placeholder="Subject" v-model.trim="messageForm.subject"  autofocus />
+
                         </div>
-                   
+
+                        <div class="field col-12">
+                           <label for="body">Body</label>
+                            <Textarea id="body" v-model="messageForm.message_body" autoResize />
+
+                        </div>
+
                      </div>
-                     
+
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="addMessage=false"/>
                         <Button label="Send" icon="pi pi-check" text @click="saveMessage" />
