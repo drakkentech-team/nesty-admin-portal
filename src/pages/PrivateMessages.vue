@@ -194,23 +194,24 @@
                 <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '450px'}" header="Advanced Search" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
                         <div class="field col-12">
-                           
-                            <MultiSelect v-model="searchForm.username" :options="cities" optionLabel="name" placeholder="Select User Names" checkmark :highlightOnSelect="false" />
-                           
-                        </div>
-                        <div class="field col-12">
-                           
-                            <MultiSelect v-model="searchForm.email" :options="cities" optionLabel="name" placeholder="Select Email"  />
+                           <label for="username">Username</label> 
+                           <MultiSelect id="username" v-model="searchForm.username" :options="cities" optionLabel="name" placeholder="Select User Names" checkmark :highlightOnSelect="false" />
                            
                         </div>
                         <div class="field col-12">
+                           <label for="email">Email</label> 
+                           <MultiSelect id="email" v-model="searchForm.email" :options="cities" optionLabel="name" placeholder="Select Email"  />
                            
-                           <MultiSelect v-model="searchForm.group" :options="cities" optionLabel="name" placeholder="Select Groups"  />
+                        </div>
+                        <div class="field col-12">
+                           <label for="group">Username</label> 
+                           <MultiSelect id="group" v-model="searchForm.group" :options="cities" optionLabel="name" placeholder="Select Groups"  />
                           
                        </div>
                        
                         <div class="field col-12">
-                            <Calendar v-model="searchForm.date" selectionMode="range" :manualInput="false" showIcon iconDisplay="input" />
+                           <label for="date_range">Date Range</label> 
+                            <Calendar id="date_range" v-model="searchForm.date" selectionMode="range" :manualInput="false" showIcon iconDisplay="input" />
                         </div>
                    
                      </div>
@@ -225,22 +226,24 @@
 
                 <Dialog :dismissableMask="true" v-model:visible="addMessage" :style="{width: '450px'}" header="New Message" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
-                        <div class="field col-12">   
-                            <Dropdown v-model="messageForm.group" :options="cities" optionLabel="name" placeholder="Select Group" checkmark :highlightOnSelect="false" />
+                        <div class="field col-12">
+                           <label for="group_">Group</label>   
+                            <Dropdown id="group_" v-model="messageForm.group" :options="cities" optionLabel="name" placeholder="Select Group" checkmark :highlightOnSelect="false" />
                         </div>
                         <div class="field col-12">
-                            <Dropdown v-model="messageForm.users" :options="cities" optionLabel="name" placeholder="Select User"  />
+                           <label for="user">Users</label>  
+                           <Dropdown id="user" v-model="messageForm.users" :options="cities" optionLabel="name" placeholder="Select User"  />
                         </div>
                         
                         <div class="field col-12">
-                           
-                           <InputText id="group" placeholder="Subject" v-model.trim="messageForm.subject"  autofocus />
+                           <label for="subject">Subject</label>  
+                           <InputText id="subject" placeholder="Subject" v-model.trim="messageForm.subject"  autofocus />
                            
                         </div>
 
                         <div class="field col-12">
-                           
-                            <Textarea v-model="messageForm.message_body" autoResize />
+                           <label for="body">Body</label> 
+                            <Textarea id="body" v-model="messageForm.message_body" autoResize />
                            
                         </div>
                    

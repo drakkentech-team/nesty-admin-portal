@@ -19,10 +19,14 @@
    const confirmationDialogBody = ref('Please confirm to proceed.');
    const callback = ref()
 
+   const searchDialog = ref(false);
+   const newDialog = ref(false);
+   const deleteDialog = ref(false);
+
 
 const createGroup = async () => {
 
-  if (true) {
+  if (false) {
     try {
          
         
@@ -62,8 +66,7 @@ const createGroup = async () => {
     });
 } ;
 
-   const searchDialog = ref(false);
-   const newDialog = ref(false);
+  
 
   
 const groupsData = [
@@ -199,40 +202,36 @@ const searchGroup= async()=>{
 }
 
 
-/*const createGroup=async()=>{
-  
-      try {
-         
-        
-        newDialog.value = false;
-        toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
-         
-      } 
-      catch (error) {
-        console.error("Error in saveUser:", error);
-        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
-      } finally {
-         
-      
-      }
-
-
-}*/
-
-
-const group= ref()
+const group= ref();
 
 const confirmDeleteGroup = (currGroup)=>{
   confirmationDialogTitle.value = "Delete Group";
   confirmationDialogBody.value = "Are you sure you want to delete?";
-  callback.value = deleteGroup;
+  callback.value = getReasonForDeleting;
   confirmationDialog.value= true;
+
   group.value = currGroup;
+  group.value['reasons'] = '';
+
 
 }
 
 const deleteGroup=async()=>{
-  console.log(group.value);
+  try {
+                 
+    deleteDialog.value = false;
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Deleted Group', life: 3000 });
+           
+  } 
+  catch (error) {
+    toast.add({ severity: 'error', summary: 'Danger', detail: 'Error  Searching, Please try again!!!', life: 3000 });
+  } finally {
+             
+  }
+}
+
+const getReasonForDeleting=()=>{
+  deleteDialog.value = true;
 }
    
 const getSeverity = (status) => {
@@ -301,19 +300,21 @@ const getSeverity = (status) => {
                   <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '670px'}" header="Advanced Search" :modal="true" class="p-fluid">
                     <div class="field col-12">
                         <label for="username">Username</label>
-                       
                         <MultiSelect v-model="searchForm.username" display="chip" :options="options.username" optionLabel="name" placeholder="Select Username"  />
                         
                     </div>
                     <div class="field col-12">
-                       <MultiSelect v-model="searchForm.name_surname" display="chip"  :options="options.name" optionLabel="name" placeholder="Select Name" />
+                      <label for="name">Name</label>
+                       <MultiSelect id="name" v-model="searchForm.name_surname" display="chip"  :options="options.name" optionLabel="name" placeholder="Select Name" />
 
                     </div>
                     <div class="field col-12">
-                      <MultiSelect v-model="searchForm.email"  display="chip"  :options="options.email" optionLabel="name" placeholder="Select Email" :maxSelectedLabels="3"  />
+                      <label for="email">Email</label>
+                      <MultiSelect id="email"  v-model="searchForm.email"  display="chip"  :options="options.email" optionLabel="name" placeholder="Select Email" :maxSelectedLabels="3"  />
                     </div>
                     <div class="field col-12">
-                        <Dropdown v-model="searchForm.group"  display="chip"  :options="options.group" optionLabel="name" placeholder="Select Group"  />
+                      <label for="name">Group</label>
+                      <Dropdown id="group" v-model="searchForm.group"  display="chip"  :options="options.group" optionLabel="name" placeholder="Select Group"  />
                     </div>
 
                     <div class="field col-12">
@@ -325,6 +326,18 @@ const getSeverity = (status) => {
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="searchDialog=false"/>
                         <Button label="Search" icon="pi pi-search" text @click="searchGroup" />
+                     </template>
+               </Dialog>
+
+               <Dialog v-model:visible="deleteDialog" :style="{}" header="Delete Group" :modal="true" class="p-fluid">
+                
+
+                  <div class="field col-12">
+                    <Textarea id="description" placeholder="Reasons For Deleting" v-model="group.reasons" autoResize rows="5" cols="30" />
+                  </div>
+
+                     <template #footer>
+                        <Button label="Save" icon="pi pi-check" text @click="deleteGroup" />
                      </template>
                </Dialog>
 
