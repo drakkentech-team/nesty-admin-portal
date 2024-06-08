@@ -6,7 +6,7 @@
   import ConfirmationDialogClose from '../components/ConfirmationDialogClose.vue';
   import ConfirmationDialog from '../components/ConfirmationDialog.vue'
   import { useToast } from "primevue/usetoast";
-
+ 
 
   const toast = useToast();
   const confirm = useConfirm();
@@ -18,6 +18,30 @@
    const confirmationDialogTitle = ref('Are you sure?');
    const confirmationDialogBody = ref('Please confirm to proceed.');
    const callback = ref()
+
+
+const createGroup = async () => {
+
+  if (true) {
+    try {
+         
+        
+         newDialog.value = false;
+         toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
+          
+       } 
+       catch (error) {
+         console.error("Error in saveUser:", error);
+         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
+       } finally {
+          
+       
+       }
+  } else {
+    toast.add({ severity: 'error', summary: 'Validation Error', detail: 'Please check the form fields.', life: 3000 });
+  }
+};
+
 
    const confirm1 = () => {
     confirm.require({
@@ -42,8 +66,7 @@
    const newDialog = ref(false);
 
   
-
-   const groupsData = [
+const groupsData = [
   {
     name: "Tech Enthusiasts",
     long_description: "Public",
@@ -90,6 +113,53 @@ const cities = ref([
     { name: 'Paris', code: 'PRS' }
 ]);
 
+
+const options = ref({
+  province : [
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+],
+
+region : [
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+],
+username : [
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+],
+names: [
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+],
+group: [
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+],email : [
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+],
+
+})
+
 const searchForm = ref({
   keyword_search:'',
   name_surname:'',
@@ -129,14 +199,13 @@ const searchGroup= async()=>{
 }
 
 
-const createGroup=async()=>{
+/*const createGroup=async()=>{
   
       try {
          
         
         newDialog.value = false;
-
-         toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
+        toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
          
       } 
       catch (error) {
@@ -148,7 +217,7 @@ const createGroup=async()=>{
       }
 
 
-}
+}*/
 
 
 const group= ref()
@@ -233,21 +302,22 @@ const getSeverity = (status) => {
                     <div class="field col-12">
                         <label for="username">Username</label>
                        
-                        <MultiSelect v-model="searchForm.username" display="chip" :options="cities" optionLabel="name" placeholder="Select Username"  />
+                        <MultiSelect v-model="searchForm.username" display="chip" :options="options.username" optionLabel="name" placeholder="Select Username"  />
                         
                     </div>
                     <div class="field col-12">
-                       <MultiSelect v-model="searchForm.name_surname" display="chip"  :options="cities" optionLabel="name" placeholder="Select Name " />
+                       <MultiSelect v-model="searchForm.name_surname" display="chip"  :options="options.name" optionLabel="name" placeholder="Select Name" />
 
                     </div>
                     <div class="field col-12">
-                      <MultiSelect v-model="searchForm.email"  display="chip"  :options="cities" optionLabel="name" placeholder="Select Email" :maxSelectedLabels="3"  />
+                      <MultiSelect v-model="searchForm.email"  display="chip"  :options="options.email" optionLabel="name" placeholder="Select Email" :maxSelectedLabels="3"  />
                     </div>
                     <div class="field col-12">
-                        <Dropdown v-model="searchForm.group"  display="chip"  :options="cities" optionLabel="name" placeholder="Select Group"  />
+                        <Dropdown v-model="searchForm.group"  display="chip"  :options="options.group" optionLabel="name" placeholder="Select Group"  />
                     </div>
 
                     <div class="field col-12">
+                      <label for="group_name">Date Filter</label>
                       <Calendar v-model="searchForm.date" selectionMode="range" :manualInput="false" showIcon iconDisplay="input" />
                     </div>
                     
@@ -262,16 +332,18 @@ const getSeverity = (status) => {
                <Dialog :dismissableMask="true" v-model:visible="newDialog" :style="{}" header="Create Group" :modal="true" class="p-fluid">
                 <div class="field col-12">
                         <label for="group_name">Group Name</label>
-                        <InputText id="group_name" v-model="createForm.group_name" aria-describedby="group-help" />
-                        <small id="group-help">Enter group name</small>
+                        <InputText id="group_name" placeholder="Enter group name" v-model="createForm.group_name" aria-describedby="group-help" />
+                        <small>Group name is required and should be at least 3 characters long.</small>
                     </div>
                     <div class="field col-12">
-                        <Dropdown v-model="createForm.province" :options="cities" optionLabel="province" placeholder="Select a Province" />
+                      <label for="province">Province</label>
+                        <Dropdown id="province" v-model="createForm.province" :options="options.province" optionLabel="name" placeholder="Select a Province" />
                         <small id="province-help">Select Province</small>
                     </div>
                     
                     <div class="field col-12">
-                        <Dropdown v-model="createForm.region" :options="cities" optionLabel="region" placeholder="Select a Religion"  />
+                      <label for="region">Region</label>
+                        <Dropdown id="region" v-model="createForm.region" :options="options.region" optionLabel="name" placeholder="Select a Religion"  />
                     </div>
 
                     <div class="field col-12">
@@ -296,13 +368,9 @@ const getSeverity = (status) => {
                   </div>
 
                   <div class="field col-12">
-                    <Textarea placeholder="Group Description" v-model="createForm.description" autoResize rows="5" cols="30" />
+                    <label for="region">Description</label>
+                    <Textarea id="description" placeholder="Group Description" v-model="createForm.description" autoResize rows="5" cols="30" />
                   </div>
-
-
-
-
-              
 
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="newDialog=false"/>
