@@ -84,6 +84,7 @@
          props: {
             modal: true,
             // showHeader: false,
+            header: ' ',
             style: {
                width: '75vw',
             }
@@ -121,7 +122,7 @@
                   ]"
                   filterDisplay="menu"
                   @row-click="moderate"
-            >
+               >
                <template #header>
                   <div class="flex justify-content-end">
                      <IconField iconPosition="left">

@@ -5,8 +5,8 @@
           <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
             <i class="pi pi-question text-5xl"></i>
           </div>
-          <span class="font-bold text-2xl block mb-2 mt-4">{{ title }}</span>
-          <p class="mb-0">{{ body }}</p>
+          <span class="font-bold text-2xl block mb-2 mt-4" v-html="title"></span>
+          <p class="mb-0" v-html="body"></p>
           <div class="flex align-items-center gap-2 mt-4">
             <Button label="Yes" @click="handleAccept(acceptCallback)"></Button>
             <Button label="No" outlined @click="handleReject(rejectCallback)"></Button>
@@ -35,6 +35,18 @@
     show : {
       type:Boolean,
       default: false
+    },
+    toasts : {
+      type: Boolean,
+      default: true
+    },
+    acceptDetail : {
+      type: String,
+      default: 'You have accepted'
+    },
+    rejectDetail : {
+      type: String,
+      default: 'You have rejected'
     }
   });
   
@@ -56,13 +68,17 @@
   });
   
   const handleAccept = (acceptCallback) => {
-    toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+    if (props.toasts) {
+      toast.add({ severity: 'info', summary: 'Confirmed', detail: props.acceptDetail, life: 3000 });
+    }
     emit('confirm');
     closeDialog();
   };
   
   const handleReject = (rejectCallback) => {
-    toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+    if (props.toasts) {
+      toast.add({ severity: 'error', summary: 'Rejected', detail: props.rejectDetail, life: 3000 });
+    }
     emit('cancel');
     closeDialog();
   };
