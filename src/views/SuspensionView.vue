@@ -38,7 +38,7 @@
          confirmedDialogMessage.value = `${props.user} has been Suspended for ${suspendPeriod.value}`
          showConfirmedDialog.value = true;
       } else {
-         confirmBanTitle.value = `Selected to BAN \n<b>${user}</b>`;
+         confirmBanTitle.value = `Selected to BAN \n<b>${props.user}</b>`;
          showConfirmBanDialog.value = true;
       }
    }
