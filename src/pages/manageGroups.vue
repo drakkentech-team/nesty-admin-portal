@@ -20,14 +20,66 @@
    const searchDialog = ref(false);
    const newDialog = ref(false);
    const deleteDialog = ref(false);
+   const validationErrors = ref({
+     group_name: null,
+     province: null,
+     region: null,
+     min_age: null,
+     max_age: null,
+     description: null,
+   });
 
+   const validateCreateForm = () => {
+     let isValid = true;
+     // Reset validation errors
+     validationErrors.value = {
+       group_name: null,
+       province: null,
+       region: null,
+       min_age: null,
+       max_age: null,
+       description: null,
+     };
+
+     // Validate group_name
+     if (!createForm.value.group_name || createForm.value.group_name.length < 3) {
+       validationErrors.value.group_name = 'Group name is required and should be at least 3 characters long.';
+       isValid = false;
+     }
+
+     // Validate province
+     if (!createForm.value.province) {
+       validationErrors.value.province = 'Province is required.';
+       isValid = false;
+     }
+
+     if (!createForm.value.region) {
+       validationErrors.value.region = 'Region is required.';
+       isValid = false;
+     }
+
+     if (!createForm.value.description) {
+       validationErrors.value.description = 'Description is required.';
+       isValid = false;
+     }
+
+     if (!createForm.value.min_age) {
+       validationErrors.value.min_age = 'Min Age is required.';
+       isValid = false;
+     }
+
+     if (!createForm.value.max_age) {
+       validationErrors.value.max_age = 'Max Age is required.';
+       isValid = false;
+     }
+
+     return isValid;
+   };
 
 const createGroup = async () => {
 
-  if (false) {//todo when api call is available
+  if (validateCreateForm()){
     try {
-
-
          newDialog.value = false;
          toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
 
@@ -344,17 +396,24 @@ const getSeverity = (status) => {
                 <div class="field col-12">
                         <label for="group_name">Group Name</label>
                         <InputText id="group_name" placeholder="Enter group name" v-model="createForm.group_name" aria-describedby="group-help" />
-                        <small>Group name is required and should be at least 3 characters long.</small>
+                        <template v-if="validationErrors.group_name">
+                          <small style="color: red">{{ validationErrors.group_name }}</small>
+                        </template>
                     </div>
                     <div class="field col-12">
                       <label for="province">Province</label>
                         <Dropdown id="province" v-model="createForm.province" :options="options.province" optionLabel="name" placeholder="Select a Province" />
-                        <small id="province-help">Select Province</small>
+                      <template v-if="validationErrors.province">
+                        <small style="color: red">{{ validationErrors.province }}</small>
+                      </template>
                     </div>
 
                     <div class="field col-12">
                       <label for="region">Region</label>
                         <Dropdown id="region" v-model="createForm.region" :options="options.region" optionLabel="name" placeholder="Select a Religion"  />
+                        <template v-if="validationErrors.region">
+                          <small style="color: red">{{ validationErrors.region }}</small>
+                        </template>
                     </div>
 
                     <div class="field col-12">
@@ -376,11 +435,20 @@ const getSeverity = (status) => {
                             <span class="pi pi-minus" />
                         </template>
                       </InputNumber>
+                      <template v-if="validationErrors.min_age">
+                        <small style="color: red">{{ validationErrors.min_age }}</small>
+                      </template>
+                      <template v-if="validationErrors.max_age">
+                        <small style="color: red">{{ validationErrors.max_age }}</small>
+                      </template>
                   </div>
 
                   <div class="field col-12">
                     <label for="region">Description</label>
                     <Textarea id="description" placeholder="Group Description" v-model="createForm.description" autoResize rows="5" cols="30" />
+                    <template v-if="validationErrors.description">
+                      <small style="color: red">{{ validationErrors.description }}</small>
+                    </template>
                   </div>
 
                      <template #footer>
