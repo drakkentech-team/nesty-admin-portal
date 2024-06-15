@@ -33,7 +33,7 @@ const router = createRouter({
             {
                path: '/notifications',
                name: 'notifications',
-               component: () => import('../pages/PrivateMessages.vue'),
+               component: () => import('../pages/privateMessages.vue'),
             },
          ]
       },
@@ -60,17 +60,6 @@ const router = createRouter({
          ]
       },
       {
-         path: '/payment-account',
-         component: DashboardLayout,
-         children: [
-            {
-               path: '',
-               name: 'payment-account',
-               component: () => import('../pages/paymentAccounts.vue'),
-            },
-         ]
-      },
-      {
          path: '/userView',
          component: DashboardLayout,
          children: [
@@ -80,7 +69,7 @@ const router = createRouter({
                component: () => import('../pages/userView.vue'),
             },
          ]
-      }, 
+      },
       {
          path: '/manage-groups',
          component: DashboardLayout,
@@ -91,7 +80,7 @@ const router = createRouter({
                component: () => import('../pages/manageGroups.vue'),
             },
          ]
-      }, 
+      },
    ]
 });
 
@@ -101,7 +90,7 @@ router.beforeEach((to, from, next) => {
    //const userIsLoggedIn = user.user ? true : false
    const userIsLoggedIn =  true;
 
- 
+
    if (to.path === '/login' && userIsLoggedIn) {
      next('/notifications');
    } else if (to.path !== '/login' && !userIsLoggedIn) {

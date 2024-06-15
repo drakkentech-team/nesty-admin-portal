@@ -1,15 +1,17 @@
 <script setup>
-   import { ref} from 'vue';
+import {onMounted, ref} from 'vue';
    import { useConfirm } from "primevue/useconfirm";
-  import ConfirmationDialogClose from '../components/ConfirmationDialogClose.vue';
-  import ConfirmationDialog from '../components/ConfirmationDialog.vue'
-  import { useToast } from "primevue/usetoast";
+   import ConfirmationDialog from '../components/ConfirmationDialog.vue'
+   import { useToast } from "primevue/usetoast";
+import {fetchMobileUsers} from "@/api/mobileAppUsers";
+import {fetchGroups} from "@/api/manageGroups";
+import {fetchAdminPortalUsers, updateAdminPortalUser} from "@/api/adminPortalUsers";
 
 
   const toast = useToast();
   const confirm = useConfirm();
 
-  components:['ConfirmationDialogClose', 'ConfirmationDialog']
+  components:['ConfirmationDialog']
 
   const confirmationDialog = ref(false);
    const confirmationDialogClose = ref(false);
@@ -80,8 +82,20 @@ const createGroup = async () => {
 
   if (validateCreateForm()){
     try {
-         newDialog.value = false;
-         toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
+
+      const payload = {
+        group_name: createForm.value.group_name,
+        province: createForm.value.province,
+        min_age: createForm.value.min_age,
+        max_age: createForm.value.max_age,
+        region: createForm.value.region,
+        description: createForm.value.description
+      }
+
+      await createGroup( payload);
+      groupsData.value = await fetchGroups();
+      newDialog.value = false;
+      toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
 
        }
        catch (error) {
@@ -119,43 +133,7 @@ const createGroup = async () => {
 
 
 
-const groupsData = [
-  {
-    name: "Tech Enthusiasts",
-    long_description: "Public",
-    suburb: "San Francisco",
-    user_count: 120,
-    status: "Active"
-  },
-  {
-    name: "Photography Club",
-    long_description: "Private",
-    suburb: "New York",
-    user_count: 85,
-    status: "Active"
-  },
-  {
-    name: "Fitness Freaks",
-    long_description: "Public",
-    suburb: "Los Angeles",
-    user_count: 95,
-    status: "Inactive"
-  },
-  {
-    name: "Bookworms Society",
-    long_description: "Private",
-    suburb: "Chicago",
-    user_count: 60,
-    status: "Active"
-  },
-  {
-    name: "Foodies Group",
-    long_description: "Public",
-    suburb: "Austin",
-    user_count: 150,
-    status: "Active"
-  }
-];
+const groupsData = ref([]);
 
 const selectedCity = ref();
 const cities = ref([
@@ -235,10 +213,7 @@ const createForm = ref({
 const searchGroup= async()=>{
 
   try {
-
-
       searchDialog.value = false;
-
       toast.add({ severity: 'success', summary: 'Success', detail: 'Searching!!!', life: 3000 });
 
        }
@@ -293,6 +268,14 @@ const getSeverity = (status) => {
             return 'danger';
     }
 }
+
+onMounted(() => {
+  fetchGroups().then((data) => {
+    groupsData.value = data;
+  });
+});
+
+
 </script>
 
 <template>
@@ -461,7 +444,6 @@ const getSeverity = (status) => {
 		</div>
 	</div>
 
-  <ConfirmationDialogClose/>
   <ConfirmationDialog :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 

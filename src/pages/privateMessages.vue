@@ -1,7 +1,9 @@
 <script setup>
-   import { ref  } from 'vue';
+
+   import {onMounted, ref} from 'vue';
    import { useToast } from "primevue/usetoast";
    import { useConfirm } from "primevue/useconfirm";
+   import {fetchPrivateMessages} from "@/api/privateMessage";
 
    const toast = useToast();
    const confirm = useConfirm();
@@ -10,68 +12,36 @@
    const searchDialog = ref(false);
 
 
-   const confirm1 = () => {
-    confirm.require({
-        message: 'Would you like to send another message?',
-        header: 'Message Sent!',
-
-        rejectClass: 'p-button-secondary p-button-outlined',
-        rejectLabel: 'No',
-        acceptLabel: 'Yes',
-        accept: () => {
-            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
-            addMessage.value = true;
-
-        },
-        reject: () => {
-            toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
-        }
+    onMounted(() => {
+      fetchPrivateMessages().then((data) => {
+        messages.value = data;
+      });
     });
-};
 
 
-   const messages = [
-      {
-        date: '2024-05-01',
-        recipients: ['John Doe', 'Jane Smith'],
-        subject: 'Meeting Reminder',
-        received: true,
-        opened: true,
-        messageType: 'Email'
-      },
-      {
-        date: '2024-05-02',
-        recipients: ['Alice Johnson'],
-        subject: 'Project Update',
-        received: true,
-        opened: false,
-        messageType: 'Email'
-      },
-      {
-        date: '2024-05-03',
-        recipients: ['Bob Williams'],
-        subject: 'Urgent: Action Required',
-        received: true,
-        opened: true,
-        messageType: 'Email'
-      },
-      {
-        date: '2024-05-04',
-        recipients: ['Emily Davis', 'Michael Brown'],
-        subject: 'Weekly Newsletter',
-        received: true,
-        opened: true,
-        messageType: 'Newsletter'
-      },
-      {
-        date: '2024-05-05',
-        recipients: ['Sam Wilson'],
-        subject: 'Invitation to Webinar',
-        received: true,
-        opened: false,
-        messageType: 'Email'
-      }
-    ]
+
+  const confirm1 = () => {
+      confirm.require({
+          message: 'Would you like to send another message?',
+          header: 'Message Sent!',
+
+          rejectClass: 'p-button-secondary p-button-outlined',
+          rejectLabel: 'No',
+          acceptLabel: 'Yes',
+          accept: () => {
+              toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+              addMessage.value = true;
+
+          },
+          reject: () => {
+              toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+          }
+      });
+  };
+
+
+   const messages = ref([]);
+
 
     const cities = ref([
         { name: 'New York', code: 'NY' },
@@ -106,9 +76,7 @@
         console.log(searchForm.value);
         try {
 
-
          searchDialog.value = false;
-
          toast.add({ severity: 'success', summary: 'Success', detail: 'Searching!!!', life: 3000 });
 
           }
@@ -116,10 +84,7 @@
          console.error("Error in saveUser:", error);
          toast.add({ severity: 'error', summary: 'Danger', detail: 'Error  Searching, Please try again!!!', life: 3000 });
        } finally {
-
-
      }
-
    }
 
    const sendMessage=async()=>{
@@ -146,7 +111,6 @@
         console.error("Error in saveUser:", error);
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
       } finally {
-
          spinner.value = false;
       }
 
