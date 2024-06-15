@@ -23,9 +23,8 @@
    const confirmLabel = ref('Save');
    const rejectLabel = ref('Confirm');
 
+
    components:['ConfirmationDialogClose', 'ConfirmationDialog']
-
-
 
    onMounted(() => {
       fetchAdminPortalUsers().then((data) => {
@@ -45,36 +44,61 @@
       return emailPattern.test(email);
     }
 
+   const validationErrors = ref({
+     email: null,
+   });
+
+   const validateCreateForm = () => {
+     let isValid = true;
+     // Reset validation errors
+     validationErrors.value = {
+       email : null,
+     };
+
+
+     // Validate province
+     if (!usersForm.value.email) {
+       validationErrors.value.email = 'Email is required.';
+       isValid = false;
+     } else if (!isValidEmail(usersForm.value.email)) {
+       validationErrors.value.email = 'Invalid Email.';
+       isValid = false;
+     }
+
+
+     return isValid;
+   };
+
    const editUser= async ()=>{
 
-      try {
 
-         const payload ={
-            email: user.value.email,
-            password: user.value.password,
-            is_admin: (usersForm.value.is_admin)? 1:0,
-            is_active : 1
+     if(validateCreateForm(user.value.email)) {
+
+       try {
+
+         const payload = {
+           email: user.value.email,
+           password: user.value.password,
+           is_admin: (usersForm.value.is_admin) ? 1 : 0,
+           is_active: 1
          }
 
-
-         await updateAdminPortalUser(user.value['sid'],payload);
+         await updateAdminPortalUser(user.value['sid'], payload);
          users.value = await fetchAdminPortalUsers();
-
-
-         toast.add({ severity: 'success', summary: 'Success', detail: 'User Updated!!!', life: 3000 });
-      }
-      catch (error) {
-        console.error("Error in saveUser:", error);
-        //confirmationDialogClose.value= true;
-        //confirmationDialogTitle.value = "Error. Please try again!";
-        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
-      } finally {
+         toast.add({severity: 'success', summary: 'Success', detail: 'User Updated!!!', life: 3000});
+       } catch (error) {
+         console.error("Error in saveUser:", error);
+         //confirmationDialogClose.value= true;
+         //confirmationDialogTitle.value = "Error. Please try again!";
+         toast.add({severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000});
+       } finally {
 
          //confirmationDialogTitle.value = "Deleted successfully!";
          //confirmationDialog.value = false;
          //confirmationDialogClose.value= true;
          spinner.value = false;
-      }
+       }
+     }
 
    }
 
@@ -105,7 +129,7 @@
    }
 
    const deleteUser=async()=>{
-      console.log(user.value);
+
       try {
 
          const payload ={
@@ -120,7 +144,7 @@
 
          toast.add({ severity: 'success', summary: 'Success', detail: 'User Deleted!!!', life: 3000 });
          confirmationDialogTitle.value = "Deleted successfully!";
-         confirmationDialog.value = false;
+         confirmationDialog.value = true;
          confirmationDialogClose.value= true;
       }
       catch (error) {
@@ -136,9 +160,13 @@
    }
 
    const confirmSaveUser = () => {
-      //confirmationDialog.value= true;
-      //callback.value = saveUser;
-      saveUser()
+
+     if(validateCreateForm()){
+       saveUser()
+     }else{
+       toast.add({ severity: 'error', summary: 'Validation Error', detail: 'Please check the form fields.', life: 3000 });
+     }
+
    }
 
    const saveUser = async() => {
@@ -150,10 +178,6 @@
          });
 
           users.value = await fetchAdminPortalUsers();
-
-
-
-
       }
       catch (error) {
         console.error("Error in saveUser:", error);
@@ -173,9 +197,6 @@
          confirmationDialog.value = true;
          confirmationDialogTitle.value = "User Created successfully!";
          toast.add({ severity: 'success', summary: 'Success', detail: 'User Created!!!', life: 3000 })
-
-
-
       }
    };
 
@@ -236,7 +257,9 @@
                         <div class="field col">
                            <label for="email" class="bold-label">Email</label>
                            <InputText id="email" v-model.trim="usersForm.email"  autofocus :class="{'p-invalid':  !isValidEmail(usersForm.email)}" />
-                           <small class="p-error" v-if=" !isValidEmail(usersForm.email)">email is required.</small>
+                          <template v-if="validationErrors.email">
+                            <small style="color: red">{{ validationErrors.email }}</small>
+                          </template>
                         </div>
 
                         <div class="field col-12">
@@ -263,6 +286,7 @@
                         <div class="field col">
                            <label for="email" class="bold-label">Email</label>
                            <InputText disabled id="email" v-model.trim="user.email" required autofocus  />
+                          <small style="color: red">{{ validationErrors.email}}</small>
                         </div>
 
                         <div class="field col-12">
@@ -294,6 +318,6 @@
 	</div>
 
 
-   <ConfirmationDialog :confirmLabel="confirmLabel" :rejectLabel="rejectLabel" :icon ="'pi pi-question'" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
+   <ConfirmationDialog :two-button="!confirmationDialogClose" :confirm-label="confirmLabel" :reject-label="rejectLabel" :icon ="'pi pi-question'" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 

@@ -6,7 +6,7 @@
 
    const dialog = useDialog();
 
-   
+
 
    const handleRowClick = (event) => {
       console.log(event.data.value);
@@ -26,14 +26,14 @@
                modal: true
          },
          onClose: (options) => {
-            
+
          }
     });
 }
 
 
    const userData = ref([
-      { 
+      {
         first_name: 'John',
         last_name: 'Doe',
         email: 'john.doe@example.com',
@@ -43,7 +43,7 @@
         username: 'johndoe',
         province: 'California'
       },
-      { 
+      {
         first_name: 'Jane',
         last_name: 'Doe',
         email: 'jane.doe@example.com',
@@ -69,6 +69,65 @@
       organisation: "",
    })
 
+
+   const validateCreateForm = () => {
+     let isValid = true;
+     // Reset validation errors
+     validationErrors.value = {
+       first_name: null,
+       last_name: null,
+       email : null,
+       id : null,
+       contact_nr : null,
+       description: null,
+     };
+
+     // Validate group_name
+     if (!user.value.first_name) {
+       validationErrors.value.first_name = 'first name is required.';
+       isValid = false;
+     }
+
+     // Validate province
+     if (!user.value.last_name) {
+       validationErrors.value.last_name = 'Province is required.';
+       isValid = false;
+     }
+
+     if (!user.value.email) {
+       validationErrors.value.region = 'Email is required.';
+       isValid = false;
+     }else if(validateEmail(user.value.email)){
+       validationErrors.value.region = 'Invalid Email';
+       isValid = false;
+     }
+
+     if (!createForm.value.description) {
+       validationErrors.value.description = 'Description is required.';
+       isValid = false;
+     }
+
+     if (!createForm.value.min_age) {
+       validationErrors.value.min_age = 'Min Age is required.';
+       isValid = false;
+     }
+
+     if (!createForm.value.max_age) {
+       validationErrors.value.max_age = 'Max Age is required.';
+       isValid = false;
+     }
+
+     return isValid;
+   };
+
+   const validateEmail = (email) => {
+     return String(email)
+         .toLowerCase()
+         .match(
+             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+         );
+   };
+
    onMounted(() => {
       getMobileUsers().then((data) => {
         userData.value = data;
@@ -81,53 +140,34 @@
    };
 
 
-   const deletePolicy = (policy_sid) => {
-      spinner.value = true;
-      const open_user = user.value.user_sid
-      deleteUserPolicy({
-         user_detail_fk: user.value.user_sid,
-         policy_fk: policy_sid,
-      })
-      let updatedUsers = userData.value.map(user => {
-         if (user.user_sid === open_user) {
-            let updatedPolicies = user.active_policy.filter(policy => policy.policy_sid !== policy_sid);
-            return {
-                  ...user,
-                  active_policy: updatedPolicies
-            };
-         }
-         return user;
-      });
-      userData.value = updatedUsers
-      editDialog.value = false;
-      user.value = {};
-   }
 
    const saveUser = async () => {
     console.log(user.value)
     saved.value = true;
-    spinner.value = true;  
+    spinner.value = true;
 
-    try {
+    if(validateCreateForm()) {
+      try {
         await updateMobileUser({
-            user_fk: user.value.user_sid,
-            name: user.value.first_name,
-            surname: user.value.last_name,
-            email: user.value.email,
-            id: user.value.id,
-            mobile_number: user.value.contact_number,
-            client_id: user.value.client_id
+          user_fk: user.value.user_sid,
+          name: user.value.first_name,
+          surname: user.value.last_name,
+          email: user.value.email,
+          id: user.value.id,
+          mobile_number: user.value.contact_number,
+          client_id: user.value.client_id
         });
 
         const data = await getMobileUsers();
         userData.value = data;
-    } catch (error) {
+      } catch (error) {
         console.error("Error in saveUser:", error);
         // Handle your error here
-    } finally {
+      } finally {
         spinner.value = false;
         editDialog.value = false;
         user.value = {};
+      }
     }
 };
 
@@ -145,18 +185,18 @@
 		<div class="p-col-12">
          <DynamicDialog />
 			<Card>
-            
+
 
             <template #title> Mobile App Users </template>
                <template #content>
-                  <DataTable 
+                  <DataTable
                      :value="userData"
-                     paginator :rows="5" 
+                     paginator :rows="5"
                      sortMode="multiple"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
                      @row-click="handleRowClick"
-                  >  
+                  >
                      <Column sortable  field="first_name" header="Name"></Column>
                      <Column sortable  field="last_name" header="Surname"></Column>
                      <Column field="email" header="Email"></Column>
@@ -220,11 +260,11 @@
                            </Column>
                            <Column :exportable="false" style="min-width:8rem">
                               <template #body="slotProps">
-                                 <Button 
+                                 <Button
                                     v-if="slotProps.data.policy_name.toLowerCase() !== 'none'"
-                                    icon="pi pi-trash" 
-                                    class="p-button-outlined p-button-rounded" 
-                                    severity="danger" 
+                                    icon="pi pi-trash"
+                                    class="p-button-outlined p-button-rounded"
+                                    severity="danger"
                                     @click="deletePolicy(slotProps.data.policy_sid)"
                                  />
                               </template>
