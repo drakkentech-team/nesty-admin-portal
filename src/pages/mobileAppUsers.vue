@@ -15,7 +15,7 @@
             user: event.data
          },
          props: {
-               header: 'User Management > App Users',
+               header: 'View Groups',
                style: {
                   width: '90vw',
                },

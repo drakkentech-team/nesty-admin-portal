@@ -66,7 +66,7 @@ const router = createRouter({
             {
                path: '',
                name: 'news',
-               component: () => import('../pages/userView.vue'),
+               component: () => import('../pages/manageGroups.vue'),
             },
          ]
       },
