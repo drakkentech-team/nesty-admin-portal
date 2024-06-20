@@ -1,5 +1,9 @@
 <script setup>
 import {  ref, onMounted ,inject} from 'vue';
+import { useToast } from "primevue/usetoast";
+
+
+const toast = useToast();
 
 const editable  = ref(false);
 
@@ -110,6 +114,8 @@ const users = [
 
 const submitNewGroupDetails = () => {
 
+  editable.value = false;
+  toast.add({ severity: 'success', summary: 'Success', detail: 'Updated !!!', life: 3000 });
 }
 
 
@@ -166,7 +172,7 @@ onMounted(() => {
     </div>
     <Divider/>
 
-    <DataTable :value="users" showGridlines tableStyle="min-width: 50rem">
+    <DataTable :value="users" paginator :rows="5" showGridlines tableStyle="min-width: 50rem">
       <Column field="username" header="Username"></Column>
       <Column field="email" header="Email"></Column>
       <Column field="contact" header="Contact Number"></Column>

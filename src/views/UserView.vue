@@ -90,7 +90,7 @@
 
                 </div>
 
-                <DataTable :value="groups" showGridlines tableStyle="min-width: 50rem">
+                <DataTable :value="groups"  paginator :rows="5" showGridlines tableStyle="min-width: 50rem">
                     <Column field="group_name" header="Group Name"></Column>
                     <Column field="location" header="Location"></Column>
                     <Column field="suburb" header="Suburb"></Column>
@@ -107,7 +107,7 @@
                     </div>
                 </template>
 
-                <DataTable :value="reports" showGridlines tableStyle="min-width: 50rem">
+                <DataTable :value="reports" paginator :rows="5"  showGridlines tableStyle="min-width: 50rem">
                     <Column field="date" header="Date"></Column>
                     <Column field="reported_by" header="Reported By"></Column>
                     <Column field="posted_by" header="Posted By"></Column>
