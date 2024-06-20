@@ -146,7 +146,7 @@
             </template>
             <template #content>
 
-                <DataTable :value="messages"  tableStyle="min-width: 50rem">
+                <DataTable :value="messages" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"  tableStyle="min-width: 50rem">
                     <Column field="date" header="Date"></Column>
                     <Column field="recipients" header="Recipients"></Column>
                     <Column field="subject" header="Subject"></Column>

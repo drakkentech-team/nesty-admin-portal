@@ -1,11 +1,14 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+   import {onMounted, ref,defineAsyncComponent} from 'vue';
    import { useConfirm } from "primevue/useconfirm";
    import ConfirmationDialog from '../components/ConfirmationDialog.vue'
    import { useToast } from "primevue/usetoast";
-import {fetchMobileUsers} from "@/api/mobileAppUsers";
-import {fetchGroups} from "@/api/manageGroups";
-import {fetchAdminPortalUsers, updateAdminPortalUser} from "@/api/adminPortalUsers";
+   import {fetchGroups} from "@/api/manageGroups";
+
+  import { useDialog } from 'primevue/usedialog';
+  const userView = defineAsyncComponent(() => import('../views/GroupDetailsView.vue'));
+
+  const dialog = useDialog()
 
 
   const toast = useToast();
@@ -13,7 +16,7 @@ import {fetchAdminPortalUsers, updateAdminPortalUser} from "@/api/adminPortalUse
 
   components:['ConfirmationDialog']
 
-  const confirmationDialog = ref(false);
+   const confirmationDialog = ref(false);
    const confirmationDialogClose = ref(false);
    const confirmationDialogTitle = ref('Are you sure?');
    const confirmationDialogBody = ref('Please confirm to proceed.');
@@ -164,7 +167,7 @@ region : [
 username : [
     { name: 'New York', code: 'NY' },
     { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
+  { name: 'London', code: 'LDN' },
     { name: 'Istanbul', code: 'IST' },
     { name: 'Paris', code: 'PRS' }
 ],
@@ -209,6 +212,29 @@ const createForm = ref({
   region:'',
   description:'',
 })
+
+const handleViewClick = (event) => {
+  console.log(event.data)
+  dialog.open(userView, {
+    data:{
+      user: {}
+    },
+    props: {
+      header: 'Group Details',
+      style: {
+        width: '90vw',
+      },
+      breakpoints:{
+        '960px': '75vw',
+        '640px': '90vw'
+      },
+      modal: true
+    },
+    onClose: (options) => {
+    }
+  });
+}
+
 
 const searchGroup= async()=>{
 
@@ -324,8 +350,8 @@ onMounted(() => {
                     </Column>
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">
-
-                           <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteGroup(slotProps.data)" />
+                          <Button icon="pi pi-eye" outlined rounded class="mr-2" @click="handleViewClick(slotProps.data)" />
+                          <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteGroup(slotProps.data)" />
                         </template>
                      </Column>
                   </DataTable>
@@ -444,6 +470,7 @@ onMounted(() => {
 		</div>
 	</div>
 
+  <DynamicDialog />
   <ConfirmationDialog :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 

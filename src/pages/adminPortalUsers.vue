@@ -64,8 +64,6 @@
        validationErrors.value.email = 'Invalid Email.';
        isValid = false;
      }
-
-
      return isValid;
    };
 
@@ -99,9 +97,7 @@
          spinner.value = false;
        }
      }
-
    }
-
 
    const confirmEditUser = (data) => {
       user.value = {...data};
