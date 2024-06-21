@@ -11,9 +11,8 @@ import { FilterMatchMode } from "primevue/api";
    });
 
    const fetchLogs = async () => {
-      fetchGroupLifeCycleLogs().then((data) => {
-         logs.value = data;
-      });
+      const data = await fetchGroupLifeCycleLogs();
+      logs.value = data;
    }
 
    onMounted(() => {
