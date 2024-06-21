@@ -54,6 +54,7 @@ export default {
                   ]
                },
                {label: 'News', icon: 'pi pi-fw pi-book', to: 'userView'},
+               {label: 'Group Life Cycle Log', icon: 'pi pi-list', to: 'group-life-cycle-log'},
                /*	
                {label: 'Payment Account', icon: 'pi pi-fw pi-wallet', to: 'payment-account'},*/	
             ]

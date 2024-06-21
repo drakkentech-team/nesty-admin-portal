@@ -91,7 +91,7 @@ const router = createRouter({
                component: () => import('../pages/products.vue'),
             },
          ]
-      }, 
+      },
       {
          path: '/moderation',
          component: DashboardLayout,
@@ -100,6 +100,17 @@ const router = createRouter({
                path: '',
                name: 'moderation',
                component: () => import('../pages/moderation.vue'),
+            }
+         ]
+      },
+      {
+         path: '/group-life-cycle-log',
+         component: DashboardLayout,
+         children: [
+            {
+               path: '',
+               name: 'group-life-cycle-log',
+               component: () => import('../pages/groupLifeCycleLog.vue'),
             }
          ]
       },
