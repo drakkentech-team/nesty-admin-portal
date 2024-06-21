@@ -13,8 +13,8 @@
          type: Boolean,
          default: false
       },
-      user: {
-         type: String
+      userId: {
+         type: Number
       }
    });
    const emit = defineEmits(["close"]);
@@ -44,7 +44,7 @@
    }
 
    const onBanConfirm = () => {
-      confirmedDialogMessage.value = `<b>${props.user} has been BANNED`;
+      confirmedDialogMessage.value = `<b>${props.user}</b> has been BANNED`;
       showConfirmedDialog.value = true;
    }
 
