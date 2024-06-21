@@ -1,60 +1,39 @@
 <script setup>
-   import { defineAsyncComponent, ref } from "vue";
+   import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue";
    import { FilterMatchMode } from "primevue/api";
    import { useDialog } from "primevue/usedialog";
+   import { fetchModerationReports } from "../api/moderation";
+   import { storeToRefs } from "pinia";
+   import { useModerationStore } from "../stores/moderationStore";
 
 
    const dynamicView = defineAsyncComponent(() => import("../views/ModerationView.vue"));
    const dialog = useDialog();
+   const { reloadRequired } = storeToRefs(useModerationStore());
    
    const reports = ref([]);
-   reports.value =  [
-      {
-         date: '2024-05-01',
-         reported_by: 'John Doe',
-         posted_by: 'Jane Smith',
-         reason: 'Lorem ipsum dolor sit amet',
-         type: 'Type A',
-         group: 'Group 1',
-         date_posted: '2024-05-01',
-         status: 'Pending'
-      },
-      {
-         date: '2024-05-05',
-         reported_by: 'Alice Johnson',
-         posted_by: 'Bob Brown',
-         reason: 'Consectetur adipiscing elit',
-         type: 'Type B',
-         group: 'Group 2',
-         date_posted: '2024-05-04',
-         status: 'Resolved'
-      },
-      {
-         date: '2024-05-10',
-         reported_by: 'Emily Davis',
-         posted_by: 'Michael Wilson',
-         reason: 'Sed do eiusmod tempor incididunt',
-         type: 'Type C',
-         group: 'Group 1',
-         date_posted: '2024-05-09',
-         status: 'Overruled'
-      },
-      {
-         date: '2024-04-30',
-         reported_by: 'Jane Doe',
-         posted_by: 'Bob Brown',
-         reason: 'Something or the other',
-         type: 'Type B',
-         group: 'Group 2',
-         date_posted: '2024-04-29',
-         status: 'Open'
-      },
-      // Add more demo data as needed
-   ]
-   
    const filters = ref({
-      global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      moderation_status: { value: null, matchMode: FilterMatchMode.IN }
    });
+   const filterPanel = ref();
+   const statusFilterList = ref([]);
+   const openStatusCount = ref(0);
+   const pendingStatusCount = ref(0);
+   const isFiltersEnabled = computed(() => {
+      return filters.value['global'].value || filters.value['moderation_status'].value;
+   })
+
+   onMounted(() => {
+      fetchReports();
+   })
+
+   watch(reloadRequired, (newValue) => {
+      if (newValue === true) {
+         reloadRequired.value = false;
+         fetchReports();
+      }
+   })
 
    const sortStatuses = (a, b) => {
       const status0 = "Open";
@@ -74,8 +53,8 @@
    }
 
    const defaultOrder = (a, b) => {
-      var statusOrder = sortStatuses(a.status, b.status);
-      var dateOrder = new Date(a.date) - new Date(b.date);
+      var statusOrder = sortStatuses(a.moderation_status, b.moderation_status);
+      var dateOrder = new Date(a.date_reported) - new Date(b.date_reported);
       return -statusOrder || -dateOrder;
    }
 
@@ -95,11 +74,50 @@
       });
    }
 
-   reports.value.sort((a, b) => defaultOrder(a, b));
-
-   const testLog = () => {
-      console.log("It works");
+   const toggleFPanel = (e) => {
+      statusFilterList.value = filters.value['moderation_status'].value;
+      filterPanel.value.toggle(e);
    }
+
+   const filterByStatus = () => {
+      if (statusFilterList.value === null || statusFilterList.value.length === 0) {
+         filters.value['moderation_status'].value = null;
+      } else {
+         filters.value['moderation_status'].value = statusFilterList.value;
+      }
+   }
+
+   const clearFilters = () => {
+      for (const field in filters.value) {
+         filters.value[field].value = null;
+      }
+   }
+
+   const countStatuses = () => {
+      reports.value.forEach(report => {
+         const status = report['moderation_status'];
+         if (status === "Open") {
+            openStatusCount.value++;
+         } else if (status === "Pending") {
+            pendingStatusCount.value++;
+         } else {
+            return;
+         }
+      });
+   }
+
+   const sortReports = () => {
+      reports.value.sort((a, b) => defaultOrder(a, b));
+      countStatuses();
+   }
+
+   const fetchReports = () => {
+      fetchModerationReports().then((data) => {
+         reports.value = data;
+         sortReports();
+      });
+   }
+
 </script>
 
 <template>
@@ -117,33 +135,69 @@
                   :rowsPerPageOptions="[5, 10, 20, 50]"
                   removableSort
                   v-model:filters="filters"
-                  :globalFilterFields="['date', 'reported_by', 'posted_by', 'reason', 'type',
-                     'group', 'date_posted', 'status'
+                  :globalFilterFields="['date_reported', 'reporting_user', 'reported_user', 'reason_for_report', 'report_type',
+                     'group', 'date_posted', 'moderation_status'
                   ]"
                   filterDisplay="menu"
                   @row-click="moderate"
                >
                <template #header>
-                  <div class="flex justify-content-end">
-                     <IconField iconPosition="left">
-                        <InputIcon>
-                           <i class="pi pi-search" />
-                        </InputIcon>
-                        <InputText v-model="filters['global'].value" placeholder="Search" />
-                     </IconField>
+                  <div class="flex justify-content-between">
+                     <div class="flex justify-content-start">
+                        <Button icon="pi pi-filter" outlined @click="toggleFPanel" />
+                     </div>
+                     <div class="flex justify-content-end gap-5">
+                        <Button @click="clearFilters" label="Clear" v-show="isFiltersEnabled" />
+                        <IconField iconPosition="left">
+                           <InputIcon>
+                              <i class="pi pi-search" />
+                           </InputIcon>
+                           <InputText v-model="filters['global'].value" placeholder="Search" />
+                        </IconField>
+                     </div>
                   </div>
                </template>
-               <Column field="date" header="Date Reported" sortable></Column>
-               <Column field="reported_by" header="Reported By" sortable></Column>
-               <Column field="posted_by" header="Posted By" sortable></Column>
-               <Column field="reason" header="Reason" sortable></Column>
-               <Column field="type" header="Type" sortable></Column>
+               <Column field="date_reported" header="Date Reported" sortable></Column>
+               <Column field="reporting_user" header="Reported By" sortable></Column>
+               <Column field="reported_user" header="Posted By" sortable></Column>
+               <Column field="reason_for_report" header="Reason" sortable></Column>
+               <Column field="report_type" header="Type" sortable></Column>
                <Column field="group" header="Group" sortable></Column>
                <Column field="date_posted" header="Date Posted" sortable></Column>
-               <Column field="status" header="Status" sortable></Column>
+               <Column field="moderation_status" header="Status" sortable></Column>
             </DataTable>
             </template>
          </Card>
       </div>
    </div>
+
+   <OverlayPanel ref="filterPanel">
+      <div class="flex flex-wrap justify-content-center gap-5 mt-3 mb-5">
+         <div>
+            <Checkbox v-model="statusFilterList" value="Open" />
+            <label class="ml-2">Open</label>
+            <Badge :value="openStatusCount" />
+         </div>
+
+         <div>
+            <Checkbox v-model="statusFilterList" value="Pending" />
+            <label class="ml-2">Pending</label>
+            <Badge :value="pendingStatusCount" />
+         </div>
+
+         <div>
+            <Checkbox v-model="statusFilterList" value="Resolved" />
+            <label class="ml-2">Resolved</label>
+         </div>
+
+         <div>
+            <Checkbox v-model="statusFilterList" value="Overruled" />
+            <label class="ml-2">Overruled</label>
+         </div>
+      </div>
+      <div class="flex justify-content-center gap-5">
+         <Button label="Filter" @click="filterByStatus" />
+         <Button label="Cancel" @click="toggleFPanel" />
+      </div>
+   </OverlayPanel>
 </template>

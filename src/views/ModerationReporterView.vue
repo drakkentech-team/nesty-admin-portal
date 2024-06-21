@@ -8,43 +8,43 @@
    const reports = ref([]);
    reports.value =  [
       {
-         date: '2024-05-01',
-         reason: 'Lorem ipsum dolor sit amet',
-         type: 'Type A',
+         date_reported: '2024-05-01',
+         reason_for_report: 'Lorem ipsum dolor sit amet',
+         report_type: 'Type A',
          group: 'Group 1',
          date_posted: '2024-05-01',
-         status: 'Pending'
+         moderation_status: 'Pending'
       },
       {
-         date: '2024-05-05',
-         reason: 'Consectetur adipiscing elit',
-         type: 'Type B',
+         date_reported: '2024-05-05',
+         reason_for_report: 'Consectetur adipiscing elit',
+         report_type: 'Type B',
          group: 'Group 2',
          date_posted: '2024-05-04',
-         status: 'Resolved'
+         moderation_status: 'Resolved'
       },
       {
-         date: '2024-05-10',
-         reason: 'Sed do eiusmod tempor incididunt',
-         type: 'Type C',
+         date_reported: '2024-05-10',
+         reason_for_report: 'Sed do eiusmod tempor incididunt',
+         report_type: 'Type C',
          group: 'Group 1',
          date_posted: '2024-05-09',
-         status: 'Overruled'
+         moderation_status: 'Overruled'
       },
       {
-         date: '2024-04-30',
-         reason: 'Something or the other',
-         type: 'Type B',
+         date_reported: '2024-04-30',
+         reason_for_report: 'Something or the other',
+         report_type: 'Type B',
          group: 'Group 2',
          date_posted: '2024-04-29',
-         status: 'Open'
+         moderation_status: 'Open'
       },
       // Add more demo data as needed
    ]
 
    const checkProgressStatuses = () => {
       reports.value.forEach(report => {
-         report.progressStatus = checkProgressStatus(report.status);
+         report.progressStatus = checkProgressStatus(report.moderation_status);
       });
    }
 
@@ -69,13 +69,13 @@
                </div>
             </template>
 
-            <Column field="date" header="Date Reported" sortable></Column>
-            <Column field="reason" header="Reason" sortable></Column>
-            <Column field="type" header="Type" sortable></Column>
+            <Column field="date_reported" header="Date Reported" sortable></Column>
+            <Column field="reason_for_report" header="Reason" sortable></Column>
+            <Column field="report_type" header="Type" sortable></Column>
             <Column field="group" header="Group" sortable></Column>
             <Column field="date_posted" header="Date Posted" sortable></Column>
             <Column field="progressStatus" header="Status" sortable></Column>
-            <Column field="status" header="Resolution" sortable></Column>
+            <Column field="moderation_status" header="Resolution" sortable></Column>
          </DataTable>
       </div>
    </div>

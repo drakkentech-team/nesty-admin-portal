@@ -47,18 +47,22 @@
       confirmedDialogMessage.value = `<b>${props.user} has been BANNED`;
       showConfirmedDialog.value = true;
    }
+
+   const closeDialog = () => {
+      emit('close');
+   }
 </script>
 
 <template>
    <div class="p-grid">
       <div class="p-col-12">
-         <Dialog v-model:visible="visible" modal
+         <Dialog v-model:visible="visible" modal :pt:closeButton:onClick="closeDialog"
             :header="`How long would you like to suspend ${user}?`">
             <Dropdown v-model="suspendPeriod" :options="timeframes"
                placeholder="Choose timeframe" class="col-6 col-offset-3 mb-6" />
             <div class="mx-3 flex align-items-center justify-content-center gap-3">
                <Button label="Confirm" @click="onConfirm"></Button>
-               <Button label="Cancel" severity="secondary" @click="$emit('close')"></Button>
+               <Button label="Cancel" severity="secondary" @click="closeDialog"></Button>
             </div>
          </Dialog>
       </div>

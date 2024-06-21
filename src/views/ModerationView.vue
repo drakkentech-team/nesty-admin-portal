@@ -45,10 +45,10 @@
                <ModerationCaseView :report="report" />
             </TabPanel>
             <TabPanel header="Reported History">
-               <ModerationReportedView :user="report.reported_by" />
+               <ModerationReportedView :user="report.reporting_user" />
             </TabPanel>
             <TabPanel header="Reporter History">
-               <ModerationReporterView :user="report.posted_by" />
+               <ModerationReporterView :user="report.reported_user" />
             </TabPanel>
          </TabView>
       </div>
