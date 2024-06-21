@@ -6,10 +6,10 @@
           <i class="pi 
 pi-exclamation-circle  text-5xl"></i>
         </div>
-        <span class="font-bold text-2xl block mb-2 mt-4">{{ title }}</span>
+        <span class="font-bold text-2xl block mb-2 mt-4" v-html="title"></span>
        
         <div class="flex align-items-center gap-2 mt-4">
-          <Button label="Close" @click="handleAccept(acceptCallback)"></Button>
+          <Button :label="buttonLabel" @click="handleAccept(acceptCallback)"></Button>
         </div>
       </div>
     </template>
@@ -30,6 +30,10 @@ const props = defineProps({
   show : {
     type:Boolean,
     default: false
+  },
+  buttonLabel : {
+    type: String,
+    default: "Close"
   }
 });
 

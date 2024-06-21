@@ -92,6 +92,17 @@ const router = createRouter({
             },
          ]
       }, 
+      {
+         path: '/moderation',
+         component: DashboardLayout,
+         children: [
+            {
+               path: '',
+               name: 'moderation',
+               component: () => import('../pages/moderation.vue'),
+            }
+         ]
+      },
    ]
 });
 
