@@ -93,6 +93,17 @@ const router = createRouter({
          ]
       },
       {
+         path: '/moderation',
+         component: DashboardLayout,
+         children: [
+            {
+               path: '',
+               name: 'moderation',
+               component: () => import('../pages/moderation.vue'),
+            }
+         ]
+      },
+      {
          path: '/group-life-cycle-log',
          component: DashboardLayout,
          children: [
@@ -102,7 +113,7 @@ const router = createRouter({
                component: () => import('../pages/groupLifeCycleLog.vue'),
             }
          ]
-      }
+      },
    ]
 });
 
