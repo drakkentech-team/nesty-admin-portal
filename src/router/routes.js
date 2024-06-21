@@ -91,7 +91,18 @@ const router = createRouter({
                component: () => import('../pages/products.vue'),
             },
          ]
-      }, 
+      },
+      {
+         path: '/group-life-cycle-log',
+         component: DashboardLayout,
+         children: [
+            {
+               path: '',
+               name: 'group-life-cycle-log',
+               component: () => import('../pages/groupLifeCycleLog.vue'),
+            }
+         ]
+      }
    ]
 });
 

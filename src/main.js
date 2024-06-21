@@ -97,6 +97,8 @@ import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import vueFaker from 'vue-faker';
 import DialogService from 'primevue/dialogservice';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
 
 
 import CodeHighlight from './AppCodeHighlight';
@@ -205,6 +207,8 @@ app.component('ToggleButton', ToggleButton);
 app.component('Tree', Tree);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
+app.component('IconField', IconField);
+app.component('InputIcon', InputIcon);
 
 
 app.mount('#app');
