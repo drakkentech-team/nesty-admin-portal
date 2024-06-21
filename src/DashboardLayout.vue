@@ -45,6 +45,7 @@ export default {
             mobileMenuActive: false,
             menu : [
                {label: 'Private Messages', icon: 'pi pi-fw pi-send', to: 'notifications'},
+               {label: 'Moderation', icon: 'pi pi-fw pi-eraser', to: 'moderation'},
                {label: 'Manage Groups', icon: 'pi pi-fw pi-address-book', to: 'manage-groups'},
                {label: 'User Management', icon: 'pi pi-fw pi-users',
                   items:[
@@ -53,6 +54,7 @@ export default {
                   ]
                },
                {label: 'News', icon: 'pi pi-fw pi-book', to: 'userView'},
+               {label: 'Group Life Cycle Log', icon: 'pi pi-list', to: 'group-life-cycle-log'},
                /*
                {label: 'Payment Account', icon: 'pi pi-fw pi-wallet', to: 'payment-account'},*/
             ]

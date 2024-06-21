@@ -33,7 +33,7 @@ const router = createRouter({
             {
                path: '/notifications',
                name: 'notifications',
-               component: () => import('../pages/privateMessages.vue'),
+               component: () => import('../pages/notifications.vue'),
             },
          ]
       },
@@ -60,25 +60,58 @@ const router = createRouter({
          ]
       },
       {
+         path: '/payment-account',
+         component: DashboardLayout,
+         children: [
+            {
+               path: '',
+               name: 'payment-account',
+               component: () => import('../pages/paymentAccounts.vue'),
+            },
+         ]
+      },
+      {
          path: '/userView',
          component: DashboardLayout,
          children: [
             {
                path: '',
                name: 'news',
-               component: () => import('../pages/manageGroups.vue'),
+               component: () => import('../pages/userView.vue'),
             },
          ]
-      },
+      }, 
       {
-         path: '/manage-groups',
+         path: '/products',
          component: DashboardLayout,
          children: [
             {
                path: '',
-               name: 'manage-groups',
-               component: () => import('../pages/manageGroups.vue'),
+               name: 'products',
+               component: () => import('../pages/products.vue'),
             },
+         ]
+      },
+      {
+         path: '/moderation',
+         component: DashboardLayout,
+         children: [
+            {
+               path: '',
+               name: 'moderation',
+               component: () => import('../pages/moderation.vue'),
+            }
+         ]
+      },
+      {
+         path: '/group-life-cycle-log',
+         component: DashboardLayout,
+         children: [
+            {
+               path: '',
+               name: 'group-life-cycle-log',
+               component: () => import('../pages/groupLifeCycleLog.vue'),
+            }
          ]
       },
    ]
@@ -90,7 +123,7 @@ router.beforeEach((to, from, next) => {
    //const userIsLoggedIn = user.user ? true : false
    const userIsLoggedIn =  true;
 
-
+ 
    if (to.path === '/login' && userIsLoggedIn) {
      next('/notifications');
    } else if (to.path !== '/login' && !userIsLoggedIn) {
