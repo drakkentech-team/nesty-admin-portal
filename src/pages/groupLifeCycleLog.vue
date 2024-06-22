@@ -1,18 +1,16 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import { fetchGroupLifeCycleLogs } from "../api/groupLifeCycleLog";
-import { FilterMatchMode } from "primevue/api";
+import {onMounted, ref} from 'vue';
+import {fetchGroupLifeCycleLogs} from "@/api/groupLifeCycleLog";
+import {FilterMatchMode} from "primevue/api";
 
 
-
-   const logs = ref([]);
+const logs = ref([]);
    const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
    });
 
    const fetchLogs = async () => {
-      const data = await fetchGroupLifeCycleLogs();
-      logs.value = data;
+     logs.value = await fetchGroupLifeCycleLogs();
    }
 
    onMounted(() => {

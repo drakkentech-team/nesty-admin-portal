@@ -121,6 +121,8 @@ const submitNewGroupDetails = () => {
 
 
 
+
+
 onMounted(() => {
 
 });
@@ -130,26 +132,24 @@ onMounted(() => {
 
 <template>
   <div class="card">
-
+    <Divider/>
     <div style="display: flex; align-items: center; justify-content: space-between;">
       <span class="font-bold white-space-nowrap"></span>
       <Button icon="pi pi-pencil" rounded @click="editable=true" :disabled="editable" />
     </div>
-    <Divider/>
-
 
       <div class="grid grid-cols-3 gap-4">
         <div class="col">
-          <h4><b>Group Name</b>  {{user.first_name}}</h4>
+          <span><b>Group Name : </b>  {{user.first_name}}</span>
           <InputText :disabled="!editable" id="group_name" placeholder="Enter group name" v-model="user.group_name" aria-describedby="group-help" />
         </div>
         <div class="col" >
-          <h4><b>Number of Members</b>  {{user.gender}}</h4>
+          <span><b>Number of Members : </b>  {{user.gender}}</span>
           <InputText :disabled="!editable" id="group_name" placeholder="Enter Number of Member" v-model="user.group_name" aria-describedby="group-help" />
         </div>
 
         <div class="col" >
-          <h4><b>Created</b> </h4>
+          <span><b>Created : </b> </span>
           <InputText disabled id="date_created" placeholder="Enter Date Created" v-model="user.date_name" aria-describedby="group-help" />
 
         </div>
@@ -159,11 +159,11 @@ onMounted(() => {
     <Divider/>
 
     <div>
-      <h4><b>Province</b></h4>
+      <span><b>Province : </b></span>
       <Dropdown :disabled="!editable" id="province" v-model="user.province" :options="options.province" optionLabel="name" placeholder="Select a Province" />
     </div>
-    <div>
-      <h4><b>Region</b></h4>
+    <div class="my-5">
+      <span><b>Region : </b></span>
       <Dropdown :disabled="!editable" id="region" v-model="user.region" :options="options.region" optionLabel="name" placeholder="Select a Religion"  />
     </div>
 
@@ -172,12 +172,12 @@ onMounted(() => {
     </div>
     <Divider/>
 
-    <DataTable :value="users" paginator :rows="5" showGridlines tableStyle="min-width: 50rem">
-      <Column field="username" header="Username"></Column>
-      <Column field="email" header="Email"></Column>
-      <Column field="contact" header="Contact Number"></Column>
-      <Column field="region" header="Region"></Column>
-      <Column field="child_age_group" header="Child Age Group"></Column>
+    <DataTable :value="users" paginator :rows="5" showGridlines sortMode="multiple" tableStyle="min-width: 50rem">
+      <Column field="username"  sortable header="Username"></Column>
+      <Column field="email"  sortable header="Email"></Column>
+      <Column field="contact"  sortable header="Contact Number"></Column>
+      <Column field="region"  sortable header="Region"></Column>
+      <Column field="child_age_group"  sortable header="Child Age Group"></Column>
     </DataTable>
   </div>
 </template>

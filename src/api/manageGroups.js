@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const fetchGroups = async () => {
 
-    return[
+    return [
         {
             name: "Tech Enthusiasts",
             long_description: "Public",

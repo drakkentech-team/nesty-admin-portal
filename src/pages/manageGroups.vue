@@ -5,16 +5,18 @@
    import { useToast } from "primevue/usetoast";
    import {fetchGroups} from "@/api/manageGroups";
 
-  import { useDialog } from 'primevue/usedialog';
-  const userView = defineAsyncComponent(() => import('../views/GroupDetailsView.vue'));
+   import { useDialog } from 'primevue/usedialog';
+   const userView = defineAsyncComponent(() => import('../views/GroupDetailsView.vue'));
 
-  const dialog = useDialog()
+   const dialog = useDialog()
+
+   const confirmLabel = ref('Yes');
+   const rejectLabel = ref('No');
 
 
   const toast = useToast();
   const confirm = useConfirm();
 
-  components:['ConfirmationDialog']
 
    const confirmationDialog = ref(false);
    const confirmationDialogClose = ref(false);
@@ -105,7 +107,6 @@ const createGroup = async () => {
          console.error("Error in saveUser:", error);
          toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
        } finally {
-
 
        }
   } else {
@@ -263,8 +264,6 @@ const confirmDeleteGroup = (currGroup)=>{
 
   group.value = currGroup;
   group.value['reasons'] = '';
-
-
 }
 
 const deleteGroup=async()=>{
@@ -471,6 +470,6 @@ onMounted(() => {
 	</div>
 
   <DynamicDialog />
-  <ConfirmationDialog :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
+  <ConfirmationDialog :twoButton="!confirmationDialogClose" :confirmLabel="confirmLabel" :rejectLabel="rejectLabel" :icon ="'pi pi-question'" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 

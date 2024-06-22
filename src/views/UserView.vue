@@ -2,6 +2,7 @@
    import {  ref, onMounted ,inject} from 'vue';
    import { useToast } from "primevue/usetoast";
    import {fetchUserHistory, fetchUserGroups} from '@/api/mobileAppUsers';
+   import SuspensionView from "@/views/SuspensionView.vue";
 
    const toast = useToast();
    const reports = ref([]);
@@ -25,10 +26,12 @@
       }
    );
 
+   const showSuspendDialog = ref(false);
+
 
 
    const suspendUser = () => {
-     //todo implement moderation
+     showSuspendDialog.value = true;
    }
 
    onMounted(() => {
@@ -59,7 +62,7 @@
     <div class="card">
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <div/>
-          <Button icon="pi pi-minus-circle" label="Suspend User" severity="danger"  />
+          <Button icon="pi pi-minus-circle" @click="suspendUser" label="Suspend User" severity="danger"  />
         </div>
 
         <TabView class="tabview-custom">
@@ -73,19 +76,19 @@
                 </template>
                 <div class="grid grid-cols-3 gap-4">
                     <div class="col">
-                      <h4><b>First Name</b> : {{user.first_name}}</h4>
-                      <h4><b>Gender</b> : {{user.gender}}</h4>
-                      <h4><b>Date Of Birth</b> : {{user.email}}</h4>
+                      <h5><b>First Name</b> : {{user.first_name}}</h5>
+                      <h5><b>Gender</b> : {{user.gender}}</h5>
+                      <h5><b>Date Of Birth</b> : {{user.email}}</h5>
                     </div>
                     <div class="col" >
-                      <h4><b>Surname</b> : {{user.last_name}}</h4>
-                      <h4><b>Cell</b> : {{user.contact}}</h4>
-                      <h4><b>Province</b> : {{user.province}}</h4>
+                      <h5><b>Surname</b> : {{user.last_name}}</h5>
+                      <h5><b>Cell</b> : {{user.contact}}</h5>
+                      <h5><b>Province</b> : {{user.province}}</h5>
                     </div>
                     <div>
-                      <h4><b>Username</b> : {{user.username}}</h4>
-                        <h4><b>Email</b> : {{user.email}}</h4>
-                        <h4><b>Status</b> : {{user.status}}</h4>
+                      <h5><b>Username</b> : {{user.username}}</h5>
+                      <h5><b>Email</b> : {{user.email}}</h5>
+                      <h5><b>Status</b> : {{user.status}}</h5>
                     </div>
 
                 </div>
@@ -107,20 +110,23 @@
                     </div>
                 </template>
 
-                <DataTable :value="reports" paginator :rows="5"  showGridlines tableStyle="min-width: 50rem">
-                    <Column field="date" header="Date"></Column>
-                    <Column field="reported_by" header="Reported By"></Column>
-                    <Column field="posted_by" header="Posted By"></Column>
-                    <Column field="reason" header="Reason"></Column>
-                    <Column field="type" header="Type"></Column>
-                    <Column field="group" header="Group"></Column>
-                    <Column field="date_posted" header="Date Posted"></Column>
-                    <Column field="status" header="Status"></Column>
+                <DataTable :value="reports" paginator sortable :rows="5"  showGridlines tableStyle="min-width: 50rem">
+                    <Column field="date" sortable header="Date"></Column>
+                    <Column field="reported_by"  sortable header="Reported By"></Column>
+                    <Column field="posted_by" sortable header="Posted By"></Column>
+                    <Column field="reason" sortable header="Reason"></Column>
+                    <Column field="type" sortable header="Type"></Column>
+                    <Column field="group" sortable header="Group"></Column>
+                    <Column field="date_posted" sortable header="Date Posted"></Column>
+                    <Column field="status" sortable header="Status"></Column>
                 </DataTable>
 
             </TabPanel>
         </TabView>
+      <SuspensionView :user="user" :show="showSuspendDialog" @close="showSuspendDialog = false" />
     </div>
+
+
 </template>
 
 

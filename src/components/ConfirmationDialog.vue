@@ -1,19 +1,21 @@
 <template>
-  <ConfirmDialog group="headless">
-    <template #container="{ message, acceptCallback, rejectCallback }">
-      <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
-        <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
-          <i :class="`${icon} text-5xl`"></i>
+  <div>
+    <ConfirmDialog group="headless">
+      <template #container="{ message, accept, reject }">
+        <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+          <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
+            <i :class="`${icon} text-5xl`"></i>
+          </div>
+          <span class="font-bold text-2xl block mb-2 mt-4">{{ title }}</span>
+          <span class="mb-0">{{ body }}</span>
+          <div class="flex align-items-center gap-2 mt-4">
+            <Button :label="confirmLabel" @click="handleAccept(accept)"></Button>
+            <Button v-show="showTwoButtons" :label="rejectLabel" outlined @click="handleReject(reject)"></Button>
+          </div>
         </div>
-        <span class="font-bold text-2xl block mb-2 mt-4">{{ title }}</span>
-        <p v-show="twoButton" class="mb-0">{{ body }}</p>
-        <div class="flex align-items-center gap-2 mt-4">
-          <Button :label="confirmLabel" @click="handleAccept(acceptCallback)"></Button>
-          <Button v-show="twoButton"  :label="cancelLabel" outlined @click="handleReject(rejectCallback)"></Button>
-        </div>
-      </div>
-    </template>
-  </ConfirmDialog>
+      </template>
+    </ConfirmDialog>
+  </div>
 
   <Toast />
 </template>
@@ -32,35 +34,35 @@ const props = defineProps({
     type: String,
     default: 'Please confirm to proceed.'
   },
-  show : {
-    type:Boolean,
-    default: false
-  },
-  icon:{
-    type:String,
-    default:'pi pi-question'
-  },
-  twoButton:{
+  show: {
     type: Boolean,
     default: false
   },
-  confirmLabel:{
+  icon: {
+    type: String,
+    default: 'pi pi-question'
+  },
+  showTwoButtons: {
+    type: Boolean,
+    default: true
+  },
+  confirmLabel: {
     type: String,
     default: 'Save'
   },
-  cancelLabel:{
-    type:String,
+  rejectLabel: {
+    type: String,
     default: 'Cancel'
   }
 });
 
 const emit = defineEmits(['confirm', 'cancel']);
 
-const confirm = useConfirm();
+const confirmService = useConfirm();
 const toast = useToast();
 
 const closeDialog = () => {
-  confirm.close();
+  confirmService.close();
 };
 
 watch(() => props.show, (newValue) => {
@@ -77,19 +79,20 @@ const handleAccept = () => {
   closeDialog();
 };
 
-const handleReject = () => {
+const handleReject = (rejectCallback) => {
   toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
   emit('cancel');
+  rejectCallback();
   closeDialog();
 };
 
 const requireConfirmation = () => {
-  confirm.require({
+  confirmService.require({
     group: 'headless',
     header: props.title,
     message: props.body,
-    accept: () => handleAccept(() => {}),
-    reject: () => handleReject(() => {})
+    accept: handleAccept,
+    reject: handleReject
   });
 };
 </script>

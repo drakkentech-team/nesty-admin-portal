@@ -1,7 +1,8 @@
 <script setup>
-   import { ref, onMounted,defineAsyncComponent } from 'vue';
+import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
    import { fetchMobileUsers} from '@/api/mobileAppUsers';
    import { useDialog } from 'primevue/usedialog';
+   import {FilterMatchMode} from "primevue/api";
    const userView = defineAsyncComponent(() => import('../views/UserView.vue'));
 
    const dialog = useDialog();
@@ -54,7 +55,17 @@
       },
     ]);
 
-   onMounted(() => {
+   const filters = ref({
+     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+     moderation_status: { value: null, matchMode: FilterMatchMode.IN }
+   });
+
+  const isFiltersEnabled = computed(() => {
+    return filters.value['global'].value || filters.value['moderation_status'].value;
+  })
+
+
+onMounted(() => {
       fetchMobileUsers().then((data) => {
         userData.value = data;
       });
@@ -76,8 +87,28 @@
                      sortMode="multiple"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
+                     removableSort
                      @row-click="handleRowClick"
+                     filterDisplay="menu"
+                     v-model:filters="filters"
                   >
+
+                    <template #header>
+                      <div class="flex justify-content-between">
+                        <div class="flex justify-content-start">
+                          <Button icon="pi pi-filter" outlined @click="toggleFPanel" />
+                        </div>
+                        <div class="flex justify-content-end gap-5">
+                          <Button @click="clearFilters" label="Clear" v-show="isFiltersEnabled" />
+                          <IconField iconPosition="left">
+                            <InputIcon>
+                              <i class="pi pi-search" />
+                            </InputIcon>
+                            <InputText v-model="filters['global'].value" placeholder="Search" />
+                          </IconField>
+                        </div>
+                      </div>
+                    </template>
                      <Column sortable  field="first_name" header="Name"></Column>
                      <Column sortable  field="last_name" header="Surname"></Column>
                      <Column field="email" header="Email"></Column>

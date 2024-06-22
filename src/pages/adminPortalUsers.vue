@@ -1,10 +1,10 @@
 <script setup>
 
-   import { ref, onMounted} from 'vue';
-   import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser ,deleteAdminPortalUser} from '../api/adminPortalUsers';
+import {ref, onMounted, computed} from 'vue';
+   import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser ,deleteAdminPortalUser} from '@/api/adminPortalUsers';
    import { useToast } from "primevue/usetoast";
-   import ConfirmationDialogClose from '../components/ConfirmationDialogClose.vue';
    import ConfirmationDialog from '../components/ConfirmationDialog.vue'
+   import {FilterMatchMode} from "primevue/api";
 
 
    const users = ref([]);
@@ -12,7 +12,6 @@
    const addUsersDialog = ref(false);
    const editDialog = ref(false);
    const saved = ref(false);
-   const spinner = ref(false);
    const toast = useToast();
    const confirmationDialog = ref(false);
    const confirmationDialogClose = ref(false);
@@ -20,11 +19,9 @@
    const confirmationDialogBody = ref('Please confirm to proceed.');
    const callback = ref()
 
-   const confirmLabel = ref('Save');
-   const rejectLabel = ref('Confirm');
-
-
-   components:['ConfirmationDialogClose', 'ConfirmationDialog']
+   const confirmLabel = ref('Yes');
+   const rejectLabel = ref('No');
+   const confirmIcon = ref('pi pi-question');
 
    onMounted(() => {
       fetchAdminPortalUsers().then((data) => {
@@ -83,6 +80,11 @@
 
          await updateAdminPortalUser(user.value['sid'], payload);
          users.value = await fetchAdminPortalUsers();
+
+         confirmationDialogTitle.value = "Deleted successfully!";
+         confirmationDialog.value = false;
+         confirmationDialogClose.value= true;
+
          toast.add({severity: 'success', summary: 'Success', detail: 'User Updated!!!', life: 3000});
        } catch (error) {
          console.error("Error in saveUser:", error);
@@ -91,10 +93,8 @@
          toast.add({severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000});
        } finally {
 
-         //confirmationDialogTitle.value = "Deleted successfully!";
-         //confirmationDialog.value = false;
-         //confirmationDialogClose.value= true;
-         spinner.value = false;
+
+
        }
      }
    }
@@ -137,11 +137,12 @@
          await deleteAdminPortalUser(user.value['sid'],payload);
             users.value= await fetchAdminPortalUsers();
 
-
          toast.add({ severity: 'success', summary: 'Success', detail: 'User Deleted!!!', life: 3000 });
          confirmationDialogTitle.value = "Deleted successfully!";
          confirmationDialog.value = true;
+         confirmIcon.value = "pi pi-trash" ;
          confirmationDialogClose.value= true;
+
       }
       catch (error) {
         console.error("Error in saveUser:", error);
@@ -149,8 +150,6 @@
         //confirmationDialogTitle.value = "Error. Please try again!";
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
       } finally {
-
-         spinner.value = false;
       }
 
    }
@@ -201,6 +200,15 @@
       saved.value = false;
    };
 
+   const filters = ref({
+     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+     moderation_status: { value: null, matchMode: FilterMatchMode.IN }
+   });
+
+const isFiltersEnabled = computed(() => {
+  return filters.value['global'].value || filters.value['moderation_status'].value;
+})
+
 </script>
 
 <template>
@@ -227,6 +235,22 @@
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
                   >
+                    <template #header>
+                      <div class="flex justify-content-between">
+                        <div class="flex justify-content-start">
+                          <Button icon="pi pi-filter" outlined @click="toggleFPanel" />
+                        </div>
+                        <div class="flex justify-content-end gap-5">
+                          <Button @click="clearFilters" label="Clear" v-show="isFiltersEnabled" />
+                          <IconField iconPosition="left">
+                            <InputIcon>
+                              <i class="pi pi-search" />
+                            </InputIcon>
+                            <InputText v-model="filters['global'].value" placeholder="Search" />
+                          </IconField>
+                        </div>
+                      </div>
+                    </template>
 
                      <Column field="email" header="Email"></Column>
                      <Column field="is_admin" header="User Role">
@@ -314,6 +338,6 @@
 	</div>
 
 
-   <ConfirmationDialog :two-button="!confirmationDialogClose" :confirm-label="confirmLabel" :reject-label="rejectLabel" :icon ="'pi pi-question'" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
+   <ConfirmationDialog v-if="confirmationDialog" :twoButton="!confirmationDialogClose" :confirmLabel="confirmLabel" :rejectLabel="rejectLabel" :icon ="confirmIcon" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 

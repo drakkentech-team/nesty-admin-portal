@@ -1,9 +1,10 @@
 <script setup>
 
-   import {onMounted, ref} from 'vue';
+import { onMounted, ref} from 'vue';
    import { useToast } from "primevue/usetoast";
    import { useConfirm } from "primevue/useconfirm";
    import {fetchPrivateMessages} from "@/api/privateMessage";
+
 
    const toast = useToast();
    const confirm = useConfirm();
@@ -68,6 +69,7 @@
     const saveMessage = () => {
       addMessage.value = false;
       confirm1();
+      sendMessage();
       console.log(messageForm.value);
    };
 
@@ -91,30 +93,18 @@
       console.log(user.value);
       try {
 
-         const payload ={
-            email: user.value.email,
-            password: "",
-            is_active : 0
-         }
-
-         await deleteAdminPortalUser(user.value['sid'],payload);
-         users.value  = await fetchAdminPortalUsers();
-
-
-
          toast.add({ severity: 'success', summary: 'Success', detail: 'User Deleted!!!', life: 3000 });
-         confirmationDialogTitle.value = "Deleted successfully!";
-         confirmationDialog.value = false;
-         confirmationDialogClose.value= true;
+
       }
       catch (error) {
         console.error("Error in saveUser:", error);
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
       } finally {
-         spinner.value = false;
+
       }
 
    }
+
 
 
 </script>
