@@ -10,8 +10,12 @@
 
    const dialog = useDialog()
 
+   const isSearch =  ref(false);
+
    const confirmLabel = ref('Yes');
    const rejectLabel = ref('No');
+
+
 
 
   const toast = useToast();
@@ -242,8 +246,9 @@ const searchGroup= async()=>{
   try {
       searchDialog.value = false;
       toast.add({ severity: 'success', summary: 'Success', detail: 'Searching!!!', life: 3000 });
+      isSearch.value = true;
 
-       }
+  }
     catch (error) {
       console.error("Error in saveUser:", error);
       toast.add({ severity: 'error', summary: 'Danger', detail: 'Error  Searching, Please try again!!!', life: 3000 });
@@ -294,6 +299,16 @@ const getSeverity = (status) => {
     }
 }
 
+
+const clearSearchResults=async ()=>{
+
+  fetchGroups().then((data)=>{
+    groupsData.value = data;
+  });
+  isSearch.value = false;
+  toast.add({ severity: 'success', summary: 'Success', detail: 'Retrieving Groups', life: 3000 });
+}
+
 onMounted(() => {
   fetchGroups().then((data) => {
     groupsData.value = data;
@@ -333,12 +348,13 @@ onMounted(() => {
                      paginator :rows="5"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
+                     sortMode="multiple"
                   >
-                     <Column field="name" header="Group Name"></Column>
-                     <Column field="long_description" header="Private/Public"></Column>
-                     <Column field="suburb" header="Suburb"></Column>
-                     <Column field="user_count" header="user_count"></Column>
-                     <Column field="status" header="Group Status">
+                     <Column field="name" sortable header="Group Name"></Column>
+                     <Column field="long_description"  sortable header="Private/Public"></Column>
+                     <Column field="suburb" sortable header="Suburb"></Column>
+                     <Column field="user_count" sortable header="user_count"></Column>
+                     <Column field="status" sortable header="Group Status">
                       <template #body="{ data }">
                         <Tag :value="data.status" :severity="getSeverity(data.status)" />
                       </template>
@@ -467,6 +483,9 @@ onMounted(() => {
                </template>
          </Card>
 		</div>
+    <div class="m-5 flex flex-row-reverse ">
+      <Button @click="clearSearchResults" v-show="isSearch" label="Return To Search"/>
+    </div>
 	</div>
 
   <DynamicDialog />

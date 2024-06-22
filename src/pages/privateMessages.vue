@@ -1,16 +1,29 @@
 <script setup>
 
-import { onMounted, ref} from 'vue';
+   import { onMounted, ref} from 'vue';
    import { useToast } from "primevue/usetoast";
    import { useConfirm } from "primevue/useconfirm";
    import {fetchPrivateMessages} from "@/api/privateMessage";
+   import {fetchGroups} from "@/api/manageGroups";
 
 
    const toast = useToast();
    const confirm = useConfirm();
 
+   const isSearch =  ref(false);
+
    const addMessage = ref(false);
    const searchDialog = ref(false);
+
+
+   const clearSearchResults=async ()=>{
+
+     fetchGroups().then((data)=>{
+       groupsData.value = data;
+     });
+     isSearch.value = false;
+     toast.add({ severity: 'success', summary: 'Success', detail: 'Retrieving Messages', life: 3000 });
+   }
 
 
     onMounted(() => {
@@ -80,6 +93,7 @@ import { onMounted, ref} from 'vue';
 
          searchDialog.value = false;
          toast.add({ severity: 'success', summary: 'Success', detail: 'Searching!!!', life: 3000 });
+         isSearch.value = true;
 
           }
        catch (error) {
@@ -136,13 +150,13 @@ import { onMounted, ref} from 'vue';
             </template>
             <template #content>
 
-                <DataTable :value="messages" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"  tableStyle="min-width: 50rem">
-                    <Column field="date" header="Date"></Column>
-                    <Column field="recipients" header="Recipients"></Column>
-                    <Column field="subject" header="Subject"></Column>
-                    <Column field="received" header="Received"></Column>
-                    <Column field="opened" header="Opened"></Column>
-                    <Column field="messageType" header="Message Type"></Column>
+                <DataTable :value="messages" paginator :rows="5"   :rowsPerPageOptions="[5, 10, 20, 50]"  tableStyle="min-width: 50rem">
+                    <Column field="date" sortable header="Date"></Column>
+                    <Column field="recipients" sortable header="Recipients"></Column>
+                    <Column field="subject" sortable header="Subject"></Column>
+                    <Column field="received" sortable header="Received"></Column>
+                    <Column field="opened" sortable header="Opened"></Column>
+                    <Column field="messageType" sortable header="Message Type"></Column>
                 </DataTable>
 
                 <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '450px'}" header="Advanced Search" :modal="true" class="p-fluid">
@@ -214,6 +228,9 @@ import { onMounted, ref} from 'vue';
             </template>
          </Card>
 		</div>
+    <div class="m-5 flex flex-row-reverse ">
+      <Button @click="clearSearchResults" v-show="isSearch" label="Return To Search"/>
+    </div>
 	</div>
 </template>
 

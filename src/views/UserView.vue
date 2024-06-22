@@ -110,7 +110,7 @@
                     </div>
                 </template>
 
-                <DataTable :value="reports" paginator sortable :rows="5"  showGridlines tableStyle="min-width: 50rem">
+                <DataTable :value="reports"  paginator sortable :rows="5"  showGridlines tableStyle="min-width: 50rem">
                     <Column field="date" sortable header="Date"></Column>
                     <Column field="reported_by"  sortable header="Reported By"></Column>
                     <Column field="posted_by" sortable header="Posted By"></Column>
