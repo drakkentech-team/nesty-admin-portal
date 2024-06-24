@@ -1,7 +1,7 @@
 <script setup>
    import { defineProps, ref } from "vue";
    import ConfirmationDialog2 from "../components/ConfirmationDialog2.vue";
-   import ConfirmationDialogClose from "../components/ConfirmationDialogClose.vue"
+   import ConfirmationDialogClose from "../components/ConfirmationDialogClose2.vue"
    import { checkProgressStatus } from "../utilities/moderation";
    import SuspensionView from "./SuspensionView.vue";
    import MessageReportedUser from "./MessageReportedUser.vue";
@@ -16,11 +16,13 @@
 
    const statuses = ["Open", "In Progress", "Resolved"];
    const progressStatus = ref(checkProgressStatus(props.report.moderation_status));
-   const overruleConfirmationmessage = "Are you sure you want to OVERRULE and IGNORE the reported post?";
+   const overruleConfirmationMessage = "Are you sure you want to OVERRULE and IGNORE the reported post?";
    const showOverruleConfirmation = ref(false);
    const showSuspendDialog = ref(false);
    const showMessageDialog = ref(false);
    const showDeleteDialog = ref(false);
+   const showConfirmedDialog = ref(false);
+   const overruleConfirmedMessage = "Reported post OVERRULED";
 
    // const checkProgressStatus = () => {
    //    const reportStatus = props.report.status;
@@ -37,12 +39,13 @@
       showOverruleConfirmation.value = true;
    }
 
-   const handleCancel = () => {
+   const closeConfirmDialog = () => {
       showOverruleConfirmation.value = false;
    }
 
    const handleConfirm = () => {
-
+      showConfirmedDialog.value = true;
+      closeConfirmDialog();
    }
 
    const confirmSuspension = () => {
@@ -135,10 +138,12 @@
       </div>
    </div>
 
-   <ConfirmationDialog2 :title="''" :body="overruleConfirmationmessage"
-      :show="showOverruleConfirmation" @cancel="handleCancel" @confirm="handleConfirm" />
-   <!-- <ConfirmationDialogClose :show="showConfirmedDialog" /> -->
-   <SuspensionView :show="showSuspendDialog" :user="report.reported_user" @close="closeSuspension" />
+   <ConfirmationDialog2 :title="''" :body="overruleConfirmationMessage"
+      :show="showOverruleConfirmation" @close="closeConfirmDialog" @confirm="handleConfirm" />
+   <ConfirmationDialogClose :title="overruleConfirmedMessage" buttonLabel="Return to query"
+      :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
+   <SuspensionView :show="showSuspendDialog" @close="closeSuspension"
+      :userName="report.reported_user" :userId="report.reported_userid" />
    <MessageReportedUser :visible="showMessageDialog"
       @close="closeMessageDialog" @closeCallback="closeMessageDialog" />
    <DeleteReportedContent :visible="showDeleteDialog" :report="report" @close="closeDeleteDialog" />

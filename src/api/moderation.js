@@ -121,7 +121,9 @@ const demoReports = ref([
       post_sid: 0,
       comment_sid: null,
       moderation_status_sid: 2,
-      sid: 0
+      sid: 0,
+      reported_userid: 0,
+      reporting_userid: 0
    },
    {
       date_reported: '2024-05-05',
@@ -137,7 +139,9 @@ const demoReports = ref([
       post_sid: 1,
       comment_sid: 0,
       moderation_status_sid: 3,
-      sid: 1
+      sid: 1,
+      reported_userid: 1,
+      reporting_userid: 1
    },
    {
       date_reported: '2024-05-10',
@@ -153,7 +157,9 @@ const demoReports = ref([
       post_sid: 2,
       comment_sid: null,
       moderation_status_sid: 4,
-      sid: 2
+      sid: 2,
+      reported_userid: 2,
+      reporting_userid: 2
    },
    {
       date_reported: '2024-04-30',
@@ -169,7 +175,9 @@ const demoReports = ref([
       post_sid: 3,
       comment_sid: 1,
       moderation_status_sid: 1,
-      sid: 3
+      sid: 3,
+      reported_userid: 1,
+      reporting_userid: 3
    },
    // Add more demo data as needed
 ]);
