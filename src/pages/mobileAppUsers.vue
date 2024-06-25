@@ -80,7 +80,7 @@ onMounted(() => {
 		<div class="p-col-12">
       <DynamicDialog />
 			<Card>
-            <template #title> Mobile App Users </template>
+            <template #title>User management > Mobile App Users </template>
                <template #content>
                   <DataTable
                      :value="userData"
