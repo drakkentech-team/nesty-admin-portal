@@ -56,12 +56,11 @@ import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
     ]);
 
    const filters = ref({
-     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-     moderation_status: { value: null, matchMode: FilterMatchMode.IN }
+     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
    });
 
   const isFiltersEnabled = computed(() => {
-    return filters.value['global'].value || filters.value['moderation_status'].value;
+    return filters.value['global'].value || filters.value['firt_name'].value;
   })
 
 
@@ -91,23 +90,17 @@ onMounted(() => {
                      @row-click="handleRowClick"
                      filterDisplay="menu"
                      v-model:filters="filters"
+                     :globalFilterFields="['first_name', 'last_name', 'email', 'username', 'province']"
                   >
-
                     <template #header>
-                      <div class="flex justify-content-between">
-                        <div class="flex justify-content-start">
-                          <Button icon="pi pi-filter" outlined @click="toggleFPanel" />
-                        </div>
-                        <div class="flex justify-content-end gap-5">
-                          <Button @click="clearFilters" label="Clear" v-show="isFiltersEnabled" />
-                          <IconField iconPosition="left">
-                            <InputIcon>
-                              <i class="pi pi-search" />
-                            </InputIcon>
-                            <InputText v-model="filters['global'].value" placeholder="Search" />
-                          </IconField>
-                        </div>
-                      </div>
+                    <div class="flex justify-content-end">
+                      <IconField iconPosition="left">
+                        <InputIcon>
+                          <i class="pi pi-search" />
+                        </InputIcon>
+                        <InputText v-model="filters['global'].value" placeholder="Search" />
+                      </IconField>
+                    </div>
                     </template>
                      <Column sortable  field="first_name" header="Name"></Column>
                      <Column sortable  field="last_name" header="Surname"></Column>

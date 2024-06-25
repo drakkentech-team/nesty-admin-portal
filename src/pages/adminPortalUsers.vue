@@ -164,7 +164,10 @@ import {ref, onMounted, computed} from 'vue';
 
    }
 
-   const saveUser = async() => {
+
+
+
+const saveUser = async() => {
         try {
          await createAdminPortalUser({
             email: usersForm.value.email,
@@ -202,7 +205,6 @@ import {ref, onMounted, computed} from 'vue';
 
    const filters = ref({
      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-     moderation_status: { value: null, matchMode: FilterMatchMode.IN }
    });
 
 const isFiltersEnabled = computed(() => {
@@ -234,21 +236,17 @@ const isFiltersEnabled = computed(() => {
                      paginator :rows="5"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
+                     v-model:filters="filters"
+                     :globalFilterFields="['email', 'group_admin', 'group_name', 'action', 'reason']"
                   >
                     <template #header>
-                      <div class="flex justify-content-between">
-                        <div class="flex justify-content-start">
-                          <Button icon="pi pi-filter" outlined @click="toggleFPanel" />
-                        </div>
-                        <div class="flex justify-content-end gap-5">
-                          <Button @click="clearFilters" label="Clear" v-show="isFiltersEnabled" />
-                          <IconField iconPosition="left">
-                            <InputIcon>
-                              <i class="pi pi-search" />
-                            </InputIcon>
-                            <InputText v-model="filters['global'].value" placeholder="Search" />
-                          </IconField>
-                        </div>
+                      <div class="flex justify-content-end">
+                        <IconField iconPosition="left">
+                          <InputIcon>
+                            <i class="pi pi-search" />
+                          </InputIcon>
+                          <InputText v-model="filters['global'].value" placeholder="Search" />
+                        </IconField>
                       </div>
                     </template>
 
