@@ -219,10 +219,9 @@ const createForm = ref({
 })
 
 const handleViewClick = (event) => {
-  console.log(event.data)
   dialog.open(userView, {
     data:{
-      user: {}
+     group : {...event.data}
     },
     props: {
       header: 'Group Details',
@@ -369,7 +368,6 @@ onMounted(() => {
                     </Column>
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">
-                          <Button icon="pi pi-eye" outlined rounded class="mr-2" @click="handleViewClick(slotProps.data)" />
                           <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteGroup(slotProps.data)" />
                         </template>
                      </Column>
