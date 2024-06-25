@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useStore } from '../stores/store';
+//import { useStore } from '../stores/store';
 import DashboardLayout from '../DashboardLayout.vue';
 import PlainLayout from '../PlainLayout.vue';
 
@@ -37,7 +37,6 @@ const router = createRouter({
             },
          ]
       },
-      ,
       {
          path: '/manage-groups',
          component: DashboardLayout,
@@ -49,7 +48,6 @@ const router = createRouter({
             },
          ]
       },
-       ,
       {
          path: '/mobile-app-users',
          component: DashboardLayout,
@@ -99,13 +97,13 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
-   const user = useStore()
+   //const user = useStore()
    //const userIsLoggedIn = user.user ? true : false
    const userIsLoggedIn =  true;
 
 
    if (to.path === '/login' && userIsLoggedIn) {
-     next('/notifications');
+     next('/private-messages');
    } else if (to.path !== '/login' && !userIsLoggedIn) {
      next('/login');
    } else {

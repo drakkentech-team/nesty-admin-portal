@@ -5,7 +5,7 @@
         <transition name="layout-sidebar">
             <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
                 <div class="layout-logo">
-                    <router-link to="/notifications">
+                    <router-link to="/private-messages">
                         <img alt="Logo" src="/img/nesty-bird.png" style="height:100px; width:100px"/><br>
                     </router-link>
                 </div>
