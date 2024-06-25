@@ -1,62 +1,30 @@
 <script setup>
-   import { computed, defineAsyncComponent, onMounted, ref, watch } from "vue";
+   import { computed, defineAsyncComponent, onBeforeMount, onMounted, ref, watch } from "vue";
    import { FilterMatchMode } from "primevue/api";
    import { useDialog } from "primevue/usedialog";
-   import { fetchModerationReports } from "../api/moderation";
    import { storeToRefs } from "pinia";
    import { useModerationStore } from "../stores/moderationStore";
 
 
    const dynamicView = defineAsyncComponent(() => import("../views/ModerationView.vue"));
    const dialog = useDialog();
-   const { reloadRequired } = storeToRefs(useModerationStore());
+   const store = useModerationStore();
+   const { reports } = storeToRefs(store);
+   const { fetchReports } = store;
    
-   const reports = ref([]);
    const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
       moderation_status: { value: null, matchMode: FilterMatchMode.IN }
    });
    const filterPanel = ref();
    const statusFilterList = ref([]);
-   const openStatusCount = ref(0);
-   const pendingStatusCount = ref(0);
    const isFiltersEnabled = computed(() => {
       return filters.value['global'].value || filters.value['moderation_status'].value;
    })
 
-   onMounted(() => {
+   onBeforeMount(() => {
       fetchReports();
    })
-
-   watch(reloadRequired, (newValue) => {
-      if (newValue === true) {
-         reloadRequired.value = false;
-         fetchReports();
-      }
-   })
-
-   const sortStatuses = (a, b) => {
-      const status0 = "Open";
-      const status1 = "Pending";
-
-      if (a === b) {
-         return 0;
-      } else if (a === status0) {
-         return 1;
-      } else if (b === status0 || b === status1) {
-         return -1;
-      } else if (a === status1) {
-         return 1;
-      } else {
-         return 0;
-      };
-   }
-
-   const defaultOrder = (a, b) => {
-      var statusOrder = sortStatuses(a.moderation_status, b.moderation_status);
-      var dateOrder = new Date(a.date_reported) - new Date(b.date_reported);
-      return -statusOrder || -dateOrder;
-   }
 
    const moderate = (event) => {
       dialog.open(dynamicView, {
@@ -65,7 +33,8 @@
             // showHeader: false,
             header: ' ',
             style: {
-               width: '75vw',
+               width: '67vw',
+               height: '39vw'
             }
          },
          data: {
@@ -92,32 +61,6 @@
          filters.value[field].value = null;
       }
    }
-
-   const countStatuses = () => {
-      reports.value.forEach(report => {
-         const status = report['moderation_status'];
-         if (status === "Open") {
-            openStatusCount.value++;
-         } else if (status === "Pending") {
-            pendingStatusCount.value++;
-         } else {
-            return;
-         }
-      });
-   }
-
-   const sortReports = () => {
-      reports.value.sort((a, b) => defaultOrder(a, b));
-      countStatuses();
-   }
-
-   const fetchReports = () => {
-      fetchModerationReports().then((data) => {
-         reports.value = data;
-         sortReports();
-      });
-   }
-
 </script>
 
 <template>
@@ -127,7 +70,7 @@
          <Card>
             <template #title> Moderation </template>
             <template #content>
-               <DataTable 
+               <DataTable
                   :value="reports"
                   tableStyle="min-width: 50rem"
                   paginator
@@ -140,6 +83,7 @@
                   ]"
                   filterDisplay="menu"
                   @row-click="moderate"
+                  :rowStyle="() => {return {cursor:'pointer'}}"
                >
                <template #header>
                   <div class="flex justify-content-between">
@@ -176,13 +120,11 @@
          <div>
             <Checkbox v-model="statusFilterList" value="Open" />
             <label class="ml-2">Open</label>
-            <Badge :value="openStatusCount" />
          </div>
 
          <div>
             <Checkbox v-model="statusFilterList" value="Pending" />
             <label class="ml-2">Pending</label>
-            <Badge :value="pendingStatusCount" />
          </div>
 
          <div>
@@ -201,3 +143,7 @@
       </div>
    </OverlayPanel>
 </template>
+
+<style scoped>
+
+</style>

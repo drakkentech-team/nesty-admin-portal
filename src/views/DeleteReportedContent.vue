@@ -2,7 +2,7 @@
    import { onMounted, ref } from 'vue';
    import { deleteViolation, updateStatus } from '../api/moderation';
    import { useModerationStore } from "../stores/moderationStore";
-   import { storeToRefs } from 'pinia';
+   import ConfirmationDialogClose from '../components/ConfirmationDialogClose2.vue';
 
 
    const emit = defineEmits(['close']);
@@ -13,11 +13,12 @@
       },
       report : Object
    })
-   const { reloadRequired } = storeToRefs(useModerationStore());
+   const { fetchReports } = useModerationStore();
    
    const itemToDelete = ref();
    const reason = ref();
    const isPost = ref(false);
+   const showConfirmedDialog = ref(false);
 
    onMounted(() => {
       itemToDelete.value = props.report.report_type;
@@ -41,16 +42,21 @@
          });
       }
 
-      await updateStatus(props.report.sid, 3);
-      reloadRequired.value = true;
+      openConfirmedDialog();
+      await updateStatus(props.report.sid, 4);
+      fetchReports();
       closeDialog();   // tmp
+   }
+
+   const openConfirmedDialog = () => {
+      showConfirmedDialog.value = true;
    }
 </script>
 
 <template>
    <Dialog :visible="visible" modal header="What would you like to delete?"
       :pt:closeButton:onClick="closeDialog" >
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap gap-3 my-2">
          <div class="flex align-items-center">
             <RadioButton v-model="itemToDelete" value="Comment" :disabled="isPost" />
             <label class="ml-2">Comment only</label>
@@ -66,11 +72,13 @@
       </div>
     
       <div>
-         <Textarea v-model="reason" placeholder="Reason For Deleting" rows="10" cols="60" />
+         <Textarea v-model="reason" placeholder="Reason For Deleting" rows="10" cols="60" class="mt-2"/>
       </div>
 
       <template #footer>
          <Button label="Delete" @click="deleteContent" :disabled="!(reason && itemToDelete)" />
       </template>
    </Dialog>
+   <ConfirmationDialogClose :title="'<b>Deleted Successfully!</b>'" :show="showConfirmedDialog"
+      :buttonLabel="'Return to Query'" @close="showConfirmedDialog=false" />
 </template>

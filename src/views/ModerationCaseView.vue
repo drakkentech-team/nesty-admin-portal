@@ -12,7 +12,7 @@
 
 
    const props = defineProps(["report"]);
-   const { reloadRequired } = storeToRefs(useModerationStore());
+   const { fetchReports } = useModerationStore();
 
    const statuses = ["Open", "In Progress", "Resolved"];
    const progressStatus = ref(checkProgressStatus(props.report.moderation_status));
@@ -23,17 +23,7 @@
    const showDeleteDialog = ref(false);
    const showConfirmedDialog = ref(false);
    const overruleConfirmedMessage = "Reported post OVERRULED";
-
-   // const checkProgressStatus = () => {
-   //    const reportStatus = props.report.status;
-   //    if (reportStatus === "Open") {
-   //       progressStatus.value = "Open";
-   //    } else if (reportStatus === "Pending") {
-   //       progressStatus.value = "In Progress";
-   //    } else {
-   //       progressStatus.value = "Resolved";
-   //    }
-   // }
+   const buttonStyle = "col-12 mb-3 justify-content-center";
 
    const confirmOverrule = () => {
       showOverruleConfirmation.value = true;
@@ -89,22 +79,20 @@
             await updateStatus(props.report.sid, 2);
             break;
          case "Resolved":
-            await updateStatus(props.report.sid, 3);
+            await updateStatus(props.report.sid, 4);
             break;
       
          default:
             await updateStatus(props.report.sid, 1);
       }
-      reloadRequired.value = true;
+      fetchReports();
    }
-
-   // checkProgressStatus();
 </script>
 
 <template>
    <div class="p-grid">
       <div class="p-col-12">
-         <div class="grid">
+         <div class="grid my-3">
             <Panel header="Reported Date" class="col">
                {{ report.reason_for_report }}
             </Panel>
@@ -119,18 +107,18 @@
             </Panel>
          </div>
 
-         <div class="grid nested-grid + mt-4">
-            <div class="col-8">
+         <div class="grid nested-grid my-3">
+            <div class="col-9">
                <ScrollPanel class="content p-4">
                   <h4 class="font-bold">{{ report.report_type }}</h4>
                   <p>{{ reportedContent() }}</p>
                </ScrollPanel>
             </div>
-            <div class="col-4">
-               <button @click="confirmOverrule" class="col-12 mb-3">Overrule and Ignore</button>
-               <button @click="confirmSuspension" class="col-12 mb-3">Suspend Reported User</button>
-               <button @click="openMessageDialog" class="col-12 mb-3">Send Message</button>
-               <button @click="openDeleteDialog" class="col-12 mb-3">Delete</button>
+            <div class="col-3">
+               <Button @click="confirmOverrule" :class="buttonStyle">Overrule</Button>
+               <Button @click="confirmSuspension" :class="buttonStyle">Suspend Reported User</Button>
+               <Button @click="openMessageDialog" :class="buttonStyle">Send Message</Button>
+               <Button @click="openDeleteDialog" :class="buttonStyle">Delete</Button>
                <Dropdown v-model="progressStatus" :options="statuses"
                   placeholder="Status" class="col-12" @change="changeModerationStatus" />
             </div>
@@ -143,7 +131,7 @@
    <ConfirmationDialogClose :title="overruleConfirmedMessage" buttonLabel="Return to query"
       :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
    <SuspensionView :show="showSuspendDialog" @close="closeSuspension"
-      :userName="report.reported_user" :userId="report.reported_userid" />
+      :report="report" />
    <MessageReportedUser :visible="showMessageDialog"
       @close="closeMessageDialog" @closeCallback="closeMessageDialog" />
    <DeleteReportedContent :visible="showDeleteDialog" :report="report" @close="closeDeleteDialog" />
@@ -155,5 +143,4 @@
       width: auto;
       height: 100%;
    }
-   
 </style>

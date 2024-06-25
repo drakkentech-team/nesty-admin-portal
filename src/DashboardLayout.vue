@@ -29,6 +29,8 @@ import AppProfile from './AppProfile.vue';
 import AppMenu from './AppMenu.vue';
 import AppFooter from './AppFooter.vue';
 import { useStore } from './stores/store';
+import { useModerationStore } from './stores/moderationStore';
+import { storeToRefs } from "pinia";
 
 
 
@@ -37,6 +39,7 @@ export default {
         const store = useStore();
     },
     data() {
+        const { openStatusCount } = storeToRefs(useModerationStore());
         return {
             layoutMode: 'static',
             layoutColorMode: 'dark',
@@ -45,7 +48,7 @@ export default {
             mobileMenuActive: false,
             menu : [
                {label: 'Private Messages', icon: 'pi pi-fw pi-send', to: 'notifications'},
-               {label: 'Moderation', icon: 'pi pi-fw pi-eraser', to: 'moderation'},
+               {label: 'Moderation', icon: 'pi pi-fw pi-eraser', to: 'moderation', badge: openStatusCount},
                {label: 'Manage Groups', icon: 'pi pi-fw pi-cart-plus', to: 'products'},
                {label: 'User Management', icon: 'pi pi-fw pi-users',
                   items:[

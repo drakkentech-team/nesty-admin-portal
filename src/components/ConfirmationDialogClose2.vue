@@ -1,5 +1,5 @@
 <template>
-  <Dialog :visible="show">
+  <Dialog :visible="show" :style="{'min-width': '20vw'}">
     <template #container="{ closeCallback }">
       <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
         <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">

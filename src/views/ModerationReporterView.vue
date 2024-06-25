@@ -52,8 +52,9 @@
 </script>
 
 <template>
-   <div class="p-grid">
+   <div class="p-grid my-2">
       <div class="p-col-12">
+         <h5 class="font-semibold ml-3">User: {{ nameAndSurname }} ({{ user }})</h5>
          <DataTable
             :value="reports"
             tableStyle="min-width: 50rem"
@@ -62,12 +63,12 @@
             :rowsPerPageOptions="[5, 10, 20, 50]"
             removableSort
          >
-            <template #header>
+            <!-- <template #header>
                <div class="grid">
                   <span class="col">Username: {{ user }}</span>
                   <span class="col">Name and Surname: {{ nameAndSurname }}</span>
                </div>
-            </template>
+            </template> -->
 
             <Column field="date_reported" header="Date Reported" sortable></Column>
             <Column field="reason_for_report" header="Reason" sortable></Column>

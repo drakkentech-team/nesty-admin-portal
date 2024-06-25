@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import ConfirmationDialogClose from '../components/ConfirmationDialogClose2.vue';
 
 
    const emit = defineEmits(['close']);
@@ -13,9 +14,15 @@ import { ref } from 'vue';
    const subject = ref();
    const body = ref();
    const refToReported = ref();
+   const showConfirmedDialog = ref(false);
 
    const closeDialog = () => {
       emit('close');
+   }
+
+   const openConfirmedDialog = () => {
+      showConfirmedDialog.value = true;
+      closeDialog();
    }
 </script>
 
@@ -33,7 +40,10 @@ import { ref } from 'vue';
       </div>
 
       <template #footer>
-         <Button label="Send" @click="$emit('close')" />
+         <Button label="Send" @click="openConfirmedDialog" :disabled="!body" />
       </template>
    </Dialog>
+
+   <ConfirmationDialogClose :title="'<b>Message Sent</b>'" :buttonLabel="'Return to Post'"
+      :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
 </template>

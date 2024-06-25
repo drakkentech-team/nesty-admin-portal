@@ -20,21 +20,17 @@
 </script>
 
 <template>
-   <div class="p-grid">
-      <div class="p-col-12">
-         <TabView v-if="mounted">
-            <TabPanel header="Case">
-               <ModerationCaseView :report="report" />
-            </TabPanel>
-            <TabPanel header="Reported History">
-               <ModerationReportedView :user="report.reporting_user" />
-            </TabPanel>
-            <TabPanel header="Reporter History">
-               <ModerationReporterView :user="report.reported_user" />
-            </TabPanel>
-         </TabView>
-      </div>
-   </div>
+   <TabView v-if="mounted">
+      <TabPanel header="Case">
+         <ModerationCaseView :report="report" />
+      </TabPanel>
+      <TabPanel header="Reported History">
+         <ModerationReportedView :user="report.reporting_user" />
+      </TabPanel>
+      <TabPanel header="Reporter History">
+         <ModerationReporterView :user="report.reported_user" />
+      </TabPanel>
+   </TabView>
 </template>
 
 <style scoped>

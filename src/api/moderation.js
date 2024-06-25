@@ -28,7 +28,7 @@ export const fetchModerationReports = async () => {
 
 
 export const suspendBanUser = async (sid, payload) => {
-   try {
+   /* try {
       const response = await axios.post(`${HOST}/suspend-ban-user/${sid}`, payload,{
          headers: {
             'Authorization': `Bearer ${BEARER_TOKEN}`,
@@ -39,7 +39,7 @@ export const suspendBanUser = async (sid, payload) => {
    } catch (error) {
       console.error("Error Suspending/Banning user:", error);
       throw error;
-   }
+   } */
 }
 
 

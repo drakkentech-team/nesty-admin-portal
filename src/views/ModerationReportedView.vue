@@ -1,7 +1,7 @@
 <script setup>
    import { ref, defineProps } from "vue";
    import { checkProgressStatus } from "../utilities/moderation";
-   import SuspensionView from "./SuspensionView.vue";
+   // import SuspensionView from "./SuspensionView.vue";
 
 
    const props = defineProps(["user"]); //do we receive username or id?
@@ -54,8 +54,9 @@
 </script>
 
 <template>
-   <div class="p-grid">
+   <div class="p-grid my-2">
       <div class="p-col-12">
+         <h5 class="font-semibold ml-3">User: {{ nameAndSurname }} ({{ user }})</h5>
          <DataTable
             :value="reports"
             tableStyle="min-width: 50rem"
@@ -64,7 +65,7 @@
             :rowsPerPageOptions="[5, 10, 20, 50]"
             removableSort
          >
-            <template #header>
+            <!-- <template #header>
                <div class="grid">
                   <div class="col-9 flex gap-8">
                      <span>Username: {{ user }}</span>
@@ -72,7 +73,7 @@
                   </div>
                   <Button @click="showSuspendDialog = true" outlined class="col-3 justify-content-center">Suspend Reported User</Button>
                </div>
-            </template>
+            </template> -->
 
             <Column field="date_reported" header="Date Reported" sortable></Column>
             <Column field="reason_for_report" header="Reason" sortable></Column>
@@ -85,5 +86,5 @@
       </div>
    </div>
 
-   <SuspensionView :user="user" :show="showSuspendDialog" @close="showSuspendDialog = false" />
+   <!-- <SuspensionView :user="user" :show="showSuspendDialog" @close="showSuspendDialog = false" /> -->
 </template>
