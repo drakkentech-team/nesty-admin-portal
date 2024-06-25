@@ -177,18 +177,18 @@ username : [
     { name: 'Paris', code: 'PRS' }
 ],
 names: [
-    { name: 'New York', code: 'NY' },
+    {name: 'New York', code: 'NY' },
     { name: 'Rome', code: 'RM' },
     { name: 'London', code: 'LDN' },
     { name: 'Istanbul', code: 'IST' },
     { name: 'Paris', code: 'PRS' }
 ],
 group: [
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
+    {sid:1, name: 'New York', code: 'NY' },
+    {sid:2,  name: 'Rome', code: 'RM' },
+    {sid:3,  name: 'London', code: 'LDN' },
+    {sid:4,  name: 'Istanbul', code: 'IST' },
+    {sid:5, name: 'Paris', code: 'PRS' }
 ],email : [
     { name: 'New York', code: 'NY' },
     { name: 'Rome', code: 'RM' },
@@ -219,10 +219,9 @@ const createForm = ref({
 })
 
 const handleViewClick = (event) => {
-  console.log(event.data)
   dialog.open(userView, {
     data:{
-      user: {}
+     group : {...event.data}
     },
     props: {
       header: 'Group Details',
@@ -349,6 +348,10 @@ onMounted(() => {
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
                      sortMode="multiple"
+                     data-key="sid"
+                     selection-mode="single"
+                     @rowClick="handleViewClick"
+
                   >
                      <Column field="name" sortable header="Group Name"></Column>
                      <Column field="long_description"  sortable header="Private/Public"></Column>
@@ -365,7 +368,6 @@ onMounted(() => {
                     </Column>
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">
-                          <Button icon="pi pi-eye" outlined rounded class="mr-2" @click="handleViewClick(slotProps.data)" />
                           <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteGroup(slotProps.data)" />
                         </template>
                      </Column>
