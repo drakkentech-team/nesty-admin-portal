@@ -4,6 +4,7 @@ export const fetchGroups = async () => {
 
     return [
         {
+            sid:1,
             name: "Tech Enthusiasts",
             long_description: "Public",
             suburb: "San Francisco",
@@ -11,6 +12,7 @@ export const fetchGroups = async () => {
             status: "Active"
         },
         {
+            sid:2,
             name: "Photography Club",
             long_description: "Private",
             suburb: "New York",
@@ -18,6 +20,7 @@ export const fetchGroups = async () => {
             status: "Active"
         },
         {
+            sid:3,
             name: "Fitness Freaks",
             long_description: "Public",
             suburb: "Los Angeles",
@@ -25,6 +28,7 @@ export const fetchGroups = async () => {
             status: "Inactive"
         },
         {
+            sid:4,
             name: "Bookworms Society",
             long_description: "Private",
             suburb: "Chicago",
@@ -32,6 +36,7 @@ export const fetchGroups = async () => {
             status: "Active"
         },
         {
+            sid:5,
             name: "Foodies Group",
             long_description: "Public",
             suburb: "Austin",

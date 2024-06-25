@@ -6,7 +6,7 @@ import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
    const userView = defineAsyncComponent(() => import('../views/UserView.vue'));
 
    const dialog = useDialog();
-
+   const selectedUser = ref();
 
 
    const handleRowClick = (event) => {
@@ -34,6 +34,7 @@ import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
 
    const userData = ref([
       {
+        sid:1,
         first_name: 'John',
         last_name: 'Doe',
         email: 'john.doe@example.com',
@@ -44,6 +45,7 @@ import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
         province: 'California'
       },
       {
+        sid:2,
         first_name: 'Jane',
         last_name: 'Doe',
         email: 'jane.doe@example.com',
@@ -86,11 +88,13 @@ onMounted(() => {
                      sortMode="multiple"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
+                     dataKey="sid"
                      removableSort
                      @row-click="handleRowClick"
                      filterDisplay="menu"
                      v-model:filters="filters"
                      :globalFilterFields="['first_name', 'last_name', 'email', 'username', 'province']"
+                     selectionMode="single"
                   >
                     <template #header>
                     <div class="flex justify-content-end">

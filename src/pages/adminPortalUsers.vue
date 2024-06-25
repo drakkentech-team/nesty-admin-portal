@@ -8,7 +8,7 @@ import {ref, onMounted, computed} from 'vue';
 
 
    const users = ref([]);
-   const user = ref(null);
+   const user = ref();
    const addUsersDialog = ref(false);
    const editDialog = ref(false);
    const saved = ref(false);
@@ -99,9 +99,9 @@ import {ref, onMounted, computed} from 'vue';
      }
    }
 
-   const confirmEditUser = (data) => {
-      user.value = {...data};
-      user.value.is_admin = (data.is_admin===1);
+   const confirmEditUser = (event) => {
+      user.value = {...event.data}
+      user.value.is_admin = (user.value.is_admin===1);
       editDialog.value = true;
 
    };
@@ -238,6 +238,10 @@ const isFiltersEnabled = computed(() => {
                      tableStyle="min-width: 50rem"
                      v-model:filters="filters"
                      :globalFilterFields="['email', 'group_admin', 'group_name', 'action', 'reason']"
+                     data-key="sid"
+                     selection-mode="single"
+                     @rowClick="confirmEditUser"
+                     v-model:selection="user"
                   >
                     <template #header>
                       <div class="flex justify-content-end">
@@ -262,7 +266,6 @@ const isFiltersEnabled = computed(() => {
 
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">
-                           <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="confirmEditUser(slotProps.data)" />
                            <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteUser(slotProps.data)" />
                         </template>
                      </Column>
