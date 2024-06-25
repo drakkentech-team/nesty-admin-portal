@@ -220,7 +220,7 @@ const isFiltersEnabled = computed(() => {
             <template #title>
 
                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span>User Management</span>
+                  <span>User management > Portal Users</span>
                   <Button
                      label="Create User"
                      icon="pi pi-plus"
@@ -241,7 +241,7 @@ const isFiltersEnabled = computed(() => {
                      data-key="sid"
                      selection-mode="single"
                      @rowClick="confirmEditUser"
-                     v-model:selection="user"
+
                   >
                     <template #header>
                       <div class="flex justify-content-end">
