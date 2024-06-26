@@ -33,19 +33,21 @@
    const deleteContent = async () => {
       if (itemToDelete.value.includes("Post")) {
          await deleteViolation({
-            "post_sid": props.report.post_sid
+            "post_sid": props.report.post_sid,
+            "reason_for_deletion": reason.value
          });
       }
       if (itemToDelete.value.includes("Comment", 9)) {
          await deleteViolation({
-            "comment_sid": props.report.comment_sid
+            "comment_sid": props.report.comment_sid,
+            "reason_for_deletion": reason.value
          });
       }
 
       openConfirmedDialog();
-      await updateStatus(props.report.sid, 4);
+      await updateStatus(props.report.moderation_sid, 4);
       fetchReports();
-      closeDialog();   // tmp
+      closeDialog();
    }
 
    const openConfirmedDialog = () => {
@@ -72,7 +74,7 @@
       </div>
     
       <div>
-         <Textarea v-model="reason" placeholder="Reason For Deleting" rows="10" cols="60" class="mt-2"/>
+         <Textarea v-model.trim="reason" placeholder="Reason For Deleting" rows="10" cols="60" class="mt-2"/>
       </div>
 
       <template #footer>

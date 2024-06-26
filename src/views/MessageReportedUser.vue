@@ -30,10 +30,10 @@ import ConfirmationDialogClose from '../components/ConfirmationDialogClose2.vue'
    <Dialog :visible="visible" modal header="Message to Reported User"
       :pt:closeButton:onClick="closeDialog" >
       <div>
-         <Textarea v-model="subject" placeholder="Subject" rows="1" cols="60" />
+         <Textarea v-model.trim="subject" placeholder="Subject" rows="1" cols="60" />
       </div>
       <div>
-         <Textarea v-model="body" placeholder="Add text" rows="6" cols="60" />
+         <Textarea v-model.trim="body" placeholder="Add text" rows="6" cols="60" />
       </div>
       <div>
          <Textarea v-model="refToReported" placeholder="Reported Post Reference" rows="5" cols="60" />

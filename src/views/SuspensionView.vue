@@ -33,8 +33,12 @@
    const confirmBanBody = "This action is <b>permanent</b>, are you sure you want to continue?";
 
    const onConfirm = async () => {
-      await suspendBanUser(props.report.reported_userid, { "suspend": suspendPeriod.value.days });
-      await updateStatus(props.report.sid, 4);
+      await suspendBanUser(props.report.reported_user_sid, {
+         "suspend": suspendPeriod.value.days,
+         "moderation_sid": props.report.moderation_sid,
+         "ban": false
+      });
+      await updateStatus(props.report.moderation_sid, 4);
       fetchReports();
       confirmedDialogMessage.value = `<b>${props.report.reported_user}</b> has been Suspended for ${suspendPeriod.value.label}`;
       showConfirmedDialog.value = true;
@@ -42,8 +46,11 @@
    }
 
    const onBanConfirm = async () => {
-      await suspendBanUser(props.report.reported_userid, { "ban": true });
-      await updateStatus(props.report.sid, 4);
+      await suspendBanUser(props.report.reported_user_sid, {
+         "ban": true,
+         "moderation_sid": props.report.moderation_sid
+      });
+      await updateStatus(props.report.moderation_sid, 4);
       fetchReports();
       confirmedDialogMessage.value = `<b>${props.report.reported_user}</b> has been BANNED`;
       showConfirmedDialog.value = true;

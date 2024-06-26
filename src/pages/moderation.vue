@@ -9,7 +9,7 @@
    const dynamicView = defineAsyncComponent(() => import("../views/ModerationView.vue"));
    const dialog = useDialog();
    const store = useModerationStore();
-   const { reports } = storeToRefs(store);
+   const { reports, currentReportSid } = storeToRefs(store);
    const { fetchReports } = store;
    
    const filters = ref({
@@ -27,6 +27,7 @@
    })
 
    const moderate = (event) => {
+      currentReportSid.value = event.data.moderation_sid;
       dialog.open(dynamicView, {
          props: {
             modal: true,
@@ -36,9 +37,6 @@
                width: '67vw',
                height: '39vw'
             }
-         },
-         data: {
-            report: event.data
          }
       });
    }
@@ -133,8 +131,8 @@
          </div>
 
          <div>
-            <Checkbox v-model="statusFilterList" value="Overruled" />
-            <label class="ml-2">Overruled</label>
+            <Checkbox v-model="statusFilterList" value="Ignored" />
+            <label class="ml-2">Ignored</label>
          </div>
       </div>
       <div class="flex justify-content-center gap-5">

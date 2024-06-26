@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { fetchModerationReports } from "../api/moderation";
 
 
@@ -7,7 +7,8 @@ export const useModerationStore = defineStore("moderationStore", () => {
    // const reloadRequired = ref(false);
    const reports = ref([]);
    const openStatusCount = ref(0);
-
+   const currentReportSid = ref();
+   
    const fetchReports = () => {
       fetchModerationReports().then((data) => {
          reports.value = data;
@@ -57,7 +58,11 @@ export const useModerationStore = defineStore("moderationStore", () => {
       });
    }
 
+   const currentReport = computed(() => {
+      return reports.value.find((report) => report.moderation_sid === currentReportSid.value)
+   });
+
    fetchReports();
 
-   return { reports, openStatusCount, fetchReports };
+   return { reports, openStatusCount, fetchReports, currentReportSid, report: currentReport };
 })
