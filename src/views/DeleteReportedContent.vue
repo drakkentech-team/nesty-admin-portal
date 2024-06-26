@@ -1,6 +1,6 @@
 <script setup>
    import { onMounted, ref } from 'vue';
-   import { deleteViolation, updateStatus } from '../api/moderation';
+   import { deleteViolation } from '../api/moderation';
    import { useModerationStore } from "../stores/moderationStore";
    import ConfirmationDialogClose from '../components/ConfirmationDialogClose2.vue';
 
@@ -45,7 +45,6 @@
       }
 
       openConfirmedDialog();
-      await updateStatus(props.report.moderation_sid, 4);
       fetchReports();
       closeDialog();
    }

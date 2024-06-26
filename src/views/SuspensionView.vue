@@ -2,8 +2,7 @@
    import { computed, inject, onMounted, ref } from "vue";
    import ConfirmationDialogClose from "../components/ConfirmationDialogClose2.vue";
    import ConfirmationDialog from "../components/ConfirmationDialog2.vue";
-   import { suspendBanUser, updateStatus } from "../api/moderation";
-   import { useModerationStore } from "../stores/moderationStore";
+   import { suspendBanUser } from "../api/moderation";
 
 
    const props = defineProps({
@@ -17,7 +16,6 @@
       }
    });
    const emit = defineEmits(["close"]);
-   const { fetchReports } = useModerationStore();
    const visible = computed(() => { return props.show });
    const suspendPeriod = ref();
    const timeframes = [
@@ -38,8 +36,6 @@
          "moderation_sid": props.report.moderation_sid,
          "ban": false
       });
-      await updateStatus(props.report.moderation_sid, 4);
-      fetchReports();
       confirmedDialogMessage.value = `<b>${props.report.reported_user}</b> has been Suspended for ${suspendPeriod.value.label}`;
       showConfirmedDialog.value = true;
       closeDialog();
@@ -50,8 +46,6 @@
          "ban": true,
          "moderation_sid": props.report.moderation_sid
       });
-      await updateStatus(props.report.moderation_sid, 4);
-      fetchReports();
       confirmedDialogMessage.value = `<b>${props.report.reported_user}</b> has been BANNED`;
       showConfirmedDialog.value = true;
       closeDialog();
