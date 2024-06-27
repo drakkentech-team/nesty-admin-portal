@@ -353,9 +353,9 @@ onMounted(() => {
                      @rowClick="handleViewClick"
 
                   >
-                     <Column field="name" sortable header="Group Name"></Column>
-                     <Column field="long_description"  sortable header="Private/Public"></Column>
-                     <Column field="suburb" sortable header="Suburb"></Column>
+                     <Column field="group_name" sortable header="Group Name"></Column>
+                     <Column field="group_type"  sortable header="Private/Public"></Column>
+                     <Column field="region" sortable header="Region"></Column>
                      <Column field="user_count" sortable header="user_count"></Column>
                      <Column field="status" sortable header="Group Status">
                       <template #body="{ data }">
