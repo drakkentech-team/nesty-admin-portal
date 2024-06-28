@@ -84,4 +84,21 @@ export const getGroupInfo = async (groupID) => {
 };
 
 
+export const deleteGroup = async (groupID) => {
 
+    try{
+        await axios.post(`${HOST}/web/edit-group/${groupID}`, payload, {
+            headers: {
+                'Authorization': `Bearer ${BEARER_TOKEN}`,
+                'Content-Type': 'application/json',
+                'app-id': 1
+            },
+
+        });
+        return ("Successfully Deleted Group")
+    }
+    catch (error) {
+        console.error("Error Deleting group:", error);
+        throw error;
+    }
+};

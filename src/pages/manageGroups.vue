@@ -1,7 +1,6 @@
 <script setup>
    import {onMounted, ref,defineAsyncComponent} from 'vue';
    import { useConfirm } from "primevue/useconfirm";
-   import ConfirmationDialog from '../components/ConfirmationDialog.vue'
    import { useToast } from "primevue/usetoast";
    import {createGroup, fetchGroups} from "@/api/manageGroups";
 
@@ -80,7 +79,7 @@
      return isValid;
    };
 
-const createGroup = async () => {
+const createNewGroupDetails = async () => {
 
   if (validateCreateForm()){
     try {
@@ -1350,33 +1349,6 @@ const confirmDeleteGroup = (currGroup)=>{
   group.value['reasons'] = '';
 }
 
-const deleteGroup=async()=>{
-  try {
-
-    deleteDialog.value = false;
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Deleted Group', life: 3000 });
-
-  }
-  catch (error) {
-    toast.add({ severity: 'error', summary: 'Danger', detail: 'Error  Searching, Please try again!!!', life: 3000 });
-  } finally {
-
-  }
-}
-
-const getReasonForDeleting=()=>{
-  deleteDialog.value = true;
-}
-
-const getSeverity = (status) => {
-    switch (status) {
-        case 'Active':
-            return 'info';
-
-        case 'Inactive':
-            return 'danger';
-    }
-}
 
 
 const clearSearchResults=async ()=>{
@@ -1391,6 +1363,7 @@ const clearSearchResults=async ()=>{
 onMounted(() => {
   fetchGroups().then((data) => {
     groupsData.value = data;
+    console.log(data);
   });
 });
 
@@ -1433,24 +1406,10 @@ onMounted(() => {
                      @rowClick="handleViewClick"
 
                   >
-                     <Column field="name" sortable header="Group Name"></Column>
-                     <Column field="long_description"  sortable header="Private/Public"></Column>
-                     <Column field="suburb" sortable header="Suburb"></Column>
+                     <Column field="group_name" sortable header="Group Name"></Column>
+                     <Column field="group_type"  sortable header="Private/Public"></Column>
+                     <Column field="region" sortable header="Region"></Column>
                      <Column field="user_count" sortable header="user_count"></Column>
-                     <Column field="status" sortable header="Group Status">
-                      <template #body="{ data }">
-                        <Tag :value="data.status" :severity="getSeverity(data.status)" />
-                      </template>
-                      <template #option="slotProps">
-                        <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
-                      </template>
-
-                    </Column>
-                     <Column header="Actions" :exportable="false" style="min-width:8rem">
-                        <template #body="slotProps">
-                          <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteGroup(slotProps.data)" />
-                        </template>
-                     </Column>
                   </DataTable>
 
                   <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '670px'}" header="Advanced Search" :modal="true" class="p-fluid">
@@ -1556,7 +1515,7 @@ onMounted(() => {
 
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="newDialog=false"/>
-                        <Button label="Save" icon="pi pi-check" text @click="createNewGroup" />
+                        <Button label="Save" icon="pi pi-check" text @click="createNewGroupDetails" />
                      </template>
                </Dialog>
                </template>
