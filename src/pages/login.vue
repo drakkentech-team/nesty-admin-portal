@@ -23,13 +23,13 @@
       const user = useStore()
       try {
          const response = await login({
-            email: email.value, 
+            email: email.value,
             password: password.value
          });
 
          if (response && response.status === 200) {
             user.setUser(response.data)
-            await router.push({ path: '/notifications' });
+            await router.push({ path: '/private-messages' });
          }
       } catch (error) {
          const { status } = error.request || {};
@@ -44,13 +44,13 @@
 <template>
    <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
       <div class="flex flex-column align-items-center justify-content-center">
-         <div 
-            style="border-radius: 56px; 
-            padding: 0.3rem; 
+         <div
+            style="border-radius: 56px;
+            padding: 0.3rem;
             background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)"
          >
-            <div 
-               class="w-full surface-card py-8 px-5 sm:px-8" 
+            <div
+               class="w-full surface-card py-8 px-5 sm:px-8"
                style="border-radius: 53px"
             >
                <div class="text-center mb-5">
@@ -62,22 +62,22 @@
                <!-- Wrap input fields and button inside a form -->
                <form @submit.prevent="handleLogin">
                   <div>
-                     <label 
-                        for="email" 
+                     <label
+                        for="email"
                         class="block text-900 text-xl font-medium mb-2"
                      >
                         Email
                      </label>
-                     <InputText 
-                        id="email" 
-                        type="text" 
-                        placeholder="Email address" 
-                        class="w-full md:w-30rem mb-5" 
-                        style="padding: 1rem" 
-                        v-model="email" 
+                     <InputText
+                        id="email"
+                        type="text"
+                        placeholder="Email address"
+                        class="w-full md:w-30rem mb-5"
+                        style="padding: 1rem"
+                        v-model="email"
                      />
-                     <label 
-                        for="password" 
+                     <label
+                        for="password"
                         class="block text-900 font-medium text-xl mb-2"
                      >
                         Password
@@ -93,9 +93,9 @@
                            :feedback="false"
                         />
                      </div>
-                     <Button 
-                        label="Sign In" 
-                        class="w-full p-3 text-xl mt-5 bg-#fead5e hover:bg-#ffc34d focus:bg-#ffc34d" 
+                     <Button
+                        label="Sign In"
+                        class="w-full p-3 text-xl mt-5 bg-#fead5e hover:bg-#ffc34d focus:bg-#ffc34d"
                         type="submit"
                         background="#ffc34d"
 
@@ -103,15 +103,15 @@
                         <ProgressSpinner
                            v-if="isLoading"
                            class=".p-progress-spinner-circle"
-                           style="width: 2; 
-                           height: 23px;" 
-                           strokeWidth="5" 
+                           style="width: 2;
+                           height: 23px;"
+                           strokeWidth="5"
                         />
                      </Button>
                   </div>
                </form>
                <div class="text-center mt-5">
-                  <Message 
+                  <Message
                      v-if="message"
                      severity="error"
                      :sticky=false

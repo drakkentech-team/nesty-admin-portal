@@ -1,18 +1,16 @@
 <script setup>
-import { onMounted, ref } from 'vue';
-import { fetchGroupLifeCycleLogs } from "../api/groupLifeCycleLog";
-import { FilterMatchMode } from "primevue/api";
+import {onMounted, ref} from 'vue';
+import {fetchGroupLifeCycleLogs} from "@/api/groupLifeCycleLog";
+import {FilterMatchMode} from "primevue/api";
 
 
-
-   const logs = ref([]);
+const logs = ref([]);
    const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
    });
 
    const fetchLogs = async () => {
-      const data = await fetchGroupLifeCycleLogs();
-      logs.value = data;
+     logs.value = await fetchGroupLifeCycleLogs();
    }
 
    onMounted(() => {
@@ -24,6 +22,14 @@ import { FilterMatchMode } from "primevue/api";
    <Card>
       <template #title>Group Life Cycle Log</template>
       <template #content>
+         <div class="flex justify-content-end my-3">
+            <IconField iconPosition="left">
+               <InputIcon>
+                  <i class="pi pi-search" />
+               </InputIcon>
+               <InputText v-model="filters['global'].value" placeholder="Search" />
+            </IconField>
+         </div>
          <DataTable
             :value="logs"
             tableStyle="min-width: 50rem"
@@ -34,21 +40,11 @@ import { FilterMatchMode } from "primevue/api";
             v-model:filters="filters"
             :globalFilterFields="['date', 'group_admin', 'group_name', 'action', 'reason']"
          >
-            <template #header>
-               <div class="flex justify-content-end">
-                  <IconField iconPosition="left">
-                     <InputIcon>
-                        <i class="pi pi-search" />
-                     </InputIcon>
-                     <InputText v-model="filters['global'].value" placeholder="Search" />
-                  </IconField>
-               </div>
-            </template>
-            <Column field="date" header="Edit Date" sortable></Column>
-            <Column field="group_admin" header="Group Admin" sortable></Column>
+            <Column field="date" header="Date" sortable></Column>
+            <Column field="group_admin" header="Performed by" sortable></Column>
             <Column field="group_name" header="Group Name" sortable></Column>
-            <Column field="action" header="Action Taken" sortable></Column>
-            <Column field="reason" header="Reason" sortable></Column>
+            <Column field="action" header="Action" sortable></Column>
+            <Column field="reason" header="Reason for Action" sortable></Column>
          </DataTable>
       </template>
    </Card>

@@ -2,8 +2,9 @@
    import { computed, defineAsyncComponent, onBeforeMount, onMounted, ref, watch } from "vue";
    import { FilterMatchMode } from "primevue/api";
    import { useDialog } from "primevue/usedialog";
+   import { fetchModerationReports } from "@/api/moderation";
    import { storeToRefs } from "pinia";
-   import { useModerationStore } from "../stores/moderationStore";
+   import { useModerationStore } from "@/stores/moderationStore";
 
 
    const dynamicView = defineAsyncComponent(() => import("../views/ModerationView.vue"));
@@ -11,7 +12,6 @@
    const store = useModerationStore();
    const { reports, currentReportSid } = storeToRefs(store);
    const { fetchReports } = store;
-   
    const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
       moderation_status: { value: null, matchMode: FilterMatchMode.IN }
@@ -71,13 +71,14 @@
                <DataTable
                   :value="reports"
                   tableStyle="min-width: 50rem"
+                  data-key="moderation_sid"
                   paginator
                   :rows="5"
                   :rowsPerPageOptions="[5, 10, 20, 50]"
+                  selectionMode="single"
                   removableSort
                   v-model:filters="filters"
-                  :globalFilterFields="['date_reported', 'reporting_user', 'reported_user', 'reason_for_report', 'report_type',
-                     'group', 'date_posted', 'moderation_status'
+                  :globalFilterFields="[
                   ]"
                   filterDisplay="menu"
                   @row-click="moderate"

@@ -1,18 +1,17 @@
 <script setup>
-   
-   import { ref, onMounted, vModelCheckbox } from 'vue';
-   import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser ,deleteAdminPortalUser} from '../api/adminPortalUsers';
+
+import {ref, onMounted, computed} from 'vue';
+   import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser ,deleteAdminPortalUser} from '@/api/adminPortalUsers';
    import { useToast } from "primevue/usetoast";
-   import ConfirmationDialogClose from '../components/ConfirmationDialogClose.vue';
    import ConfirmationDialog from '../components/ConfirmationDialog.vue'
+   import {FilterMatchMode} from "primevue/api";
 
 
    const users = ref([]);
-   const user = ref(null);
+   const user = ref();
    const addUsersDialog = ref(false);
    const editDialog = ref(false);
    const saved = ref(false);
-   const spinner = ref(false);
    const toast = useToast();
    const confirmationDialog = ref(false);
    const confirmationDialogClose = ref(false);
@@ -20,9 +19,9 @@
    const confirmationDialogBody = ref('Please confirm to proceed.');
    const callback = ref()
 
-   components:['ConfirmationDialogClose', 'ConfirmationDialog']
-
-
+   const confirmLabel = ref('Yes');
+   const rejectLabel = ref('No');
+   const confirmIcon = ref('pi pi-question');
 
    onMounted(() => {
       fetchAdminPortalUsers().then((data) => {
@@ -42,45 +41,69 @@
       return emailPattern.test(email);
     }
 
+   const validationErrors = ref({
+     email: null,
+   });
+
+   const validateCreateForm = () => {
+     let isValid = true;
+     // Reset validation errors
+     validationErrors.value = {
+       email : null,
+     };
+
+
+     // Validate province
+     if (!usersForm.value.email) {
+       validationErrors.value.email = 'Email is required.';
+       isValid = false;
+     } else if (!isValidEmail(usersForm.value.email)) {
+       validationErrors.value.email = 'Invalid Email.';
+       isValid = false;
+     }
+     return isValid;
+   };
+
    const editUser= async ()=>{
-      
-      try {
-         
-         const payload ={
-            email: user.value.email,
-            password: user.value.password,
-            is_admin: (usersForm.value.is_admin)? 1:0,
-            is_active : 1
+
+
+     if(validateCreateForm(user.value.email)) {
+
+       try {
+
+         const payload = {
+           email: user.value.email,
+           password: user.value.password,
+           is_admin: (usersForm.value.is_admin) ? 1 : 0,
+           is_active: 1
          }
 
+         await updateAdminPortalUser(user.value['sid'], payload);
+         users.value = await fetchAdminPortalUsers();
 
-         await updateAdminPortalUser(user.value['sid'],payload);
-         const data = await fetchAdminPortalUsers();
-         users.value = data;
+         confirmationDialogTitle.value = "Deleted successfully!";
+         confirmationDialog.value = false;
+         confirmationDialogClose.value= true;
 
-         toast.add({ severity: 'success', summary: 'Success', detail: 'User Updated!!!', life: 3000 });
-      } 
-      catch (error) {
-        console.error("Error in saveUser:", error);
-        //confirmationDialogClose.value= true;
-        //confirmationDialogTitle.value = "Error. Please try again!";
-        toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
-      } finally {
-        
-         //confirmationDialogTitle.value = "Deleted successfully!";
-         //confirmationDialog.value = false;
+         toast.add({severity: 'success', summary: 'Success', detail: 'User Updated!!!', life: 3000});
+       } catch (error) {
+         console.error("Error in saveUser:", error);
          //confirmationDialogClose.value= true;
-         spinner.value = false;
-      }
+         //confirmationDialogTitle.value = "Error. Please try again!";
+         toast.add({severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000});
+       } finally {
 
+
+
+       }
+     }
    }
 
-
-   const confirmEditUser = (data) => {
-      user.value = {...data};
-      user.value.is_admin = (data.is_admin===1)? true:false;
+   const confirmEditUser = (event) => {
+      user.value = {...event.data}
+      user.value.is_admin = (user.value.is_admin===1);
       editDialog.value = true;
-      
+
    };
 
    const saveEditUser = () => {
@@ -89,7 +112,7 @@
       confirmationDialogBody.value = "Are you Sure you want to update user?";
       callback.value = editUser;
       confirmationDialog.value= true;
-   
+
    };
 
    const confirmDeleteUser=(data)=>{
@@ -98,13 +121,13 @@
       confirmationDialogBody.value = "Are you Sure you want to delete?";
       callback.value = deleteUser;
       confirmationDialog.value= true;
-   
+
    }
 
    const deleteUser=async()=>{
-      console.log(user.value);
+
       try {
-         
+
          const payload ={
             email: user.value.email,
             password: "",
@@ -112,58 +135,66 @@
          }
 
          await deleteAdminPortalUser(user.value['sid'],payload);
-            const data = await fetchAdminPortalUsers();
-            users.value = data;
-
+            users.value= await fetchAdminPortalUsers();
 
          toast.add({ severity: 'success', summary: 'Success', detail: 'User Deleted!!!', life: 3000 });
          confirmationDialogTitle.value = "Deleted successfully!";
-         confirmationDialog.value = false;
+         confirmationDialog.value = true;
+         confirmIcon.value = "pi pi-trash" ;
          confirmationDialogClose.value= true;
-      } 
+
+      }
       catch (error) {
         console.error("Error in saveUser:", error);
         //confirmationDialogClose.value= true;
         //confirmationDialogTitle.value = "Error. Please try again!";
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
       } finally {
-         
-         spinner.value = false;
       }
 
    }
 
    const confirmSaveUser = () => {
-      //confirmationDialog.value= true;
-      //callback.value = saveUser;
-      saveUser()
+
+     if(validateCreateForm()){
+       saveUser()
+     }else{
+       toast.add({ severity: 'error', summary: 'Validation Error', detail: 'Please check the form fields.', life: 3000 });
+     }
+
    }
 
-   const saveUser = async() => {
+
+
+
+const saveUser = async() => {
         try {
          await createAdminPortalUser({
             email: usersForm.value.email,
             password: usersForm.value.password,
             is_admin: usersForm.value.is_admin,
          });
-         console.log(usersForm.value);
-         const data = await fetchAdminPortalUsers();
-         users.value = data;
 
-         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created!!!', life: 3000 });
-      } 
+          users.value = await fetchAdminPortalUsers();
+      }
       catch (error) {
         console.error("Error in saveUser:", error);
         //confirmationDialogClose.value= true;
         //confirmationDialogTitle.value = "Error Please try again!";
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
-      } 
+      }
       finally {
         spinner.value = false;
         addUsersDialog.value = false;
-        
-        //confirmationDialogClose.value= true;
-        //confirmationDialogTitle.value = "User Created successfully!";
+
+
+        confirmLabel.value = "Close";
+         callback.value = ()=>{
+            confirmationDialog.value = false;
+         }
+         confirmationDialog.value = true;
+         confirmationDialogTitle.value = "User Created successfully!";
+         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created!!!', life: 3000 })
       }
    };
 
@@ -172,73 +203,98 @@
       saved.value = false;
    };
 
+   const filters = ref({
+     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+   });
+
+const isFiltersEnabled = computed(() => {
+  return filters.value['global'].value || filters.value['moderation_status'].value;
+})
+
 </script>
 
 <template>
 	<div class="p-grid">
 		<div class="p-col-12">
 			<Card>
-            <template #title> 
-            
+            <template #title>
+
                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span>User Management</span>
-                  <Button 
-                     label="Create User" 
-                     icon="pi pi-plus" 
-                     severity="info" 
+                  <span>User management > Portal Users</span>
+                  <Button
+                     label="Create User"
+                     icon="pi pi-plus"
+                     severity="info"
                      @click="addUsersDialog=true"
                   />
                </div>
-            
+
             </template>
                <template #content>
-                  <DataTable 
+                  <DataTable
                      :value="users"
-                     paginator :rows="5" 
+                     paginator :rows="5"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
+                     v-model:filters="filters"
+                     :globalFilterFields="['email', 'group_admin', 'group_name', 'action', 'reason']"
+                     data-key="sid"
+                     selection-mode="single"
+                     @rowClick="confirmEditUser"
+
                   >
-                     
+                    <template #header>
+                      <div class="flex justify-content-end">
+                        <IconField iconPosition="left">
+                          <InputIcon>
+                            <i class="pi pi-search" />
+                          </InputIcon>
+                          <InputText v-model="filters['global'].value" placeholder="Search" />
+                        </IconField>
+                      </div>
+                    </template>
+
                      <Column field="email" header="Email"></Column>
                      <Column field="is_admin" header="User Role">
 
                         <template #body="slotProps">
-                           {{ (slotProps.data.is_admin==1)? 'Admin': 'Standard' }}
+                           {{ (slotProps.data.is_admin===1)? 'Admin': 'Standard' }}
                         </template>
-                     
+
                      </Column>
                      <Column field="last_login" header="Last Login"></Column>
-                    
+
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">
-                           <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="confirmEditUser(slotProps.data)" />
                            <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteUser(slotProps.data)" />
                         </template>
                      </Column>
                   </DataTable>
 
-               
+
 
                   <Dialog :dismissableMask="true" v-model:visible="addUsersDialog" :style="{width: '450px'}" header="Create User" :modal="true" class="p-fluid">
                      <div class="formgrid grid">
                         <div class="field col">
                            <label for="email" class="bold-label">Email</label>
                            <InputText id="email" v-model.trim="usersForm.email"  autofocus :class="{'p-invalid':  !isValidEmail(usersForm.email)}" />
-                           <small class="p-error" v-if=" !isValidEmail(usersForm.email)">email is required.</small>
+                          <template v-if="validationErrors.email">
+                            <small style="color: red">{{ validationErrors.email }}</small>
+                          </template>
                         </div>
-            
+
                         <div class="field col-12">
                            <label for="password" class="bold-label">Password</label>
                            <Password id="password"  v-model.trim="usersForm.password" toggleMask required autofocus :class="{'p-invalid': saved && !usersForm.password}" />
                            <small class="p-error" v-if="saved && !usersForm.password">Password is required.</small>
                         </div>
-                        
+
                            <div class="field col flex align-items-center justify-center">
                               <label for="admin" class="bold-label mr-3">Admin</label>
                               <Checkbox id="admin" type v-model="usersForm.is_admin" :binary="true"  autofocus  />
                            </div>
                      </div>
-                     
+
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="addUsersDialog=false"/>
                         <Button label="Save" icon="pi pi-check" text @click="confirmSaveUser" />
@@ -251,19 +307,20 @@
                         <div class="field col">
                            <label for="email" class="bold-label">Email</label>
                            <InputText disabled id="email" v-model.trim="user.email" required autofocus  />
+                          <small style="color: red">{{ validationErrors.email}}</small>
                         </div>
-            
+
                         <div class="field col-12">
                            <label for="password" class="bold-label">Current Password</label>
-                           <Password id="password" type v-model.trim="user.current_password" required toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
+                           <Password id="password" type="password" v-model.trim="user.current_password" required toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
                            <small class="p-error" v-if="saved && !user.password">Password is required.</small>
                         </div>
                         <div class="field col-12">
                            <label for="password" class="bold-label">New Password</label>
                            <Password id="password" v-model.trim="user.password" required toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
-                           <small class="p-error" v-if="!user.password == user.current_password">Password is required.</small>
+                           <small class="p-error" v-if="!user.password === user.current_password">Password is required.</small>
                         </div>
-                        
+
                            <div class="field col flex align-items-center justify-center">
                               <label for="admin" class="bold-label mr-4">Admin </label>
                               <Checkbox id="admin" type v-model="user.is_admin" :binary="true"  autofocus  />
@@ -281,7 +338,7 @@
 		</div>
 	</div>
 
-   <ConfirmationDialogClose :title="confirmationDialogTitle" :show="confirmationDialogClose" @confirm ="confirmationDialogClose=false"/>
-   <ConfirmationDialog :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
+
+   <ConfirmationDialog v-if="confirmationDialog" :twoButton="!confirmationDialogClose" :confirmLabel="confirmLabel" :rejectLabel="rejectLabel" :icon ="confirmIcon" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 

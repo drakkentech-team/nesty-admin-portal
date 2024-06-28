@@ -5,7 +5,7 @@
         <transition name="layout-sidebar">
             <div :class="sidebarClass" @click="onSidebarClick" v-show="isSidebarVisible()">
                 <div class="layout-logo">
-                    <router-link to="/notifications">
+                    <router-link to="/private-messages">
                         <img alt="Logo" src="/img/nesty-bird.png" style="height:100px; width:100px"/><br>
                     </router-link>
                 </div>
@@ -36,7 +36,7 @@ import { storeToRefs } from "pinia";
 
 export default {
    mounted() {
-        const store = useStore();
+        //const store = useStore();
     },
     data() {
         const { openStatusCount } = storeToRefs(useModerationStore());
@@ -47,19 +47,17 @@ export default {
             overlayMenuActive: false,
             mobileMenuActive: false,
             menu : [
-               {label: 'Private Messages', icon: 'pi pi-fw pi-send', to: 'notifications'},
-               {label: 'Moderation', icon: 'pi pi-fw pi-eraser', to: 'moderation', badge: openStatusCount},
-               {label: 'Manage Groups', icon: 'pi pi-fw pi-cart-plus', to: 'products'},
-               {label: 'User Management', icon: 'pi pi-fw pi-users',
+               {label: 'Private Messages', icon: 'pi pi-fw pi-send', to: 'private-messages'},
+               {label: 'Moderation', icon: 'pi pi-fw pi-eraser', to: 'moderation'},
+               {label: 'Manage Groups', icon: 'pi pi-fw pi-users', to: 'manage-groups'},
+               {label: 'User Management', icon: 'pi pi-fw pi-user',
                   items:[
                      {label: 'App Users', icon: 'pi pi-fw pi-phone', to: 'mobile-app-users'},
                      {label: 'Admin Portal Users', icon: 'pi pi-fw pi-user', to: 'admin-portal-users'},
                   ]
                },
-               {label: 'News', icon: 'pi pi-fw pi-book', to: 'userView'},
                {label: 'Group Life Cycle Log', icon: 'pi pi-list', to: 'group-life-cycle-log'},
-               /*	
-               {label: 'Payment Account', icon: 'pi pi-fw pi-wallet', to: 'payment-account'},*/	
+
             ]
         }
     },
