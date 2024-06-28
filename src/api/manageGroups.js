@@ -14,7 +14,6 @@ export const fetchGroups = async () => {
           }
        });
 
-       console.log(response.data);
        return response.data;
     }
     catch (error) {
@@ -26,9 +25,8 @@ export const fetchGroups = async () => {
 
 export const createGroup = async (payload) => {
 
-    console.log("Create group!!!");
-    /*try{
-        await axios.post(`${HOST}/create-web-user`, payload, {
+    try{
+        await axios.post(`${HOST}/web/create-group`, payload, {
             headers: {
                 'Authorization': `Bearer ${BEARER_TOKEN}`,
                 'Content-Type': 'application/json',
@@ -41,7 +39,49 @@ export const createGroup = async (payload) => {
     catch (error) {
         console.error("Error creating admin portal user:", error);
         throw error;
-    }*/
+    }
 };
+
+
+export const editGroup = async (groupID,payload) => {
+
+    try{
+        await axios.post(`${HOST}/web/edit-group/${groupID}`, payload, {
+            headers: {
+                'Authorization': `Bearer ${BEARER_TOKEN}`,
+                'Content-Type': 'application/json',
+                'app-id': 1
+            },
+
+        });
+        return ("Successfully created admin portal user")
+    }
+    catch (error) {
+        console.error("Error creating admin portal user:", error);
+        throw error;
+    }
+};
+
+
+export const getGroupInfo = async (groupID) => {
+
+    try {
+        const response = await axios.get(`${HOST}/web/get-group/${groupID}`, {
+            headers: {
+                'Authorization': `Bearer ${BEARER_TOKEN}`,
+                'Content-Type': 'application/json',
+                'app-id': 1
+            }
+        });
+
+        return response.data;
+    }
+    catch (error) {
+        console.error("Error retrieving mobile user data:", error);
+        throw error;
+    }
+
+};
+
 
 
