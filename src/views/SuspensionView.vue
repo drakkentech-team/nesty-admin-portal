@@ -77,11 +77,11 @@
                <Button label="Cancel" severity="secondary" @click="closeDialog"></Button>
             </div>
          </div>
-         <div class="col-3">
+         <!-- <div class="col-3">
             <div class="flex justify-content-end">
                <Button label="Ban" severity="danger" @click="openConfirmBanDialog"></Button>
             </div>
-         </div>
+         </div> -->
       </div>
    </Dialog>
 
