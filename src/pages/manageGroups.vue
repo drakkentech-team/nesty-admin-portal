@@ -1,7 +1,6 @@
 <script setup>
    import {onMounted, ref,defineAsyncComponent} from 'vue';
    import { useConfirm } from "primevue/useconfirm";
-   import ConfirmationDialog from '../components/ConfirmationDialog.vue'
    import { useToast } from "primevue/usetoast";
    import {fetchGroups} from "@/api/manageGroups";
 
@@ -12,8 +11,7 @@
 
    const isSearch =  ref(false);
 
-   const confirmLabel = ref('Yes');
-   const rejectLabel = ref('No');
+
 
 
 
@@ -22,15 +20,9 @@
   const confirm = useConfirm();
 
 
-   const confirmationDialog = ref(false);
-   const confirmationDialogClose = ref(false);
-   const confirmationDialogTitle = ref('Are you sure?');
-   const confirmationDialogBody = ref('Please confirm to proceed.');
-   const callback = ref()
-
    const searchDialog = ref(false);
    const newDialog = ref(false);
-   const deleteDialog = ref(false);
+
    const validationErrors = ref({
      group_name: null,
      province: null,
@@ -258,35 +250,8 @@ const searchGroup= async()=>{
 }
 
 
-const group= ref();
 
-const confirmDeleteGroup = (currGroup)=>{
-  confirmationDialogTitle.value = "Delete Group";
-  confirmationDialogBody.value = "Are you sure you want to delete?";
-  callback.value = getReasonForDeleting;
-  confirmationDialog.value= true;
 
-  group.value = currGroup;
-  group.value['reasons'] = '';
-}
-
-const deleteGroup=async()=>{
-  try {
-
-    deleteDialog.value = false;
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Deleted Group', life: 3000 });
-
-  }
-  catch (error) {
-    toast.add({ severity: 'error', summary: 'Danger', detail: 'Error  Searching, Please try again!!!', life: 3000 });
-  } finally {
-
-  }
-}
-
-const getReasonForDeleting=()=>{
-  deleteDialog.value = true;
-}
 
 const getSeverity = (status) => {
     switch (status) {
@@ -366,11 +331,6 @@ onMounted(() => {
                       </template>
 
                     </Column>
-                     <Column header="Actions" :exportable="false" style="min-width:8rem">
-                        <template #body="slotProps">
-                          <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteGroup(slotProps.data)" />
-                        </template>
-                     </Column>
                   </DataTable>
 
                   <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '670px'}" header="Advanced Search" :modal="true" class="p-fluid">
@@ -405,17 +365,6 @@ onMounted(() => {
                      </template>
                </Dialog>
 
-               <Dialog v-model:visible="deleteDialog" :style="{}" header="Delete Group" :modal="true" class="p-fluid">
-
-
-                  <div class="field col-12">
-                    <Textarea id="description" placeholder="Reasons For Deleting" v-model="group.reasons" autoResize rows="5" cols="30" />
-                  </div>
-
-                     <template #footer>
-                        <Button label="Save" icon="pi pi-check" text @click="deleteGroup" />
-                     </template>
-               </Dialog>
 
 
                <Dialog :dismissableMask="true" v-model:visible="newDialog" :style="{}" header="Create Group" :modal="true" class="p-fluid">
@@ -491,6 +440,5 @@ onMounted(() => {
 	</div>
 
   <DynamicDialog />
-  <ConfirmationDialog :twoButton="!confirmationDialogClose" :confirmLabel="confirmLabel" :rejectLabel="rejectLabel" :icon ="'pi pi-question'" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 

@@ -1,6 +1,7 @@
 <script setup>
 import {  ref, onMounted ,inject} from 'vue';
 import { useToast } from "primevue/usetoast";
+import ConfirmationDialog from "@/components/ConfirmationDialog.vue";
 
 
 const toast = useToast();
@@ -53,6 +54,39 @@ const options = ref({
 
 })
 
+const confirmationDialog = ref(false);
+const confirmationDialogClose = ref(false);
+const confirmationDialogTitle = ref('Are you sure?');
+const confirmationDialogBody = ref('Please confirm to proceed.');
+const callback = ref()
+const deleteDialog = ref(false);
+
+const confirmDeleteGroup = ()=>{
+  confirmationDialogTitle.value = "Delete Group";
+  confirmationDialogBody.value = "Are you sure you want to delete?";
+  callback.value = getReasonForDeleting;
+  confirmationDialog.value= true;
+}
+
+const getReasonForDeleting=()=>{
+  deleteDialog.value = true;
+}
+
+
+const deleteGroup=async()=>{
+  try {
+
+    deleteDialog.value = false;
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Deleted Group', life: 3000 });
+    closeDialog();
+  }
+  catch (error) {
+    toast.add({ severity: 'error', summary: 'Danger', detail: 'Error  Searching, Please try again!!!', life: 3000 });
+  } finally {
+
+  }
+}
+
 
 
 
@@ -60,7 +94,11 @@ const options = ref({
 
 const dialogRef = inject('dialogRef');
 
-const user = ref(
+const closeDialog = () => {
+  dialogRef.value.close();
+}
+
+const group = ref(
     {
       first_name: '',
       last_name: '',
@@ -140,17 +178,17 @@ onMounted(() => {
 
       <div class="grid grid-cols-3 gap-4">
         <div class="col">
-          <span><b>Group Name : </b>  {{user.first_name}}</span>
-          <InputText :disabled="!editable" id="group_name" placeholder="Enter group name" v-model="user.group_name" aria-describedby="group-help" />
+          <span><b>Group Name : </b>  {{group.first_name}}</span>
+          <InputText :disabled="!editable" id="group_name" placeholder="Enter group name" v-model="group.group_name" aria-describedby="group-help" />
         </div>
         <div class="col" >
-          <span><b>Number of Members : </b>  {{user.gender}}</span>
-          <InputText :disabled="!editable" id="group_name" placeholder="Enter Number of Member" v-model="user.group_name" aria-describedby="group-help" />
+          <span><b>Number of Members : </b>  {{group.gender}}</span>
+          <InputText :disabled="!editable" id="group_name" placeholder="Enter Number of Member" v-model="group.group_name" aria-describedby="group-help" />
         </div>
 
         <div class="col" >
           <span><b>Created : </b> </span>
-          <InputText disabled id="date_created" placeholder="Enter Date Created" v-model="user.date_name" aria-describedby="group-help" />
+          <InputText disabled id="date_created" placeholder="Enter Date Created" v-model="group.date_name" aria-describedby="group-help" />
 
         </div>
 
@@ -160,15 +198,18 @@ onMounted(() => {
 
     <div>
       <span><b>Province : </b></span>
-      <Dropdown :disabled="!editable" id="province" v-model="user.province" :options="options.province" optionLabel="name" placeholder="Select a Province" />
+      <Dropdown :disabled="!editable" id="province" v-model="group.province" :options="options.province" optionLabel="name" placeholder="Select a Province" />
     </div>
     <div class="my-5">
       <span><b>Region : </b></span>
-      <Dropdown :disabled="!editable" id="region" v-model="user.region" :options="options.region" optionLabel="name" placeholder="Select a Religion"  />
+      <Dropdown :disabled="!editable" id="region" v-model="group.region" :options="options.region" optionLabel="name" placeholder="Select a Religion"  />
     </div>
 
     <div class="flex justify-content-center m-5">
-      <Button v-if="editable" label="Save" icon="pi pi-check" iconPos="right" @click="submitNewGroupDetails" />
+      <Button v-if="!editable" severity="danger"   label="Delete Group" icon="pi pi-trash" iconPos="right" @click="confirmDeleteGroup" />
+      <Button class="m-2" v-if="editable" severity="danger" label="Cancel" icon="pi pi-times" iconPos="right" @click="editable=false" />
+      <Button class="m-2" v-if="editable" label="Save" icon="pi pi-check" iconPos="right" @click="submitNewGroupDetails" />
+
     </div>
     <Divider/>
 
@@ -180,6 +221,21 @@ onMounted(() => {
       <Column field="child_age_group"  sortable header="Child Age Group"></Column>
     </DataTable>
   </div>
+
+  <Dialog v-model:visible="deleteDialog" :style="{}" header="Delete Group" :modal="true" class="p-fluid">
+
+
+    <div class="field col-12">
+      <Textarea id="description" placeholder="Reasons For Deleting" v-model="group.reasons" autoResize rows="5" cols="30" />
+    </div>
+
+    <template #footer>
+      <Button label="Save" icon="pi pi-check" text @click="deleteGroup" />
+    </template>
+  </Dialog>
+
+  <ConfirmationDialog :twoButton="!confirmationDialogClose" :confirmLabel="confirmLabel" :rejectLabel="rejectLabel" :icon ="'pi pi-question'" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
+
 </template>
 
 
