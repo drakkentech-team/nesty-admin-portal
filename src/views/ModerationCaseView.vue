@@ -6,7 +6,7 @@
    import SuspensionView from "./SuspensionView.vue";
    import MessageReportedUser from "./MessageReportedUser.vue";
    import DeleteReportedContent from "./DeleteReportedContent.vue";
-   import { updateStatus } from "../api/moderation";
+   import { suspendBanUser, updateStatus } from "../api/moderation";
    import { useModerationStore } from "../stores/moderationStore";
 
 
@@ -14,14 +14,19 @@
    const { fetchReports } = useModerationStore();
 
    const statuses = ["Open", "In Progress", "Resolved"];
-   const overruleConfirmationMessage = "Are you sure you want to OVERRULE and IGNORE the reported post?";
-   const showOverruleConfirmation = ref(false);
+   const ignoreConfirmationMessage = "Are you sure you want to OVERRULE and IGNORE the reported post?";
+   const showIgnoreConfirmation = ref(false);
    const showSuspendDialog = ref(false);
    const showMessageDialog = ref(false);
    const showDeleteDialog = ref(false);
-   const showConfirmedDialog = ref(false);
-   const overruleConfirmedMessage = "Reported post Ignored";
+   const ignoreConfirmedMessage = "Reported post Ignored";
    const buttonStyle = "col-12 mb-3 justify-content-center";
+   const showBanConfirmation = ref(false);
+   const confirmDialogTitle = ref('');
+   const confirmDialogMessage = ref('');
+   const showIgnoreConfirmed = ref(false);
+   const showBanConfirmed = ref(false);
+   const confirmedDialogMessage = ref('');
 
    const progressStatus = computed({
       get() {
@@ -32,18 +37,48 @@
       }
    });
 
-   const confirmOverrule = () => {
-      showOverruleConfirmation.value = true;
+   const showConfirmDialog = computed({
+      get() {
+         return showIgnoreConfirmation.value || showBanConfirmation.value;
+      },
+      set(newValue) {
+         if (newValue === false) {
+            showIgnoreConfirmation.value = false;
+            showBanConfirmation.value = false;
+         }
+      }
+   })
+
+   const showConfirmedDialog = computed({
+      get() {
+         return showIgnoreConfirmed.value || showBanConfirmed.value;
+      },
+      set(newValue) {
+         if (newValue === false) {
+            showIgnoreConfirmed.value = false;
+            showBanConfirmed.value = false;
+         }
+      }
+   })
+
+   const confirmIgnore = () => {
+      confirmDialogTitle.value = '';
+      confirmDialogMessage.value = ignoreConfirmationMessage;
+      showIgnoreConfirmation.value = true;
    }
 
    const closeConfirmDialog = () => {
-      showOverruleConfirmation.value = false;
+      showConfirmDialog.value = false;
+      confirmDialogTitle.value = '';
+      confirmDialogMessage.value = '';
    }
 
-   const handleConfirm = async () => {
-      await updateStatus(props.report.moderation_sid, 3);
-      fetchReports();
-      showConfirmedDialog.value = true;
+   const handleConfirm = () => {
+      if (showIgnoreConfirmation.value) {
+         ignorePost();
+      } else if (showBanConfirmation.value) {
+         banUser();
+      }
       closeConfirmDialog();
    }
 
@@ -96,6 +131,28 @@
       }
       fetchReports();
    }
+
+   const confirmBan = () => {
+      confirmDialogTitle.value = `Selected to BAN \n<b>${props.report.reported_user}</b>`;
+      confirmDialogMessage.value = "This action is <b>permanent</b>, are you sure you want to continue?";
+      showBanConfirmation.value = true;
+   }
+
+   const ignorePost = async () => {
+      await updateStatus(props.report.moderation_sid, 3);
+      fetchReports();
+      confirmedDialogMessage.value = ignoreConfirmedMessage;
+      showIgnoreConfirmed.value = true;
+   }
+
+   const banUser = async () => {
+      await suspendBanUser(props.report.reported_user_sid, {
+         "ban": true,
+         "moderation_sid": props.report.moderation_sid
+      });
+      confirmedDialogMessage.value = `<b>${props.report.reported_user}</b> has been BANNED`;
+      showBanConfirmed.value = true;
+   }
 </script>
 
 <template>
@@ -124,8 +181,9 @@
                </ScrollPanel>
             </div>
             <div class="col-3">
-               <Button @click="confirmOverrule" :class="buttonStyle">Overrule</Button>
+               <Button @click="confirmIgnore" :class="buttonStyle">Ignore</Button>
                <Button @click="confirmSuspension" :class="buttonStyle">Suspend Reported User</Button>
+               <Button @click="confirmBan" :class="buttonStyle">Ban Reported User</Button>
                <Button @click="openMessageDialog" :class="buttonStyle">Send Message</Button>
                <Button @click="openDeleteDialog" :class="buttonStyle">Delete</Button>
                <Dropdown v-model="progressStatus" :options="statuses"
@@ -135,9 +193,9 @@
       </div>
    </div>
 
-   <ConfirmationDialog :title="''" :body="overruleConfirmationMessage"
-      :show="showOverruleConfirmation" @close="closeConfirmDialog" @confirm="handleConfirm" />
-   <ConfirmationDialogClose :title="overruleConfirmedMessage" buttonLabel="Return to query"
+   <ConfirmationDialog :title="confirmDialogTitle" :body="confirmDialogMessage"
+      :show="showConfirmDialog" @close="closeConfirmDialog" @confirm="handleConfirm" />
+   <ConfirmationDialogClose :title="confirmedDialogMessage" buttonLabel="Return to query"
       :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
    <SuspensionView :show="showSuspendDialog" @close="closeSuspension"
       :report="report" />
