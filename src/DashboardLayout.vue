@@ -29,6 +29,8 @@ import AppProfile from './AppProfile.vue';
 import AppMenu from './AppMenu.vue';
 import AppFooter from './AppFooter.vue';
 import { useStore } from './stores/store';
+import { useModerationStore } from './stores/moderationStore';
+import { storeToRefs } from "pinia";
 
 
 
@@ -37,6 +39,7 @@ export default {
         //const store = useStore();
     },
     data() {
+        const { openStatusCount } = storeToRefs(useModerationStore());
         return {
             layoutMode: 'static',
             layoutColorMode: 'dark',

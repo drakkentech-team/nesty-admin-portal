@@ -1,48 +1,50 @@
 <script setup>
-   import { defineProps, ref } from "vue";
-   import ConfirmationDialog2 from "../components/ConfirmationDialog2.vue";
-   import ConfirmationDialogClose from "../components/ConfirmationDialogClose.vue"
+   import { computed, defineProps, ref } from "vue";
+   import ConfirmationDialog from "../components/ConfirmationDialog2.vue";
+   import ConfirmationDialogClose from "../components/ConfirmationDialogClose2.vue"
    import { checkProgressStatus } from "../utilities/moderation";
    import SuspensionView from "./SuspensionView.vue";
    import MessageReportedUser from "./MessageReportedUser.vue";
    import DeleteReportedContent from "./DeleteReportedContent.vue";
    import { updateStatus } from "../api/moderation";
    import { useModerationStore } from "../stores/moderationStore";
-   import { storeToRefs } from "pinia";
 
 
    const props = defineProps(["report"]);
-   const { reloadRequired } = storeToRefs(useModerationStore());
+   const { fetchReports } = useModerationStore();
 
    const statuses = ["Open", "In Progress", "Resolved"];
-   const progressStatus = ref(checkProgressStatus(props.report.moderation_status));
-   const overruleConfirmationmessage = "Are you sure you want to OVERRULE and IGNORE the reported post?";
+   const overruleConfirmationMessage = "Are you sure you want to OVERRULE and IGNORE the reported post?";
    const showOverruleConfirmation = ref(false);
    const showSuspendDialog = ref(false);
    const showMessageDialog = ref(false);
    const showDeleteDialog = ref(false);
+   const showConfirmedDialog = ref(false);
+   const overruleConfirmedMessage = "Reported post Ignored";
+   const buttonStyle = "col-12 mb-3 justify-content-center";
 
-   // const checkProgressStatus = () => {
-   //    const reportStatus = props.report.status;
-   //    if (reportStatus === "Open") {
-   //       progressStatus.value = "Open";
-   //    } else if (reportStatus === "Pending") {
-   //       progressStatus.value = "In Progress";
-   //    } else {
-   //       progressStatus.value = "Resolved";
-   //    }
-   // }
+   const progressStatus = computed({
+      get() {
+         return checkProgressStatus(props.report.moderation_status);
+      },
+      set(newStatus) {
+         changeModerationStatus(newStatus);
+      }
+   });
 
    const confirmOverrule = () => {
       showOverruleConfirmation.value = true;
    }
 
-   const handleCancel = () => {
+   const closeConfirmDialog = () => {
       showOverruleConfirmation.value = false;
    }
 
-   const handleConfirm = () => {
-
+   const handleConfirm = async () => {
+      await updateStatus(props.report.moderation_sid, 3);
+      fetchReports();
+      showConfirmedDialog.value = true;
+      closeConfirmDialog();
    }
 
    const confirmSuspension = () => {
@@ -77,33 +79,31 @@
       }
    }
 
-   const changeModerationStatus = async () => {
-      switch (progressStatus.value) {
+   const changeModerationStatus = async (status) => {
+      switch (status) {
          case "Open":
-            await updateStatus(props.report.sid, 1);
+            await updateStatus(props.report.moderation_sid, 1);
             break;
          case "In Progress":
-            await updateStatus(props.report.sid, 2);
+            await updateStatus(props.report.moderation_sid, 2);
             break;
          case "Resolved":
-            await updateStatus(props.report.sid, 3);
+            await updateStatus(props.report.moderation_sid, 4);
             break;
       
          default:
-            await updateStatus(props.report.sid, 1);
+            await updateStatus(props.report.moderation_sid, 1);
       }
-      reloadRequired.value = true;
+      fetchReports();
    }
-
-   // checkProgressStatus();
 </script>
 
 <template>
    <div class="p-grid">
       <div class="p-col-12">
-         <div class="grid">
+         <div class="grid my-3">
             <Panel header="Reported Date" class="col">
-               {{ report.reason_for_report }}
+               {{ report.date_reported }}
             </Panel>
             <Panel header="Reported By" class="col">
                {{ report.reporting_user }}
@@ -116,31 +116,33 @@
             </Panel>
          </div>
 
-         <div class="grid nested-grid + mt-4">
-            <div class="col-8">
+         <div class="grid nested-grid my-3">
+            <div class="col-9">
                <ScrollPanel class="content p-4">
                   <h4 class="font-bold">{{ report.report_type }}</h4>
                   <p>{{ reportedContent() }}</p>
                </ScrollPanel>
             </div>
-            <div class="col-4">
-               <button @click="confirmOverrule" class="col-12 mb-3">Overrule and Ignore</button>
-               <button @click="confirmSuspension" class="col-12 mb-3">Suspend Reported User</button>
-               <button @click="openMessageDialog" class="col-12 mb-3">Send Message</button>
-               <button @click="openDeleteDialog" class="col-12 mb-3">Delete</button>
+            <div class="col-3">
+               <Button @click="confirmOverrule" :class="buttonStyle">Overrule</Button>
+               <Button @click="confirmSuspension" :class="buttonStyle">Suspend Reported User</Button>
+               <Button @click="openMessageDialog" :class="buttonStyle">Send Message</Button>
+               <Button @click="openDeleteDialog" :class="buttonStyle">Delete</Button>
                <Dropdown v-model="progressStatus" :options="statuses"
-                  placeholder="Status" class="col-12" @change="changeModerationStatus" />
+                  placeholder="Status" class="col-12" />
             </div>
          </div>
       </div>
    </div>
 
-   <ConfirmationDialog2 :title="''" :body="overruleConfirmationmessage"
-      :show="showOverruleConfirmation" @cancel="handleCancel" @confirm="handleConfirm" />
-   <!-- <ConfirmationDialogClose :show="showConfirmedDialog" /> -->
-   <SuspensionView :show="showSuspendDialog" :user="report.reported_user" @close="closeSuspension" />
+   <ConfirmationDialog :title="''" :body="overruleConfirmationMessage"
+      :show="showOverruleConfirmation" @close="closeConfirmDialog" @confirm="handleConfirm" />
+   <ConfirmationDialogClose :title="overruleConfirmedMessage" buttonLabel="Return to query"
+      :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
+   <SuspensionView :show="showSuspendDialog" @close="closeSuspension"
+      :report="report" />
    <MessageReportedUser :visible="showMessageDialog"
-      @close="closeMessageDialog" @closeCallback="closeMessageDialog" />
+      @close="closeMessageDialog" />
    <DeleteReportedContent :visible="showDeleteDialog" :report="report" @close="closeDeleteDialog" />
 </template>
 
@@ -150,5 +152,4 @@
       width: auto;
       height: 100%;
    }
-   
 </style>
