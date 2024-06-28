@@ -1,28 +1,27 @@
 <template>
-    <ConfirmDialog group="headless">
-      <template #container="{ message, acceptCallback, rejectCallback }">
+    <Dialog :visible="show" >
+      <template #container="{ closeCallback }">
         <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
           <div class="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
             <i class="pi pi-question text-5xl"></i>
           </div>
-          <span class="font-bold text-2xl block mb-2 mt-4" v-html="title"></span>
+          <span class="text-2xl block mb-2 mt-4" v-html="title"></span>
           <p class="mb-0" v-html="body"></p>
           <div class="flex align-items-center gap-2 mt-4">
-            <Button label="Yes" @click="handleAccept(acceptCallback)"></Button>
-            <Button label="No" outlined @click="handleReject(rejectCallback)"></Button>
+            <Button :label="acceptLabel" @click="handleAccept(); closeCallback"></Button>
+            <Button :label="rejectLabel" outlined @click="handleReject(); closeCallback"></Button>
           </div>
         </div>
       </template>
-    </ConfirmDialog>
+    </Dialog>
   
     <Toast />
   </template>
   
-  <script setup>
+<script setup>
   import { defineProps, defineEmits, watch } from 'vue';
-  import { useConfirm } from "primevue/useconfirm";
   import { useToast } from "primevue/usetoast";
-  
+
   const props = defineProps({
     title: {
       type: String,
@@ -38,7 +37,7 @@
     },
     toasts : {
       type: Boolean,
-      default: true
+      default: false
     },
     acceptDetail : {
       type: String,
@@ -47,50 +46,39 @@
     rejectDetail : {
       type: String,
       default: 'You have rejected'
+    },
+    acceptLabel : {
+      type: String,
+      default: 'Yes'
+    },
+    rejectLabel : {
+      type: String,
+      default: 'No'
     }
   });
-  
-  const emit = defineEmits(['confirm', 'cancel']);
-  
-  const confirm = useConfirm();
+
+  const emit = defineEmits(['confirm', 'cancel', 'close']);
+
   const toast = useToast();
-  
+
   const closeDialog = () => {
-    confirm.close();
+    emit('close');
   };
-  
-  watch(() => props.show, (newValue) => {
-    if (newValue) {
-      requireConfirmation();
-    } else {
-      closeDialog();
-    }
-  });
-  
-  const handleAccept = (acceptCallback) => {
+
+  const handleAccept = () => {
     if (props.toasts) {
       toast.add({ severity: 'info', summary: 'Confirmed', detail: props.acceptDetail, life: 3000 });
     }
     emit('confirm');
     closeDialog();
   };
-  
-  const handleReject = (rejectCallback) => {
+
+  const handleReject = () => {
     if (props.toasts) {
       toast.add({ severity: 'error', summary: 'Rejected', detail: props.rejectDetail, life: 3000 });
     }
     emit('cancel');
     closeDialog();
   };
-  
-  const requireConfirmation = () => {
-    confirm.require({
-      group: 'headless',
-      header: props.title,
-      message: props.body,
-      accept: () => handleAccept(() => {}),
-      reject: () => handleReject(() => {})
-    });
-  };
-  </script>
+</script>
   

@@ -1,22 +1,22 @@
 <script setup>
-   import { inject, onMounted, ref } from "vue";
-   import ConfirmationDialog2 from "../components/ConfirmationDialog2.vue";
-   import ConfirmationDialogClose from "../components/ConfirmationDialogClose.vue"
-   import { useConfirm } from "primevue/useconfirm";
+   import { computed, inject, onMounted, ref } from "vue";
    import ModerationCaseView from "./ModerationCaseView.vue";
    import ModerationReportedView from "./ModerationReportedView.vue";
-   import ModerationReporterView from "./ModerationReporterView.vue"
+   import ModerationReporterView from "./ModerationReporterView.vue";
+   import { getUsersReportHistory } from "../api/moderation";
+   import { storeToRefs } from "pinia";
+   import { useModerationStore } from "../stores/moderationStore";
 
    
-   // components:["ModerationCaseView", "ModerationReportedView", "ModerationReporterView"];
+   const { report } = storeToRefs(useModerationStore());
    
    const dialogRef = inject('dialogRef');
    const mounted = ref(false);
-   const report = ref({});
+   const reportingUserReports = ref([]);
+   const reportedUserReports = ref([]);
 
-   onMounted(() => {
-      report.value = dialogRef.value.data.report;
-      // checkProgressStatus();
+   onMounted(async () => {
+      await fetchUsersReportHistory();
       mounted.value = true;
    })
 
@@ -24,47 +24,29 @@
       dialogRef.value.close();
    }
 
-   // const checkProgressStatus = () => {
-   //    const reportStatus = report.value.status;
-   //    if (reportStatus === "Open") {
-   //       report.value.progressStatus = "Open";
-   //    } else if (reportStatus === "Pending") {
-   //       report.value.progressStatus = "In Progress";
-   //    } else {
-   //       report.value.progressStatus = "Resolved";
-   //    }
-   // }
-
+   const fetchUsersReportHistory = async () => {
+      const reportHistory = await getUsersReportHistory(
+         report.value.reporting_user_sid, report.value.reported_user_sid
+      );
+      reportingUserReports.value = reportHistory.reporting_user;
+      reportedUserReports.value = reportHistory.reported_user;
+   }
 </script>
 
 <template>
-   <div class="p-grid">
-      <div class="p-col-12">
-         <TabView v-if="mounted">
-            <TabPanel header="Case">
-               <ModerationCaseView :report="report" />
-            </TabPanel>
-            <TabPanel header="Reported History">
-               <ModerationReportedView :user="report.reporting_user" />
-            </TabPanel>
-            <TabPanel header="Reporter History">
-               <ModerationReporterView :user="report.reported_user" />
-            </TabPanel>
-         </TabView>
-      </div>
-   </div>
-
-   <ConfirmationDialog2 :title="''" :body="ignoreConfirmationmessage"
-      :show="showIgnoreConfirmation" @cancel="handleCancel" @confirm="handleConfirm" />
-   <ConfirmationDialogClose :show="showConfirmedDialog" />
-
+   <TabView v-if="mounted" style="height: 39vw;">
+      <TabPanel header="Case">
+         <ModerationCaseView :report="report" />
+      </TabPanel>
+      <TabPanel header="Reported History">
+         <ModerationReportedView :reports="reportedUserReports" />
+      </TabPanel>
+      <TabPanel header="Reporter History">
+         <ModerationReporterView :reports="reportingUserReports" />
+      </TabPanel>
+   </TabView>
 </template>
 
 <style scoped>
-   .tst {
-      border: 2px solid black;
-      width: auto;
-      height: 100%;
-   }
    
 </style>

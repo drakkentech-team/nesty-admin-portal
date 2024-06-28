@@ -12,8 +12,7 @@
 
    const isSearch =  ref(false);
 
-   const confirmLabel = ref('Yes');
-   const rejectLabel = ref('No');
+
 
 
 
@@ -22,15 +21,9 @@
   const confirm = useConfirm();
 
 
-   const confirmationDialog = ref(false);
-   const confirmationDialogClose = ref(false);
-   const confirmationDialogTitle = ref('Are you sure?');
-   const confirmationDialogBody = ref('Please confirm to proceed.');
-   const callback = ref()
-
    const searchDialog = ref(false);
    const newDialog = ref(false);
-   const deleteDialog = ref(false);
+
    const validationErrors = ref({
      group_name: null,
      province: null,
@@ -87,7 +80,7 @@
      return isValid;
    };
 
-const createNewGroup= async () => {
+const createGroup = async () => {
 
   if (validateCreateForm()){
     try {
@@ -1303,7 +1296,6 @@ const createForm = ref({
   max_age:100,
   region:'',
   description:'',
-  group_type: ''
 })
 
 const handleViewClick = (event) => {
@@ -1441,10 +1433,19 @@ onMounted(() => {
                      @rowClick="handleViewClick"
 
                   >
-                     <Column field="group_name" sortable header="Group Name"></Column>
-                     <Column field="group_type"  sortable header="Private/Public"></Column>
-                     <Column field="region" sortable header="Region"></Column>
+                     <Column field="name" sortable header="Group Name"></Column>
+                     <Column field="long_description"  sortable header="Private/Public"></Column>
+                     <Column field="suburb" sortable header="Suburb"></Column>
                      <Column field="user_count" sortable header="user_count"></Column>
+                     <Column field="status" sortable header="Group Status">
+                      <template #body="{ data }">
+                        <Tag :value="data.status" :severity="getSeverity(data.status)" />
+                      </template>
+                      <template #option="slotProps">
+                        <Tag :value="slotProps.option" :severity="getSeverity(slotProps.option)" />
+                      </template>
+
+                    </Column>
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">
                           <Button :icon="'pi pi-trash'" outlined rounded  @click="confirmDeleteGroup(slotProps.data)" />
@@ -1484,17 +1485,6 @@ onMounted(() => {
                      </template>
                </Dialog>
 
-               <Dialog v-model:visible="deleteDialog" :style="{}" header="Delete Group" :modal="true" class="p-fluid">
-
-
-                  <div class="field col-12">
-                    <Textarea id="description" placeholder="Reasons For Deleting" v-model="group.reasons" autoResize rows="5" cols="30" />
-                  </div>
-
-                     <template #footer>
-                        <Button label="Save" icon="pi pi-check" text @click="deleteGroup" />
-                     </template>
-               </Dialog>
 
 
                <Dialog :dismissableMask="true" v-model:visible="newDialog" :style="{}" header="Create Group" :modal="true" class="p-fluid">
@@ -1578,6 +1568,5 @@ onMounted(() => {
 	</div>
 
   <DynamicDialog />
-  <ConfirmationDialog :twoButton="!confirmationDialogClose" :confirmLabel="confirmLabel" :rejectLabel="rejectLabel" :icon ="'pi pi-question'" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
 </template>
 
