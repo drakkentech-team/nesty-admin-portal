@@ -37,7 +37,7 @@
    onMounted(() => {
      const params = dialogRef.value.data;
      user.value = params.user;
-     console.log(params.user);
+
      const userID = 0;//todo get user id clicked
 
      fetchUserGroups(userID).then((data) => {
