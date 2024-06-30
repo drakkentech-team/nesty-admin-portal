@@ -12,10 +12,6 @@
    const isSearch =  ref(false);
 
 
-
-
-
-
   const toast = useToast();
   const confirm = useConfirm();
 
@@ -123,7 +119,6 @@ const createNewGroupDetails = async () => {
         accept: () => {
             toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
             addMessage.value = true;
-
         },
         reject: () => {
             toast.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
@@ -1295,6 +1290,7 @@ const createForm = ref({
   max_age:100,
   region:'',
   description:'',
+  group_type:''
 })
 
 const handleViewClick = (event) => {
@@ -1363,7 +1359,6 @@ const clearSearchResults=async ()=>{
 onMounted(() => {
   fetchGroups().then((data) => {
     groupsData.value = data;
-    console.log(data);
   });
 });
 

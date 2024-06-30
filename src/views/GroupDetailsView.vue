@@ -1195,6 +1195,7 @@ const submitNewGroupDetails = async () => {
       group_type_fk: groupData.value.group_type,
       description: "Just a test",
     }
+
     await editGroup(groupID.value, payload)
     toast.add({severity: 'success', summary: 'Success', detail: 'Updated !!!', life: 3000});
 
@@ -1285,7 +1286,7 @@ onMounted(() => {
     <Divider/>
 
     <DataTable :value="users" paginator :rows="5" showGridlines sortMode="multiple" tableStyle="min-width: 50rem">
-      <Column field="user_name"  sortable header="Username"></Column>
+      <Column field="user_username"  sortable header="Username"></Column>
       <Column field="user_email"  sortable header="Email"></Column>
       <Column field="user_mobile_number"  sortable header="Contact Number"></Column>
       <Column field="user_region"  sortable header="Region"></Column>

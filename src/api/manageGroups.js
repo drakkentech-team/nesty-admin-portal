@@ -46,7 +46,7 @@ export const createGroup = async (payload) => {
 export const editGroup = async (groupID,payload) => {
 
     try{
-        await axios.post(`${HOST}/web/edit-group/${groupID}`, payload, {
+        await axios.put(`${HOST}/web/edit-group/${groupID}`, payload, {
             headers: {
                 'Authorization': `Bearer ${BEARER_TOKEN}`,
                 'Content-Type': 'application/json',
