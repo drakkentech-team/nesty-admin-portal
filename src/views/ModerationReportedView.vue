@@ -1,5 +1,5 @@
 <script setup>
-   import { ref, defineProps, onMounted } from "vue";
+import {ref, defineProps, onMounted, watch} from "vue";
    import { checkProgressStatus } from "../utilities/moderation";
 
 
@@ -13,17 +13,25 @@
       });
    }
 
+
+
    onMounted(() => {
       checkProgressStatuses();
-      nameAndSurname.value = props.reports[0].reported_user_name;
-      username.value = props.reports[0].reported_user_username;
+
+     if (props.reports && props.reports.length > 0 && props.reports[0].hasOwnProperty('reported_user_name') && props.reports[0].hasOwnProperty('reported_user_username')) {
+       nameAndSurname.value = props.reports[0].reported_user_name;
+       username.value = props.reports[0].reported_user_username;
+     }
+      //nameAndSurname.value = props.reports[0].reported_user_name;
+      //username.value = props.reports[0].reported_user_username;
    })
 </script>
 
 <template>
    <div class="p-grid my-2">
       <div class="p-col-12">
-         <h5 class="font-semibold ml-3">User: {{ nameAndSurname }} ({{ username }})</h5>
+         <h5 v-if="!reports || reports.length === 0" class="font-semibold ml-3">No Reports</h5>
+         <h5 v-else class="font-semibold ml-3">User: {{ nameAndSurname }} ({{ username }})</h5>
          <DataTable
             :value="reports"
             tableStyle="min-width: 50rem"

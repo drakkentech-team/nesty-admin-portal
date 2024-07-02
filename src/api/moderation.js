@@ -35,7 +35,7 @@ export const suspendBanUser = async (sid, payload) => {
             'app-id': 1
          }
       });
-      return response.status
+
    } catch (error) {
       console.error("Error Suspending/Banning user:", error);
       throw error;

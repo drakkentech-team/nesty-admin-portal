@@ -31,14 +31,19 @@
      user.value = params.user;
 
      const userID = params.user.sid;
-
+     console.log(userID);
 
      fetchUserGroups(userID).then((data) => {
        groups.value = data;
+     }).catch((error) => {
+       console.error("Error fetching user groups:", error);
      });
 
      getUsersReportHistory(0, userID).then((data) => {
        reports.value = data.reported_user;
+       console.log("Reports fetched:", reports.value);
+     }).catch((error) => {
+       console.error("Error fetching user report history:", error);
      });
    });
 
