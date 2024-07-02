@@ -123,7 +123,7 @@
 
             </TabPanel>
         </TabView>
-      <SuspensionView :user="user" :show="showSuspendDialog" @close="showSuspendDialog = false" />
+      <SuspensionView :report="reports" :user="user" :show="showSuspendDialog" @close="showSuspendDialog = false" />
     </div>
 
 
