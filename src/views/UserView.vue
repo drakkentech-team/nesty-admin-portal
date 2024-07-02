@@ -1,11 +1,21 @@
 <script setup>
-   import {  ref, onMounted ,inject} from 'vue';
+import {ref, onMounted, inject, computed} from 'vue';
    import {fetchUserHistory, fetchUserGroups} from '@/api/mobileAppUsers';
    import SuspensionView from "@/views/SuspensionView.vue";
+   import ConfirmationDialog from "@/components/ConfirmationDialog2.vue";
+   import ConfirmationDialogClose from "@/components/ConfirmationDialogClose2.vue";
 
 
    const reports = ref([]);
    const groups = ref([]);
+
+   const confirmDialogTitle = ref('');
+   const confirmDialogMessage = ref('');
+   const showIgnoreConfirmed = ref(false);
+   const showBanConfirmed = ref(false);
+   const confirmedDialogMessage = ref('');
+   const showBanConfirmation = ref(false);
+   const showIgnoreConfirmation = ref(false);
 
 
 
@@ -28,8 +38,48 @@
    const showSuspendDialog = ref(false);
 
 
+const showConfirmDialog = computed({
+  get() {
+    return showIgnoreConfirmation.value || showBanConfirmation.value;
+  },
+  set(newValue) {
+    if (newValue === false) {
+      showIgnoreConfirmation.value = false;
+      showBanConfirmation.value = false;
+    }
+  }
+})
 
-   const suspendUser = () => {
+const closeMessageDialog = () => {
+  showMessageDialog.value = false;
+}
+
+const showConfirmedDialog = computed({
+  get() {
+    return showIgnoreConfirmed.value || showBanConfirmed.value;
+  },
+  set(newValue) {
+    if (newValue === false) {
+      showIgnoreConfirmed.value = false;
+      showBanConfirmed.value = false;
+    }
+  }
+})
+
+const handleConfirm = () => {
+  if (showIgnoreConfirmation.value) {
+    ignorePost();
+  } else if (showBanConfirmation.value) {
+    banUser();
+  }
+  closeConfirmDialog();
+}
+
+
+
+
+
+const suspendUser = () => {
      showSuspendDialog.value = true;
    }
 
@@ -48,6 +98,12 @@
        reports.value = data;
      });
     });
+
+const closeConfirmDialog = () => {
+  showConfirmDialog.value = false;
+  confirmDialogTitle.value = '';
+  confirmDialogMessage.value = '';
+}
 
 
 
@@ -124,6 +180,10 @@
             </TabPanel>
         </TabView>
       <SuspensionView :report="reports" :user="user" :show="showSuspendDialog" @close="showSuspendDialog = false" />
+      <ConfirmationDialog :title="confirmDialogTitle" :body="confirmDialogMessage"
+                          :show="showConfirmDialog" @close="closeConfirmDialog" @confirm="handleConfirm" />
+      <ConfirmationDialogClose :title="confirmedDialogMessage" buttonLabel="Return to query"
+                               :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
     </div>
 
 
