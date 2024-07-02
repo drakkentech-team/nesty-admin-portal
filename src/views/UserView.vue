@@ -1,10 +1,9 @@
 <script setup>
    import {  ref, onMounted ,inject} from 'vue';
-   import { useToast } from "primevue/usetoast";
    import {fetchUserHistory, fetchUserGroups} from '@/api/mobileAppUsers';
    import SuspensionView from "@/views/SuspensionView.vue";
 
-   const toast = useToast();
+
    const reports = ref([]);
    const groups = ref([]);
 
@@ -38,6 +37,7 @@
      const params = dialogRef.value.data;
      user.value = params.user;
      console.log(params.user);
+
      const userID = 0;//todo get user id clicked
 
      fetchUserGroups(userID).then((data) => {

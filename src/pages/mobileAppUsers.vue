@@ -109,7 +109,7 @@ onMounted(() => {
                      <Column sortable  field="first_name" header="Name"></Column>
                      <Column sortable  field="last_name" header="Surname"></Column>
                      <Column field="email" header="Email"></Column>
-                     <Column field="contact" header="Contact"></Column>
+                     <Column field="mobile_number" header="Contact"></Column>
                      <Column field="date_of_birth" header="Date Of Birth"></Column>
                      <Column field="gender" header="Gender"></Column>
                      <Column sortable  field="username" header="User Name"></Column>
