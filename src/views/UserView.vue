@@ -1,24 +1,11 @@
 <script setup>
-import {ref, onMounted, inject, computed} from 'vue';
-   import {fetchUserHistory, fetchUserGroups} from '@/api/mobileAppUsers';
-   import SuspensionView from "@/views/SuspensionView.vue";
-   import ConfirmationDialog from "@/components/ConfirmationDialog2.vue";
-   import ConfirmationDialogClose from "@/components/ConfirmationDialogClose2.vue";
-
+   import {ref, onMounted, inject} from 'vue';
+   import {fetchUserGroups} from '@/api/mobileAppUsers';
+   import ModerationReportedView from "@/views/ModerationReportedView.vue";
+   import {getUsersReportHistory} from "@/api/moderation";
 
    const reports = ref([]);
    const groups = ref([]);
-
-   const confirmDialogTitle = ref('');
-   const confirmDialogMessage = ref('');
-   const showIgnoreConfirmed = ref(false);
-   const showBanConfirmed = ref(false);
-   const confirmedDialogMessage = ref('');
-   const showBanConfirmation = ref(false);
-   const showIgnoreConfirmation = ref(false);
-
-
-
 
    const dialogRef = inject('dialogRef');
 
@@ -35,79 +22,25 @@ import {ref, onMounted, inject, computed} from 'vue';
       }
    );
 
-   const showSuspendDialog = ref(false);
-
-
-const showConfirmDialog = computed({
-  get() {
-    return showIgnoreConfirmation.value || showBanConfirmation.value;
-  },
-  set(newValue) {
-    if (newValue === false) {
-      showIgnoreConfirmation.value = false;
-      showBanConfirmation.value = false;
-    }
-  }
-})
-
-const closeMessageDialog = () => {
-  showMessageDialog.value = false;
-}
-
-const showConfirmedDialog = computed({
-  get() {
-    return showIgnoreConfirmed.value || showBanConfirmed.value;
-  },
-  set(newValue) {
-    if (newValue === false) {
-      showIgnoreConfirmed.value = false;
-      showBanConfirmed.value = false;
-    }
-  }
-})
-
-const handleConfirm = () => {
-  if (showIgnoreConfirmation.value) {
-    ignorePost();
-  } else if (showBanConfirmation.value) {
-    banUser();
-  }
-  closeConfirmDialog();
-}
 
 
 
-
-
-const suspendUser = () => {
-     showSuspendDialog.value = true;
-   }
 
    onMounted(() => {
      const params = dialogRef.value.data;
      user.value = params.user;
-     console.log(params.user);
 
-     const userID = 0;//todo get user id clicked
+     const userID = params.user.sid;
+
 
      fetchUserGroups(userID).then((data) => {
        groups.value = data;
      });
 
-     fetchUserHistory(userID).then((data) => {
-       reports.value = data;
+     getUsersReportHistory(0, userID).then((data) => {
+       reports.value = data.reported_user;
      });
-    });
-
-const closeConfirmDialog = () => {
-  showConfirmDialog.value = false;
-  confirmDialogTitle.value = '';
-  confirmDialogMessage.value = '';
-}
-
-
-
-
+   });
 
 
 
@@ -116,11 +49,6 @@ const closeConfirmDialog = () => {
 
 <template>
     <div class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <div/>
-          <Button icon="pi pi-minus-circle" @click="suspendUser" label="Suspend User" severity="danger"  />
-        </div>
-
         <TabView class="tabview-custom">
             <TabPanel>
                 <template #header>
@@ -138,7 +66,7 @@ const closeConfirmDialog = () => {
                     </div>
                     <div class="col" >
                       <h5><b>Surname</b> : {{user.last_name}}</h5>
-                      <h5><b>Cell</b> : {{user.contact}}</h5>
+                      <h5><b>Cell</b> : {{user.mobile_number}}</h5>
                       <h5><b>Province</b> : {{user.province}}</h5>
                     </div>
                     <div>
@@ -165,25 +93,10 @@ const closeConfirmDialog = () => {
                         <span class="font-bold white-space-nowrap">User History</span>
                     </div>
                 </template>
-
-                <DataTable :value="reports"  paginator sortable :rows="5"  showGridlines tableStyle="min-width: 50rem">
-                    <Column field="date" sortable header="Date"></Column>
-                    <Column field="reported_by"  sortable header="Reported By"></Column>
-                    <Column field="posted_by" sortable header="Posted By"></Column>
-                    <Column field="reason" sortable header="Reason"></Column>
-                    <Column field="type" sortable header="Type"></Column>
-                    <Column field="group" sortable header="Group"></Column>
-                    <Column field="date_posted" sortable header="Date Posted"></Column>
-                    <Column field="status" sortable header="Status"></Column>
-                </DataTable>
-
+                <ModerationReportedView :reports="reports"/>
             </TabPanel>
         </TabView>
-      <SuspensionView :report="reports" :user="user" :show="showSuspendDialog" @close="showSuspendDialog = false" />
-      <ConfirmationDialog :title="confirmDialogTitle" :body="confirmDialogMessage"
-                          :show="showConfirmDialog" @close="closeConfirmDialog" @confirm="handleConfirm" />
-      <ConfirmationDialogClose :title="confirmedDialogMessage" buttonLabel="Return to query"
-                               :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
+
     </div>
 
 

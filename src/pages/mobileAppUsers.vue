@@ -1,16 +1,14 @@
 <script setup>
-import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
+import {ref, onMounted, defineAsyncComponent} from 'vue';
    import { fetchMobileUsers} from '@/api/mobileAppUsers';
    import { useDialog } from 'primevue/usedialog';
    import {FilterMatchMode} from "primevue/api";
    const userView = defineAsyncComponent(() => import('../views/UserView.vue'));
 
    const dialog = useDialog();
-   const selectedUser = ref();
 
 
    const handleRowClick = (event) => {
-      console.log(event.data.value)
       dialog.open(userView, {
          data:{
             user: event.data
@@ -60,10 +58,6 @@ import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
    const filters = ref({
      global: { value: null, matchMode: FilterMatchMode.CONTAINS }
    });
-
-  const isFiltersEnabled = computed(() => {
-    return filters.value['global'].value || filters.value['firt_name'].value;
-  })
 
 
 onMounted(() => {
