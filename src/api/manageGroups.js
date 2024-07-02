@@ -54,10 +54,10 @@ export const editGroup = async (groupID,payload) => {
             },
 
         });
-        return ("Successfully created admin portal user")
+        return ("Successfully edited admin portal user")
     }
     catch (error) {
-        console.error("Error creating admin portal user:", error);
+        console.error("Error editing  admin portal user:", error);
         throw error;
     }
 };

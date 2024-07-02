@@ -1192,7 +1192,7 @@ const submitNewGroupDetails = async () => {
       name: groupData.value.group_name,
       province_fk: groupData.value.province,
       region_fk: groupData.value.region,
-      group_type_fk: groupData.value.group_type,
+      group_type_fk: 3,
       description: "Just a test",
     }
 

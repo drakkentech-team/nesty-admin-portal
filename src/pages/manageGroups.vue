@@ -1310,6 +1310,10 @@ const handleViewClick = (event) => {
       modal: true
     },
     onClose: (options) => {
+
+      fetchGroups().then((data) => {
+        groupsData.value = data;
+      });
     }
   });
 }
