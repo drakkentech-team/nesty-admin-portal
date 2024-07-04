@@ -78,7 +78,8 @@
                   selectionMode="single"
                   removableSort
                   v-model:filters="filters"
-                  :globalFilterFields="[
+                  :globalFilterFields="['date_reported', 'reporting_user', 'reported_user',
+                     'reason_for_report', 'report_type','group', 'date_posted', 'moderation_status'
                   ]"
                   filterDisplay="menu"
                   @row-click="moderate"
