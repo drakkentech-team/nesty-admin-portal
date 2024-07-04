@@ -48,7 +48,7 @@ export default {
             mobileMenuActive: false,
             menu : [
                {label: 'Private Messages', icon: 'pi pi-fw pi-send', to: 'private-messages'},
-               {label: 'Moderation', icon: 'pi pi-fw pi-eraser', to: 'moderation'},
+               {label: 'Moderation', icon: 'pi pi-fw pi-eraser', to: 'moderation', badge: openStatusCount},
                {label: 'Manage Groups', icon: 'pi pi-fw pi-users', to: 'manage-groups'},
                {label: 'User Management', icon: 'pi pi-fw pi-user',
                   items:[
