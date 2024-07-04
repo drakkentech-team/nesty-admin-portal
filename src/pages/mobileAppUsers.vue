@@ -10,7 +10,7 @@ import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
 
 
    const handleRowClick = (event) => {
-      console.log(event.data.value)
+
       dialog.open(userView, {
          data:{
             user: event.data
