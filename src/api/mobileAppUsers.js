@@ -1,32 +1,12 @@
+import axios from "axios";
+
 const API_ENDPOINT = import.meta.env.VITE_LOCAL;
 const BEARER_TOKEN = import.meta.env.VITE_BEARERTOKEN;
 
 export const fetchMobileUsers = async () => {
 
-   return [
-      {
-         first_name: 'John',
-         last_name: 'Doe',
-         email: 'john.doe@example.com',
-         contact: '123-456-7890',
-         date_of_birth: '1990-01-01',
-         gender: 'Male',
-         username: 'johndoe',
-         province: 'California'
-      },
-      {
-         first_name: 'Jane',
-         last_name: 'Doe',
-         email: 'jane.doe@example.com',
-         contact: '987-654-3210',
-         date_of_birth: '1992-05-15',
-         gender: 'Female',
-         username: 'janedoe',
-         province: 'New York'
-      },
-   ];
-   /*try {
-      const response = await axios.get(`${API_ENDPOINT}/get-mobile-app-users`, {
+   try {
+      const response = await axios.get(`${API_ENDPOINT}/web/get-app-users`, {
          headers: {
             'Authorization': `Bearer ${BEARER_TOKEN}`,
             'Content-Type': 'application/json',
@@ -38,7 +18,7 @@ export const fetchMobileUsers = async () => {
    catch (error) {
       console.error("Error retrieving mobile user data:", error);
       throw error;
-   }*/
+   }
 };
 
 

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { ref } from "vue";
 
 const HOST = import.meta.env.VITE_LOCAL;
 const BEARER_TOKEN = import.meta.env.VITE_BEARERTOKEN;
@@ -36,6 +35,7 @@ export const suspendBanUser = async (sid, payload) => {
             'app-id': 1
          }
       });
+
    } catch (error) {
       console.error("Error Suspending/Banning user:", error);
       throw error;
@@ -57,7 +57,7 @@ export const deleteViolation = async (payload) => {
       throw error;
    }
 
-   
+
    // Editing demo data. Uncomment above for db data...
    // if (payload.hasOwnProperty("post_sid")) {
    //    for (let i = 0; i < reports.value.length; i++) {
@@ -125,7 +125,7 @@ export const getUsersReportHistory = async (reporter_sid, reported_sid) => {
 
 
 // DEMO DATA
-/* 
+/*
 const demoReports = ref([
    {
       date_reported: '2024-05-01',

@@ -1,16 +1,14 @@
 <script setup>
-import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
+import {ref, onMounted, defineAsyncComponent} from 'vue';
    import { fetchMobileUsers} from '@/api/mobileAppUsers';
    import { useDialog } from 'primevue/usedialog';
    import {FilterMatchMode} from "primevue/api";
    const userView = defineAsyncComponent(() => import('../views/UserView.vue'));
 
    const dialog = useDialog();
-   const selectedUser = ref();
 
 
    const handleRowClick = (event) => {
-
       dialog.open(userView, {
          data:{
             user: event.data
@@ -61,10 +59,6 @@ import {ref, onMounted, defineAsyncComponent, computed} from 'vue';
      global: { value: null, matchMode: FilterMatchMode.CONTAINS }
    });
 
-  const isFiltersEnabled = computed(() => {
-    return filters.value['global'].value || filters.value['firt_name'].value;
-  })
-
 
 onMounted(() => {
       fetchMobileUsers().then((data) => {
@@ -109,7 +103,7 @@ onMounted(() => {
                      <Column sortable  field="first_name" header="Name"></Column>
                      <Column sortable  field="last_name" header="Surname"></Column>
                      <Column field="email" header="Email"></Column>
-                     <Column field="contact" header="Contact"></Column>
+                     <Column field="mobile_number" header="Contact"></Column>
                      <Column field="date_of_birth" header="Date Of Birth"></Column>
                      <Column field="gender" header="Gender"></Column>
                      <Column sortable  field="username" header="User Name"></Column>

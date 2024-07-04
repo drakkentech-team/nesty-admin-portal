@@ -1,15 +1,11 @@
 <script setup>
-   import {  ref, onMounted ,inject} from 'vue';
-   import { useToast } from "primevue/usetoast";
-   import {fetchUserHistory, fetchUserGroups} from '@/api/mobileAppUsers';
-   import SuspensionView from "@/views/SuspensionView.vue";
+   import {ref, onMounted, inject} from 'vue';
+   import {fetchUserGroups} from '@/api/mobileAppUsers';
+   import ModerationReportedView from "@/views/ModerationReportedView.vue";
+   import {getUsersReportHistory} from "@/api/moderation";
 
-   const toast = useToast();
    const reports = ref([]);
    const groups = ref([]);
-
-
-
 
    const dialogRef = inject('dialogRef');
 
@@ -26,32 +22,30 @@
       }
    );
 
-   const showSuspendDialog = ref(false);
 
 
 
-   const suspendUser = () => {
-     showSuspendDialog.value = true;
-   }
 
    onMounted(() => {
      const params = dialogRef.value.data;
      user.value = params.user;
 
-     const userID = 0;//todo get user id clicked
+     const userID = params.user.sid;
+     console.log(userID);
 
      fetchUserGroups(userID).then((data) => {
        groups.value = data;
+     }).catch((error) => {
+       console.error("Error fetching user groups:", error);
      });
 
-     fetchUserHistory(userID).then((data) => {
-       reports.value = data;
+     getUsersReportHistory(0, userID).then((data) => {
+       reports.value = data.reported_user;
+       console.log("Reports fetched:", reports.value);
+     }).catch((error) => {
+       console.error("Error fetching user report history:", error);
      });
-    });
-
-
-
-
+   });
 
 
 
@@ -60,11 +54,6 @@
 
 <template>
     <div class="card">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <div/>
-          <Button icon="pi pi-minus-circle" @click="suspendUser" label="Suspend User" severity="danger"  />
-        </div>
-
         <TabView class="tabview-custom">
             <TabPanel>
                 <template #header>
@@ -82,7 +71,7 @@
                     </div>
                     <div class="col" >
                       <h5><b>Surname</b> : {{user.last_name}}</h5>
-                      <h5><b>Cell</b> : {{user.contact}}</h5>
+                      <h5><b>Cell</b> : {{user.mobile_number}}</h5>
                       <h5><b>Province</b> : {{user.province}}</h5>
                     </div>
                     <div>
@@ -109,21 +98,10 @@
                         <span class="font-bold white-space-nowrap">User History</span>
                     </div>
                 </template>
-
-                <DataTable :value="reports"  paginator sortable :rows="5"  showGridlines tableStyle="min-width: 50rem">
-                    <Column field="date" sortable header="Date"></Column>
-                    <Column field="reported_by"  sortable header="Reported By"></Column>
-                    <Column field="posted_by" sortable header="Posted By"></Column>
-                    <Column field="reason" sortable header="Reason"></Column>
-                    <Column field="type" sortable header="Type"></Column>
-                    <Column field="group" sortable header="Group"></Column>
-                    <Column field="date_posted" sortable header="Date Posted"></Column>
-                    <Column field="status" sortable header="Status"></Column>
-                </DataTable>
-
+                <ModerationReportedView :reports="reports"/>
             </TabPanel>
         </TabView>
-      <SuspensionView :user="user" :show="showSuspendDialog" @close="showSuspendDialog = false" />
+
     </div>
 
 
