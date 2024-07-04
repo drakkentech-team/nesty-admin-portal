@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-//import { useStore } from '../stores/store';
+import { useStore } from '../stores/store';
 import DashboardLayout from '../DashboardLayout.vue';
 import PlainLayout from '../PlainLayout.vue';
 
@@ -12,6 +12,7 @@ const router = createRouter({
          children: [
            {
              path: '',
+             redirect: '/login',
              component: () => import('../pages/login.vue')
            }
          ]
@@ -97,9 +98,8 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
-   //const user = useStore()
-   //const userIsLoggedIn = user.user ? true : false
-   const userIsLoggedIn =  true;
+   const user = useStore()
+   const userIsLoggedIn = user.user ? true : false
 
 
    if (to.path === '/login' && userIsLoggedIn) {
