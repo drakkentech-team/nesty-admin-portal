@@ -1,27 +1,71 @@
 <script setup>
 
-import {ref, onMounted, computed} from 'vue';
+   import {ref, onMounted, computed} from 'vue';
    import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser ,deleteAdminPortalUser} from '@/api/adminPortalUsers';
    import { useToast } from "primevue/usetoast";
-   import ConfirmationDialog from '../components/ConfirmationDialog.vue'
    import {FilterMatchMode} from "primevue/api";
-
+   import ConfirmationDialog from "../components/ConfirmationDialog2.vue";
+   import ConfirmationDialogClose from "../components/ConfirmationDialogClose2.vue"
 
    const users = ref([]);
    const user = ref();
+
    const addUsersDialog = ref(false);
    const editDialog = ref(false);
    const saved = ref(false);
    const toast = useToast();
-   const confirmationDialog = ref(false);
-   const confirmationDialogClose = ref(false);
-   const confirmationDialogTitle = ref('Are you sure?');
-   const confirmationDialogBody = ref('Please confirm to proceed.');
-   const callback = ref()
 
-   const confirmLabel = ref('Yes');
-   const rejectLabel = ref('No');
-   const confirmIcon = ref('pi pi-question');
+   const showDeleteConfirmation = ref(false);
+   const showIgnoreConfirmation = ref(false);
+
+
+   const confirmDialogTitle = ref('');
+   const confirmDialogMessage = ref('');
+   const confirmedDialogMessage = ref('');
+   const showDeleteConfirmed = ref(false);
+   const showSaveConfirmed = ref(false);
+   const showEditConfirmed = ref(false);
+
+   const handleConfirm = () => {
+     if (showDeleteConfirmation.value) {
+        deleteUser();
+     }
+     closeConfirmDialog();
+   }
+
+
+   const closeConfirmDialog = () => {
+     showConfirmDialog.value = false;
+     confirmDialogTitle.value = '';
+     confirmDialogMessage.value = '';
+   }
+
+   const showConfirmDialog = computed({
+     get() {
+       return showDeleteConfirmation.value
+     },
+     set(newValue) {
+       if (newValue === false) {
+         showIgnoreConfirmation.value = false;
+         showDeleteConfirmation.value = false;
+       }
+     }
+   })
+
+   const showConfirmedDialog = computed({
+     get() {
+       return showDeleteConfirmed.value || showSaveConfirmed.value || showEditConfirmed.value;
+     },
+     set(newValue) {
+       if (newValue === false) {
+         showDeleteConfirmed.value = false;
+         showSaveConfirmed.value = false;
+         showEditConfirmed.value = false;
+       }
+     }
+   })
+
+
 
    onMounted(() => {
       fetchAdminPortalUsers().then((data) => {
@@ -66,63 +110,49 @@ import {ref, onMounted, computed} from 'vue';
 
    const editUser= async ()=>{
 
-
-     if(validateCreateForm(user.value.email)) {
-
        try {
-
          const payload = {
            email: user.value.email,
            password: user.value.password,
            is_admin: (usersForm.value.is_admin) ? 1 : 0,
            is_active: 1
          }
-
          await updateAdminPortalUser(user.value['sid'], payload);
          users.value = await fetchAdminPortalUsers();
 
-         confirmationDialogTitle.value = "Deleted successfully!";
-         confirmationDialog.value = false;
-         confirmationDialogClose.value= true;
-
+         confirmedDialogMessage.value = `<b>${user.value.email}</b> has been UPDATED `;
+         showEditConfirmed.value  = true;
+         editDialog.value = false;
          toast.add({severity: 'success', summary: 'Success', detail: 'User Updated!!!', life: 3000});
+
        } catch (error) {
          console.error("Error in saveUser:", error);
-         //confirmationDialogClose.value= true;
-         //confirmationDialogTitle.value = "Error. Please try again!";
-         toast.add({severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000});
+         toast.add({severity: 'error', summary: 'Danger', detail: 'Error Updating User, Please try again!!!', life: 3000});
        } finally {
 
-
-
        }
-     }
    }
 
-   const confirmEditUser = (event) => {
+   const selectEditUser = (event) => {
       user.value = {...event.data}
       user.value.is_admin = (user.value.is_admin===1);
       editDialog.value = true;
-
    };
 
-   const saveEditUser = () => {
-      editDialog.value = false;
-      confirmationDialogTitle.value = "Update User";
-      confirmationDialogBody.value = "Are you Sure you want to update user?";
-      callback.value = editUser;
-      confirmationDialog.value= true;
+   const confirmEditUser= ()=>{
+      editUser();
+   }
 
-   };
+
 
    const confirmDeleteUser=(data)=>{
-      user.value = {...data}
-      confirmationDialogTitle.value = "Delete User";
-      confirmationDialogBody.value = "Are you Sure you want to delete?";
-      callback.value = deleteUser;
-      confirmationDialog.value= true;
-
+     confirmDialogTitle.value = `Selected to DELETE \n<b>${data.email}</b>`;
+     confirmDialogMessage.value = "This action is <b>permanent</b>, are you sure you want to continue?";
+     user.value = data;
+     showDeleteConfirmation.value = true;
    }
+
+
 
    const deleteUser=async()=>{
 
@@ -138,16 +168,13 @@ import {ref, onMounted, computed} from 'vue';
             users.value= await fetchAdminPortalUsers();
 
          toast.add({ severity: 'success', summary: 'Success', detail: 'User Deleted!!!', life: 3000 });
-         confirmationDialogTitle.value = "Deleted successfully!";
-         confirmationDialog.value = true;
-         confirmIcon.value = "pi pi-trash" ;
-         confirmationDialogClose.value= true;
+         confirmedDialogMessage.value = `<b>${user.value.email}</b> has been DELETED`;
+         showDeleteConfirmed.value  = true;
+
 
       }
       catch (error) {
         console.error("Error in saveUser:", error);
-        //confirmationDialogClose.value= true;
-        //confirmationDialogTitle.value = "Error. Please try again!";
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Deleting User, Please try again!!!', life: 3000 });
       } finally {
       }
@@ -175,26 +202,21 @@ const saveUser = async() => {
             is_admin: usersForm.value.is_admin,
          });
 
+
           users.value = await fetchAdminPortalUsers();
+          toast.add({ severity: 'success', summary: 'Success', detail: 'User Created!!!', life: 3000 });
+          confirmedDialogMessage.value = `<b>${usersForm.value.email}</b> has been CREATED`;
+          addUsersDialog.value = false;
+          showSaveConfirmed.value = true;
+
+
       }
       catch (error) {
         console.error("Error in saveUser:", error);
-        //confirmationDialogClose.value= true;
-        //confirmationDialogTitle.value = "Error Please try again!";
         toast.add({ severity: 'error', summary: 'Danger', detail: 'Error Saving, Please try again!!!', life: 3000 });
       }
       finally {
-        spinner.value = false;
-        addUsersDialog.value = false;
 
-
-        confirmLabel.value = "Close";
-         callback.value = ()=>{
-            confirmationDialog.value = false;
-         }
-         confirmationDialog.value = true;
-         confirmationDialogTitle.value = "User Created successfully!";
-         toast.add({ severity: 'success', summary: 'Success', detail: 'User Created!!!', life: 3000 })
       }
    };
 
@@ -240,7 +262,7 @@ const isFiltersEnabled = computed(() => {
                      :globalFilterFields="['email', 'group_admin', 'group_name', 'action', 'reason']"
                      data-key="sid"
                      selection-mode="single"
-                     @rowClick="confirmEditUser"
+                     @rowClick="selectEditUser"
 
                   >
                     <template #header>
@@ -306,19 +328,18 @@ const isFiltersEnabled = computed(() => {
                      <div class="formgrid grid">
                         <div class="field col">
                            <label for="email" class="bold-label">Email</label>
-                           <InputText disabled id="email" v-model.trim="user.email" required autofocus  />
-                          <small style="color: red">{{ validationErrors.email}}</small>
+                           <InputText disabled id="email" v-model.trim="user.email" autofocus  />
                         </div>
 
                         <div class="field col-12">
                            <label for="password" class="bold-label">Current Password</label>
                            <Password id="password" type="password" v-model.trim="user.current_password" required toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
-                           <small class="p-error" v-if="saved && !user.password">Password is required.</small>
+                           <small class="p-error" v-if="saved && !user.current_password">Password is required.</small>
                         </div>
                         <div class="field col-12">
                            <label for="password" class="bold-label">New Password</label>
                            <Password id="password" v-model.trim="user.password" required toggleMask autofocus :class="{'p-invalid': saved && !usersForm.password}" />
-                           <small class="p-error" v-if="!user.password === user.current_password">Password is required.</small>
+                           <small class="p-error" v-if="! user.password">Password is required.</small>
                         </div>
 
                            <div class="field col flex align-items-center justify-center">
@@ -329,16 +350,20 @@ const isFiltersEnabled = computed(() => {
                      </div>
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="closeDialog"/>
-                        <Button label="Save" icon="pi pi-check" text @click="saveEditUser" />
+                        <Button label="Save" icon="pi pi-check" text @click="confirmEditUser" />
                      </template>
                   </Dialog>
 
                </template>
          </Card>
 		</div>
+    <ConfirmationDialog :title="confirmDialogTitle" :body="confirmDialogMessage"
+                        :show="showConfirmDialog" @close="closeConfirmDialog" @confirm="handleConfirm" />
+    <ConfirmationDialogClose :title="confirmedDialogMessage" buttonLabel="Close"
+                             :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
 	</div>
 
 
-   <ConfirmationDialog v-if="confirmationDialog" :twoButton="!confirmationDialogClose" :confirmLabel="confirmLabel" :rejectLabel="rejectLabel" :icon ="confirmIcon" :title="confirmationDialogTitle" :body="confirmationDialogBody"  :show="confirmationDialog" @cancel ="confirmationDialog=false" @confirm="callback"/>
+
 </template>
 

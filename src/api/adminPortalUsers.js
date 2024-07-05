@@ -18,7 +18,7 @@ export const fetchAdminPortalUsers = async () => {
       else {
          return []
       }
-      
+
    }
    catch (error) {
       console.error("Error retrieving Admin Portal Users:", error);
@@ -35,7 +35,7 @@ export const createAdminPortalUser = async (payload) => {
            'Content-Type': 'application/json',
            'app-id': 1
          },
-         
+
       });
       return ("Successfully created admin portal user")
    }
@@ -48,7 +48,6 @@ export const createAdminPortalUser = async (payload) => {
 
 export const updateAdminPortalUser = async (sid, payload) => {
 
-   console.log(payload, sid)
    try {
       await axios.put(`${HOST}/edit-web-user/${sid}`, payload, {
          headers: {
@@ -58,7 +57,7 @@ export const updateAdminPortalUser = async (sid, payload) => {
          }
       });
       return "Successfully updated admin portal user";
-   } 
+   }
    catch (error) {
       console.error("Error updating admin portal user:", error);
       throw error;
@@ -76,7 +75,7 @@ export const deleteAdminPortalUser = async (sid, payload) => {
          }
       });
       return "Successfully updated admin portal user";
-   } 
+   }
    catch (error) {
       console.error("Error updating admin portal user:", error);
       throw error;
