@@ -92,6 +92,10 @@ const router = createRouter({
             }
          ]
       },
+      {
+         path: '/:pathMatch(.*)*',
+         component: () => import('../pages/page404.vue')
+      },
    ]
 });
 
