@@ -1,8 +1,8 @@
 <script setup>
    import { ref } from 'vue';
-   import { login } from '../api/login';
+   import { login } from '@/api/login';
    import { useRouter } from 'vue-router';
-   import { useStore } from '../stores/store';
+   import { useStore } from '@/stores/store';
    import Button from 'primevue/button';
 
    const router = useRouter()

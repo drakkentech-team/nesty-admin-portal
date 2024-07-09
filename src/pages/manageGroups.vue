@@ -3,11 +3,13 @@
    import { useConfirm } from "primevue/useconfirm";
    import { useToast } from "primevue/usetoast";
    import {createGroup, fetchGroups} from "@/api/manageGroups";
+   import { useStore } from '@/stores/store';
 
    import { useDialog } from 'primevue/usedialog';
    const userView = defineAsyncComponent(() => import('../views/GroupDetailsView.vue'));
 
    const dialog = useDialog()
+   const userID = ref();
 
    const isSearch =  ref(false);
 
@@ -1310,7 +1312,6 @@ const handleViewClick = (event) => {
       modal: true
     },
     onClose: (options) => {
-
       fetchGroups().then((data) => {
         groupsData.value = data;
       });
@@ -1361,6 +1362,10 @@ const clearSearchResults=async ()=>{
 }
 
 onMounted(() => {
+  const user = useStore()
+  userID.value = user.user;
+  console.log(userID.value);
+
   fetchGroups().then((data) => {
     groupsData.value = data;
   });
