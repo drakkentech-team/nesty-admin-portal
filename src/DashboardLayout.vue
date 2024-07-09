@@ -9,7 +9,7 @@
                         <img alt="Logo" src="/img/nesty-bird.png" style="height:100px; width:100px"/><br>
                     </router-link>
                 </div>
-
+                <div class="text-center text-white text-1xl p-2">{{email}}</div>
                 <AppProfile />
                 <AppMenu :model="menu" @menuitem-click="onMenuItemClick" />
             </div>
@@ -34,13 +34,16 @@ import { storeToRefs } from "pinia";
 
 
 
+
 export default {
    mounted() {
-        //const store = useStore();
+
     },
     data() {
         const { openStatusCount } = storeToRefs(useModerationStore());
-        return {
+        const use = useStore();
+        const email = use.user.user.username;
+        return {email,
             layoutMode: 'static',
             layoutColorMode: 'dark',
             staticMenuInactive: false,
@@ -145,7 +148,6 @@ export default {
     computed: {
          user() {
             const store = useStore();
-
             return store.user;
         },
         containerClass() {

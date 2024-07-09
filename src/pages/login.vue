@@ -103,8 +103,7 @@
                         <ProgressSpinner
                            v-if="isLoading"
                            class=".p-progress-spinner-circle"
-                           style="width: 2;
-                           height: 23px;"
+                           style="width: 2; height: 23px;"
                            strokeWidth="5"
                         />
                      </Button>
