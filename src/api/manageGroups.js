@@ -6,7 +6,7 @@ const BEARER_TOKEN = import.meta.env.VITE_BEARERTOKEN;
 export const fetchGroups = async () => {
 
     try {
-       const response = await axios.get(`${HOST}/web/get-all-groups`, {
+       const response = await axios.get(`${HOST}/group/all`, {
           headers: {
              'Authorization': `Bearer ${BEARER_TOKEN}`,
              'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ export const editGroup = async (groupID,payload) => {
 export const getGroupInfo = async (groupID) => {
 
     try {
-        const response = await axios.get(`${HOST}/web/get-group/${groupID}`, {
+        const response = await axios.get(`${HOST}/group/${groupID}`, {
             headers: {
                 'Authorization': `Bearer ${BEARER_TOKEN}`,
                 'Content-Type': 'application/json',

@@ -236,7 +236,6 @@ const isFiltersEnabled = computed(() => {
                      paginator :rows="5"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
-                     v-model:filters="filters"
                      :globalFilterFields="['email', 'group_admin', 'group_name', 'action', 'reason']"
                      data-key="sid"
                      selection-mode="single"
