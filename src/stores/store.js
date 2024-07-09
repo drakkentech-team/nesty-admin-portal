@@ -11,6 +11,11 @@ export const useStore = defineStore({
       this.user = data;
       sessionStorage.setItem('user', JSON.stringify(data));
     },
+    getUser() {
+      const data =sessionStorage.getItem('user');
+      this.user = data;
+    }
+    ,
     clearUser() {
       this.user = null;
       sessionStorage.removeItem('user');

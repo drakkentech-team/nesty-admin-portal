@@ -31,7 +31,7 @@
      user.value = params.user;
 
      const userID = params.user.sid;
-     console.log(userID);
+
 
      fetchUserGroups(userID).then((data) => {
        groups.value = data;

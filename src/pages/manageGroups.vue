@@ -6,10 +6,14 @@
 
    import { useDialog } from 'primevue/usedialog';
    const userView = defineAsyncComponent(() => import('../views/GroupDetailsView.vue'));
+   import { useStore } from '@/stores/store';
+
+
 
    const dialog = useDialog()
 
    const isSearch =  ref(false);
+   const userID = ref(17);
 
 
   const toast = useToast();
@@ -26,6 +30,7 @@
      min_age: null,
      max_age: null,
      description: null,
+     reason_for_creation: null
    });
 
    const validateCreateForm = () => {
@@ -38,6 +43,7 @@
        min_age: null,
        max_age: null,
        description: null,
+       reason_for_creation: null
      };
 
      // Validate group_name
@@ -72,6 +78,11 @@
        isValid = false;
      }
 
+     if (!createForm.value.reason_for_creation) {
+       validationErrors.value.re= 'Reason for creation is required.';
+       isValid = false;
+     }
+
      return isValid;
    };
 
@@ -87,7 +98,9 @@ const createNewGroupDetails = async () => {
         max_age: createForm.value.max_age,
         region_fk: createForm.value.region,
         description: createForm.value.description,
-        group_type_fk: createForm.value.group_type
+        group_type_fk: createForm.value.group_type,
+        reason_for_creation: createForm.value.reason_for_creation,
+        admin_user_fk: userID
       }
 
       await createGroup( payload);
@@ -1290,7 +1303,8 @@ const createForm = ref({
   max_age:100,
   region:'',
   description:'',
-  group_type:''
+  group_type:'',
+  reason_for_creation:''
 })
 
 const handleViewClick = (event) => {
@@ -1339,15 +1353,6 @@ const searchGroup= async()=>{
 
 const group= ref();
 
-const confirmDeleteGroup = (currGroup)=>{
-  confirmationDialogTitle.value = "Delete Group";
-  confirmationDialogBody.value = "Are you sure you want to delete?";
-  callback.value = getReasonForDeleting;
-  confirmationDialog.value= true;
-
-  group.value = currGroup;
-  group.value['reasons'] = '';
-}
 
 
 
@@ -1361,10 +1366,16 @@ const clearSearchResults=async ()=>{
 }
 
 onMounted(() => {
+
+  const user = useStore();
+  userID.value = 17;
   fetchGroups().then((data) => {
     groupsData.value = data;
   });
+
 });
+
+
 
 
 </script>
@@ -1419,8 +1430,7 @@ onMounted(() => {
                     </div>
                     <div class="field col-12">
                       <label for="name">Name</label>
-                       <MultiSelect id="name" v-model="searchForm.name_surname" display="chip"  :options="options.name" optionLabel="name" placeholder="Select Name" />
-
+                       <MultiSelect ed id="name" v-model="searchForm.name_surname" display="chip"  :options="options.name" optionLabel="name" placeholder="Select Name" />
                     </div>
                     <div class="field col-12">
                       <label for="email">Email</label>
@@ -1511,6 +1521,14 @@ onMounted(() => {
                       <small style="color: red">{{ validationErrors.description }}</small>
                     </template>
                   </div>
+
+                 <div class="field col-12">
+                   <label for="region">Resons For Creation</label>
+                   <Textarea id="description" placeholder="Group Description" v-model="createForm.reason_for_creation" autoResize rows="5" cols="30" />
+                   <template v-if="validationErrors.reason_for_creation">
+                     <small style="color: red">{{ validationErrors.reason_for_creation }}</small>
+                   </template>
+                 </div>
 
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="newDialog=false"/>
