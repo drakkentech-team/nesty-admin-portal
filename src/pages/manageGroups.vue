@@ -1,11 +1,12 @@
 <script setup>
-   import {onMounted, ref,defineAsyncComponent} from 'vue';
+import {onMounted, ref, defineAsyncComponent, computed} from 'vue';
    import { useConfirm } from "primevue/useconfirm";
    import { useToast } from "primevue/usetoast";
    import {createGroup, fetchGroups} from "@/api/manageGroups";
    import { useStore } from '@/stores/store';
 
    import { useDialog } from 'primevue/usedialog';
+   import ConfirmationDialogClose from "@/components/ConfirmationDialogClose2.vue";
    const userView = defineAsyncComponent(() => import('../views/GroupDetailsView.vue'));
 
    const dialog = useDialog()
@@ -21,6 +22,20 @@
    const searchDialog = ref(false);
    const newDialog = ref(false);
 
+   const confirmedDialogMessage = ref('');
+   const showSaveConfirmed = ref(false);
+
+const showConfirmedDialog = computed({
+  get() {
+    return showSaveConfirmed.value ;
+  },
+  set(newValue) {
+    if (newValue === false) {
+      showSaveConfirmed.value = false;
+    }
+  }
+})
+
    const validationErrors = ref({
      group_name: null,
      province: null,
@@ -28,6 +43,7 @@
      min_age: null,
      max_age: null,
      description: null,
+     reason_for_creation:null
    });
 
    const validateCreateForm = () => {
@@ -40,6 +56,7 @@
        min_age: null,
        max_age: null,
        description: null,
+       reason_for_creation: null
      };
 
      // Validate group_name
@@ -89,12 +106,17 @@ const createNewGroupDetails = async () => {
         max_age: createForm.value.max_age,
         region_fk: createForm.value.region,
         description: createForm.value.description,
-        group_type_fk: createForm.value.group_type
+        group_type_fk: createForm.value.group_type,
+        admin_user_fk: userID.value,
+        reason_for_event:"New Group",
+        reason_for_creation: createForm.value.reason_for_creation
       }
 
       await createGroup( payload);
       groupsData.value = await fetchGroups();
       newDialog.value = false;
+      confirmedDialogMessage.value = `<b>${payload.name}</b> has been CREATED `;
+      showSaveConfirmed.value  = true;
       toast.add({ severity: 'success', summary: 'Success', detail: 'group created!!!', life: 3000 });
 
        }
@@ -1292,7 +1314,8 @@ const createForm = ref({
   max_age:100,
   region:'',
   description:'',
-  group_type:''
+  group_type:'',
+  reason_for_creation:''
 })
 
 const handleViewClick = (event) => {
@@ -1340,20 +1363,10 @@ const searchGroup= async()=>{
 
 const group= ref();
 
-const confirmDeleteGroup = (currGroup)=>{
-  confirmationDialogTitle.value = "Delete Group";
-  confirmationDialogBody.value = "Are you sure you want to delete?";
-  callback.value = getReasonForDeleting;
-  confirmationDialog.value= true;
-
-  group.value = currGroup;
-  group.value['reasons'] = '';
-}
 
 
 
 const clearSearchResults=async ()=>{
-
   fetchGroups().then((data)=>{
     groupsData.value = data;
   });
@@ -1363,8 +1376,7 @@ const clearSearchResults=async ()=>{
 
 onMounted(() => {
   const user = useStore()
-  userID.value = user.user;
-  console.log(userID.value);
+  userID.value = user.user.user.sid;
 
   fetchGroups().then((data) => {
     groupsData.value = data;
@@ -1516,6 +1528,13 @@ onMounted(() => {
                       <small style="color: red">{{ validationErrors.description }}</small>
                     </template>
                   </div>
+                 <div class="field col-12">
+                   <label for="region">Description</label>
+                   <Textarea id="description" placeholder="Group Description" v-model="createForm.reason_for_creation" autoResize rows="5" cols="30" />
+                   <template v-if="validationErrors.reason_for_creation">
+                     <small style="color: red">{{ validationErrors.reason_for_creation }}</small>
+                   </template>
+                 </div>
 
                      <template #footer>
                         <Button label="Cancel" icon="pi pi-times" text @click="newDialog=false"/>
@@ -1529,6 +1548,9 @@ onMounted(() => {
       <Button @click="clearSearchResults" v-show="isSearch" label="Return To Search"/>
     </div>
 	</div>
+
+  <ConfirmationDialogClose :title="confirmedDialogMessage" buttonLabel="Close"
+                           :show="showConfirmedDialog" @close="showConfirmedDialog=false" />
 
   <DynamicDialog />
 </template>

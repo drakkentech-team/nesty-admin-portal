@@ -7,7 +7,6 @@ export const useStore = defineStore({
   }),
   actions: {
     setUser(data) {
-      console.log(data)
       this.user = data;
       sessionStorage.setItem('user', JSON.stringify(data));
     },

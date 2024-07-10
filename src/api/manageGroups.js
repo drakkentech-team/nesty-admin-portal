@@ -26,7 +26,7 @@ export const fetchGroups = async () => {
 export const createGroup = async (payload) => {
 
     try{
-        await axios.post(`${HOST}/web/create-group`, payload, {
+        await axios.post(`${HOST}/group/new`, payload, {
             headers: {
                 'Authorization': `Bearer ${BEARER_TOKEN}`,
                 'Content-Type': 'application/json',
