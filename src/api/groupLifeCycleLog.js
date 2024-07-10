@@ -5,8 +5,8 @@ const HOST = import.meta.env.VITE_LOCAL;
 const BEARER_TOKEN = import.meta.env.VITE_BEARERTOKEN;
 
 export const fetchGroupLifeCycleLogs = async () => {
-   /* try {
-      const response = await axios.get(`${HOST}/group-life-cycle-log`,{
+   try {
+      const response = await axios.get(`${HOST}/group/life-cycle`,{
          headers: {
             'Authorization': `Bearer ${BEARER_TOKEN}`,
             'Content-Type': 'application/json',
@@ -21,16 +21,16 @@ export const fetchGroupLifeCycleLogs = async () => {
    } catch (error) {
       console.error("Error fetching Group Life Cycle Log:", error);
       throw error;
-   } */
+   }
 
 
    // returning demo data. Uncomment above code to fetch from db
-   return logs;
+   // return logs;
 }
 
 
 // DEMO DATA
-
+/* 
 const logs = [
    {
       date: '2024-05-03',
@@ -61,4 +61,4 @@ const logs = [
       reason: 'Requested'
    },
    // Add more demo data as needed
-]
+] */
