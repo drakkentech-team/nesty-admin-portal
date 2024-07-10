@@ -4,13 +4,13 @@ import {fetchGroupLifeCycleLogs} from "@/api/groupLifeCycleLog";
 import {FilterMatchMode} from "primevue/api";
 
 
-const logs = ref([]);
+   const logs = ref([]);
    const filters = ref({
       global: { value: null, matchMode: FilterMatchMode.CONTAINS },
    });
 
    const fetchLogs = async () => {
-     logs.value = await fetchGroupLifeCycleLogs();
+      logs.value = await fetchGroupLifeCycleLogs();
    }
 
    onMounted(() => {
@@ -41,7 +41,7 @@ const logs = ref([]);
             :globalFilterFields="['date', 'group_admin', 'group_name', 'action', 'reason']"
          >
             <Column field="date" header="Date" sortable></Column>
-            <Column field="group_admin" header="Performed by" sortable></Column>
+            <Column field="admin_user" header="Performed by" sortable></Column>
             <Column field="group_name" header="Group Name" sortable></Column>
             <Column field="action" header="Action" sortable></Column>
             <Column field="reason" header="Reason for Action" sortable></Column>
