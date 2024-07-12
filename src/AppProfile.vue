@@ -1,7 +1,7 @@
 <template>
 	<div class="layout-profile">
 		<button class="p-link layout-profile-link" @click="onClick">
-			<!--<span class="username">Claire Williams</span> -->
+			<!-- <span class="username">Claire Williams</span> -->
 			<i class="pi pi-fw pi-cog"></i>
 		</button>
         <transition name="layout-submenu-wrapper">
@@ -16,9 +16,10 @@
 </template>
 
 <script>
-  import { useStore } from '@/stores/store';
-	export default {
+	import router from "@/router/routes";
+  import {useStore} from "@/stores/store";
 
+  export default {
 		data() {
 			return {
 				expanded: false
@@ -29,13 +30,13 @@
 				this.expanded = !this.expanded;
 				event.preventDefault();
 			},
-      async onLogout(event) {
+      async onLogout() {
         const use = useStore()
         use.clearUser();
         await router.push({path: '/login'});
       }
 
-		}
+    }
 	}
 </script>
 
