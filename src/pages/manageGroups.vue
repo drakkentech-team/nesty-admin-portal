@@ -7,9 +7,40 @@ import {onMounted, ref, defineAsyncComponent, computed} from 'vue';
 
    import { useDialog } from 'primevue/usedialog';
    import ConfirmationDialogClose from "@/components/ConfirmationDialogClose2.vue";
+
+   const advancedSearchView = defineAsyncComponent(() => import('../views/AdvancedSearch.vue'));
    const userView = defineAsyncComponent(() => import('../views/GroupDetailsView.vue'));
 
-   const dialog = useDialog()
+   const handleSearchViewClick = (event) => {
+      dialog.open(advancedSearchView, {
+        data:{
+
+        },
+        props: {
+          header: 'Advanced Search',
+          style: {
+            width: '50vw',
+          },
+          breakpoints:{
+            '960px': '75vw',
+            '640px': '90vw'
+          },
+          modal: true,
+
+        },
+        onClose: (options) => {
+
+          if(options.data === undefined){
+            toast.add({ severity: 'error', summary: 'Search Cancelled', detail: '', life: 3000 });
+          }else {
+            searchGroup(options.data)
+          }
+        }
+      });
+    }
+
+
+const dialog = useDialog()
    const userID = ref();
 
    const isSearch =  ref(false);
@@ -1297,14 +1328,6 @@ group: [
 
 })
 
-const searchForm = ref({
-  keyword_search:'',
-  name_surname:'',
-  email:'',
-  username:'',
-  group:'',
-  date:''
-})
 
 
 const createForm = ref({
@@ -1343,7 +1366,7 @@ const handleViewClick = (event) => {
 }
 
 
-const searchGroup= async()=>{
+const searchGroup= async(searchForm)=>{
 
   try {
       searchDialog.value = false;
@@ -1359,9 +1382,6 @@ const searchGroup= async()=>{
 
   }
 }
-
-
-const group= ref();
 
 
 
@@ -1399,7 +1419,7 @@ onMounted(() => {
                         label="Search"
                         icon="pi pi-search"
                         severity="info"
-                        @click="searchDialog=true"
+                        @click="handleSearchViewClick"
                     />
                     <Button
                         label="New Group"
@@ -1427,39 +1447,6 @@ onMounted(() => {
                      <Column field="region" sortable header="Region"></Column>
                      <Column field="user_count" sortable header="user_count"></Column>
                   </DataTable>
-
-                  <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '670px'}" header="Advanced Search" :modal="true" class="p-fluid">
-                    <div class="field col-12">
-                        <label for="username">Username</label>
-                        <MultiSelect v-model="searchForm.username" display="chip" :options="options.username" optionLabel="name" placeholder="Select Username"  />
-
-                    </div>
-                    <div class="field col-12">
-                      <label for="name">Name</label>
-                       <MultiSelect id="name" v-model="searchForm.name_surname" display="chip"  :options="options.name" optionLabel="name" placeholder="Select Name" />
-
-                    </div>
-                    <div class="field col-12">
-                      <label for="email">Email</label>
-                      <MultiSelect id="email"  v-model="searchForm.email"  display="chip"  :options="options.email" optionLabel="name" placeholder="Select Email" :maxSelectedLabels="3"  />
-                    </div>
-                    <div class="field col-12">
-                      <label for="name">Group</label>
-                      <Dropdown id="group" v-model="searchForm.group"  display="chip"  :options="options.group" optionLabel="name" placeholder="Select Group"  />
-                    </div>
-
-                    <div class="field col-12">
-                      <label for="group_name">Date Filter</label>
-                      <Calendar v-model="searchForm.date" selectionMode="range" :manualInput="false" showIcon iconDisplay="input" />
-                    </div>
-
-
-                     <template #footer>
-                        <Button label="Cancel" icon="pi pi-times" text @click="searchDialog=false"/>
-                        <Button label="Search" icon="pi pi-search" text @click="searchGroup" />
-                     </template>
-               </Dialog>
-
 
 
                <Dialog :dismissableMask="true" v-model:visible="newDialog" :style="{}" header="Create Group" :modal="true" class="p-fluid">

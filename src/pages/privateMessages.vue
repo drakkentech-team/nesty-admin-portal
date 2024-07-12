@@ -1,10 +1,15 @@
 <script setup>
 
-   import { onMounted, ref} from 'vue';
+   import {defineAsyncComponent, onMounted, ref} from 'vue';
    import { useToast } from "primevue/usetoast";
    import { useConfirm } from "primevue/useconfirm";
    import {fetchPrivateMessages} from "@/api/privateMessage";
    import {fetchGroups} from "@/api/manageGroups";
+   import {fetchMobileUsers} from "@/api/mobileAppUsers";
+   import { useDialog } from 'primevue/usedialog';
+
+   const dialog = useDialog()
+   const advancedSearchView = defineAsyncComponent(() => import('../views/AdvancedSearch.vue'));
 
 
    const toast = useToast();
@@ -16,21 +21,46 @@
    const searchDialog = ref(false);
 
 
+   const users = ref([]);
+   const groups = ref([]);
+
+
    const clearSearchResults=async ()=>{
 
      fetchGroups().then((data)=>{
-       groupsData.value = data;
+       groups.value = data;
      });
      isSearch.value = false;
      toast.add({ severity: 'success', summary: 'Success', detail: 'Retrieving Messages', life: 3000 });
    }
 
+  const handleViewClick = (event) => {
+    dialog.open(advancedSearchView, {
+      data:{
 
-    onMounted(() => {
-      fetchPrivateMessages().then((data) => {
-        messages.value = data;
-      });
+      },
+      props: {
+        header: 'Advanced Search',
+        style: {
+          width: '50vw',
+        },
+        breakpoints:{
+          '960px': '75vw',
+          '640px': '90vw'
+        },
+        modal: true,
+
+      },
+      onClose: (options) => {
+
+        searchMessages(options.data)
+
+      }
     });
+  }
+
+
+
 
 
 
@@ -72,12 +102,7 @@
         message_body:""
     });
 
-    const searchForm = ref({
-        group:'',
-        date:'',
-        username:"",
-       email:''
-    });
+
 
     const saveMessage = () => {
       addMessage.value = false;
@@ -86,9 +111,8 @@
       console.log(messageForm.value);
    };
 
-   const searchMessages = async()=>{
+   const searchMessages = async(searchForm)=>{
 
-        console.log(searchForm.value);
         try {
 
          searchDialog.value = false;
@@ -104,7 +128,6 @@
    }
 
    const sendMessage=async()=>{
-      console.log(user.value);
       try {
 
          toast.add({ severity: 'success', summary: 'Success', detail: 'User Deleted!!!', life: 3000 });
@@ -118,6 +141,21 @@
       }
 
    }
+
+
+   onMounted(() => {
+     fetchPrivateMessages().then((data) => {
+       messages.value = data;
+     });
+
+     fetchMobileUsers().then((data)=>{
+       users.value = data;
+     })
+
+     fetchGroups().then((data) => {
+       groups.value = data;
+     });
+   });
 
 
 
@@ -136,7 +174,7 @@
                         label="Search"
                         icon="pi pi-search"
                         severity="info"
-                        @click="searchDialog=true"
+                        @click="handleViewClick"
                     />
                     <Button
                         label="New Message"
@@ -159,41 +197,10 @@
                     <Column field="messageType" sortable header="Message Type"></Column>
                 </DataTable>
 
-                <Dialog :dismissableMask="true" v-model:visible="searchDialog" :style="{width: '450px'}" header="Advanced Search" :modal="true" class="p-fluid">
-                     <div class="formgrid grid">
-                        <div class="field col-12">
-                           <label for="username">Username</label>
-                           <MultiSelect id="username" v-model="searchForm.username" :options="cities" optionLabel="name" placeholder="Select User Names" checkmark :highlightOnSelect="false" />
-
-                        </div>
-                        <div class="field col-12">
-                           <label for="email">Email</label>
-                           <MultiSelect id="email" v-model="searchForm.email" :options="cities" optionLabel="name" placeholder="Select Email"  />
-
-                        </div>
-                        <div class="field col-12">
-                           <label for="group">Username</label>
-                           <MultiSelect id="group" v-model="searchForm.group" :options="cities" optionLabel="name" placeholder="Select Groups"  />
-
-                       </div>
-
-                        <div class="field col-12">
-                           <label for="date_range">Date Range</label>
-                            <Calendar id="date_range" v-model="searchForm.date" selectionMode="range" :manualInput="false" showIcon iconDisplay="input" />
-                        </div>
-
-                     </div>
-
-                     <template #footer>
-                        <Button label="Cancel" icon="pi pi-times" text @click="searchDialog=false"/>
-                        <Button label="Search" icon="pi pi-search" text @click="searchMessages" />
-                     </template>
-                  </Dialog>
-
 
 
                 <Dialog :dismissableMask="true" v-model:visible="addMessage" :style="{width: '450px'}" header="New Message" :modal="true" class="p-fluid">
-                     <div class="formgrid grid">
+                     <div class="form grid">
                         <div class="field col-12">
                            <label for="group_">Group</label>
                             <Dropdown id="group_" v-model="messageForm.group" :options="cities" optionLabel="name" placeholder="Select Group" checkmark :highlightOnSelect="false" />
@@ -232,5 +239,6 @@
       <Button @click="clearSearchResults" v-show="isSearch" label="Return To Search"/>
     </div>
 	</div>
+  <DynamicDialog />
 </template>
 
