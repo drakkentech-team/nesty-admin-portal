@@ -84,7 +84,7 @@ export const getGroupInfo = async (groupID) => {
 };
 
 
-export const deleteGroup = async (groupID) => {
+export const deleteGroup = async (groupID,payload) => {
 
     try{
         await axios.post(`${HOST}/web/edit-group/${groupID}`, payload, {
@@ -99,6 +99,25 @@ export const deleteGroup = async (groupID) => {
     }
     catch (error) {
         console.error("Error Deleting group:", error);
+        throw error;
+    }
+};
+
+export const fetchMetaData = async () => {
+
+    try {
+        const response = await axios.get(`${HOST}/group/metadata`, {
+            headers: {
+                'Authorization': `Bearer ${BEARER_TOKEN}`,
+                'Content-Type': 'application/json',
+                'app-id': 1
+            }
+        });
+
+        return response.data;
+    }
+    catch (error) {
+        console.error("Error retrieving metadata:", error);
         throw error;
     }
 };
