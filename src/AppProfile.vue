@@ -1,7 +1,10 @@
 <template>
 	<div class="layout-profile">
-		<button class="p-link layout-profile-link" @click="onClick">
-			<!-- <span class="username">Claire Williams</span> -->
+
+
+    <span class="username text-center text-white text-overflow-clip">{{email}}</span>
+
+		<button class="p-link layout-profile-link align my-2" @click="onClick">
 			<i class="pi pi-fw pi-cog"></i>
 		</button>
         <transition name="layout-submenu-wrapper">
@@ -21,8 +24,11 @@
 
   export default {
 		data() {
+      const use = useStore();
+      const email = use.user.user.username;
 			return {
-				expanded: false
+				expanded: false,
+        email
 			}
 		},
 		methods: {

@@ -4,6 +4,7 @@
    import { useRouter } from 'vue-router';
    import { useStore } from '@/stores/store';
    import Button from 'primevue/button';
+   import {useToast} from "primevue/usetoast";
 
    const router = useRouter()
 
@@ -11,6 +12,7 @@
    const password = ref("");
    const isLoading  = ref(false);
    const message = ref("");
+   const toast = useToast();
 
    const ERROR_MESSAGES = {
       401: 'Incorrect password. Please try again',
@@ -35,6 +37,7 @@
          const { status } = error.request || {};
 
          message.value = ERROR_MESSAGES[status] || 'An unexpected error occurred';
+        toast.add({severity: 'error', summary: 'Danger', detail: 'Error Logging In, Please try again!!!', life: 3000});
       } finally {
          isLoading .value = false;
       }

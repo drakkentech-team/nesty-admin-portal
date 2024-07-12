@@ -9,7 +9,7 @@
                         <img alt="Logo" src="/img/nesty-bird.png" style="height:100px; width:100px"/><br>
                     </router-link>
                 </div>
-                <div class="text-center text-white text-1xl p-2">{{email}}</div>
+
                 <AppProfile />
                 <AppMenu :model="menu" @menuitem-click="onMenuItemClick" />
             </div>
@@ -41,9 +41,7 @@ export default {
     },
     data() {
         const { openStatusCount } = storeToRefs(useModerationStore());
-        const use = useStore();
-        const email = use.user.user.username;
-        return {email,
+        return {
             layoutMode: 'static',
             layoutColorMode: 'dark',
             staticMenuInactive: false,
