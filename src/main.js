@@ -95,7 +95,6 @@ import ToggleButton from 'primevue/togglebutton';
 import Tree from 'primevue/tree';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
-import vueFaker from 'vue-faker';
 import DialogService from 'primevue/dialogservice';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';

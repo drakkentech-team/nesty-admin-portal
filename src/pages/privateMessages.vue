@@ -34,7 +34,7 @@
      toast.add({ severity: 'success', summary: 'Success', detail: 'Retrieving Messages', life: 3000 });
    }
 
-  const handleViewClick = (event) => {
+  const handleViewClick = () => {
     dialog.open(advancedSearchView, {
       data:{
 
@@ -112,7 +112,7 @@
    };
 
    const searchMessages = async(searchForm)=>{
-
+        //todo connect search endpoint
         try {
 
          searchDialog.value = false;

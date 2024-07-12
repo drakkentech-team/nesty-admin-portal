@@ -11,7 +11,7 @@ import {onMounted, ref, defineAsyncComponent, computed} from 'vue';
    const advancedSearchView = defineAsyncComponent(() => import('../views/AdvancedSearch.vue'));
    const userView = defineAsyncComponent(() => import('../views/GroupDetailsView.vue'));
 
-   const handleSearchViewClick = (event) => {
+   const handleSearchViewClick = () => {
       dialog.open(advancedSearchView, {
         data:{
 
@@ -1357,7 +1357,7 @@ const handleViewClick = (event) => {
       },
       modal: true
     },
-    onClose: (options) => {
+    onClose: () => {
       fetchGroups().then((data) => {
         groupsData.value = data;
       });
@@ -1368,6 +1368,7 @@ const handleViewClick = (event) => {
 
 const searchGroup= async(searchForm)=>{
 
+  //todo connect search endpoint
   try {
       searchDialog.value = false;
       toast.add({ severity: 'success', summary: 'Success', detail: 'Searching!!!', life: 3000 });
