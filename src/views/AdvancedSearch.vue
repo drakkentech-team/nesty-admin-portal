@@ -77,9 +77,9 @@
     </FloatLabel>
 
   </div>
-  <div class="flex justify-content-center">
-    <Button label="Cancel" severity="danger" icon="pi pi-times" text @click="closeDialog({ buttonType: 'Cancel' })"/>
-    <Button label="Search" icon="pi pi-search" text @click="closeDialog(searchForm)" />
+  <div class="flex justify-content-end">
+    <Button label="Cancel"  icon="pi pi-times" text @click="closeDialog({ buttonType: 'Cancel' } )"/>
+    <Button label="Search" icon="pi pi-search" text @click="closeDialog({buttonType: 'Success' ,...searchForm})" />
   </div>
 </template>
 

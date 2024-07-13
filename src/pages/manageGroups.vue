@@ -25,11 +25,10 @@
             '640px': '90vw'
           },
           modal: true,
-
         },
         onClose: (options) => {
 
-          if(options.data === undefined){
+          if(options.data === undefined || options.data.buttonType==='Cancel'){
             toast.add({ severity: 'error', summary: 'Search Cancelled', detail: '', life: 3000 });
           }else {
             searchGroup(options.data)

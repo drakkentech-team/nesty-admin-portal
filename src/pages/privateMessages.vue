@@ -99,7 +99,12 @@
       },
       onClose: (options) => {
 
-        searchMessages(options.data)
+        if(options.data === undefined || options.data.buttonType==='Cancel'){
+          toast.add({ severity: 'error', summary: 'Search Cancelled', detail: '', life: 3000 });
+        }else {
+          searchMessages(options.data)
+        }
+
 
       }
     });
