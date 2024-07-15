@@ -95,10 +95,10 @@ import ToggleButton from 'primevue/togglebutton';
 import Tree from 'primevue/tree';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
-import vueFaker from 'vue-faker';
 import DialogService from 'primevue/dialogservice';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import FloatLabel from 'primevue/floatlabel';
 
 
 
@@ -159,6 +159,7 @@ app.component('Divider', Divider);
 app.component('Dropdown', Dropdown);
 app.component('Fieldset', Fieldset);
 app.component('FileUpload', FileUpload);
+app.component('FloatLabel', FloatLabel);
 app.component('InlineMessage', InlineMessage);
 app.component('Inplace', Inplace);
 app.component('InputMask', InputMask);
