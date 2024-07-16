@@ -5,6 +5,7 @@
    import { useToast } from "primevue/usetoast";
    import ConfirmationDialog from "../components/ConfirmationDialog2.vue";
    import ConfirmationDialogClose from "../components/ConfirmationDialogClose2.vue"
+   import {FilterMatchMode} from "primevue/api";
 
    const users = ref([]);
    const user = ref();
@@ -222,8 +223,10 @@ const saveUser = async() => {
    const closeDialog = () => {
       editDialog.value = false;
       saved.value = false;
-   };
+      filters['global'].value = ''
 
+   };
+   const filters = ref({global: { value: null, matchMode: FilterMatchMode.CONTAINS }});
 
 
 
@@ -256,8 +259,21 @@ const saveUser = async() => {
                      sortField="email" :sortOrder="-1"
                      selection-mode="single"
                      @rowClick="selectEditUser"
+                     :globalFilterFields="['email']"
+                     filterDisplay="menu"
+                     v-model:filters="filters"
+                       >
 
-                  >
+                    <template #header>
+                      <div class="flex  justify-content-end">
+                        <IconField>
+                          <InputIcon>
+                            <i class="pi pi-search" />
+                          </InputIcon>
+                          <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                        </IconField>
+                      </div>
+                    </template>
                      <Column sortable field="email" header="Email"></Column>
                      <Column field="is_admin" header="User Role">
 
