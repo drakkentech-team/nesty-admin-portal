@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { useStore } from '../stores/store';
+import { useStore } from '@/stores/store';
 import DashboardLayout from '../DashboardLayout.vue';
 import PlainLayout from '../PlainLayout.vue';
 
@@ -103,13 +103,17 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
    const user = useStore()
-   const userIsLoggedIn = user.user ? true : false
+   const userIsLoggedIn = !!user.user
 
 
    if (to.path === '/login' && userIsLoggedIn) {
      next('/private-messages');
    } else if (to.path !== '/login' && !userIsLoggedIn) {
      next('/login');
+   }else if (to.path === '/logout') {
+      const use = useStore()
+      use.clearUser();
+      next('/logout')
    } else {
      next();
    }
