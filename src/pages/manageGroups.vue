@@ -110,15 +110,6 @@ const showConfirmedDialog = computed({
        isValid = false;
      }
 
-     if (!createForm.value.min_age) {
-       validationErrors.value.min_age = 'Min Age is required.';
-       isValid = false;
-     }
-
-     if (!createForm.value.max_age) {
-       validationErrors.value.max_age = 'Max Age is required.';
-       isValid = false;
-     }
 
      return isValid;
    };
@@ -131,8 +122,6 @@ const createNewGroupDetails = async () => {
       const payload = {
         name: createForm.value.group_name,
         province_fk: createForm.value.province,
-        min_age: createForm.value.min_age,
-        max_age: createForm.value.max_age,
         region_fk: createForm.value.region,
         description: createForm.value.description,
         group_type_fk: createForm.value.group_type,
@@ -193,8 +182,6 @@ const options = ref();
 const createForm = ref({
   group_name:'',
   province:'',
-  min_age:0,
-  max_age:100,
   region:'',
   description:'',
   group_type:'',
@@ -221,9 +208,7 @@ const handleViewClick = (event) => {
     },
     props: {
       header: 'Group Details',
-      style: {
-        width: '50vw',
-      },
+
       breakpoints:{
         '960px': '75vw',
         '640px': '90vw'
@@ -316,8 +301,8 @@ onMounted(() => {
                      paginator :rows="5"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
-                     sortMode="multiple"
                      data-key="sid"
+                     sortField="group_name" :sortOrder="-1"
                      selection-mode="single"
                      @rowClick="handleViewClick"
 
@@ -325,21 +310,21 @@ onMounted(() => {
                      <Column field="group_name" sortable header="Group Name"></Column>
                      <Column field="group_type"  sortable header="Private/Public"></Column>
                      <Column field="region" sortable header="Region"></Column>
-                     <Column field="user_count" sortable header="user_count"></Column>
+                     <Column field="user_count" sortable header="User Count"></Column>
                   </DataTable>
 
 
                <Dialog :dismissableMask="true"  v-model:visible="newDialog" :style="{width: '450px'}" header="Create Group" :modal="true" class="p-fluid">
                  <div class="grid">
                 <div class="field col-6">
-                        <label for="group_name">Group Name</label>
+                  <label for="group_name"><b>Group Name</b></label>
                         <InputText id="group_name" placeholder="Enter group name" v-model="createForm.group_name" aria-describedby="group-help" />
                         <template v-if="validationErrors.group_name">
                           <small style="color: red">{{ validationErrors.group_name }}</small>
                         </template>
                     </div>
                     <div class="field col-6">
-                      <label for="province">Province</label>
+                      <label for="province"><b>Province</b></label>
                         <Dropdown id="province" option-value="sid" v-model="createForm.province" :options="options.provinces" optionLabel="name" placeholder="Select a Province" />
                       <template v-if="validationErrors.province">
                         <small style="color: red">{{ validationErrors.province }}</small>
@@ -347,57 +332,30 @@ onMounted(() => {
                     </div>
 
                     <div class="field col-6">
-                      <label for="region">Region</label>
-                        <Dropdown empty-message="Please select a province first to view available regions." id="region" option-value="sid" v-model="createForm.region" :options="filteredRegions" optionLabel="name" placeholder="Select a Religion"  />
+                      <label for="region"><b>Region</b></label>
+                        <Dropdown empty-message="Please select a province first to view available regions." id="region" option-value="sid" v-model="createForm.region" :options="filteredRegions" optionLabel="name" placeholder="Select a Region"  />
                         <template v-if="validationErrors.region">
                           <small style="color: red">{{ validationErrors.region }}</small>
                         </template>
                     </div>
 
                  <div class="field col-6">
-                   <label for="group_type">Group Type</label>
+                   <label for="group_type"><b>Group Type</b></label>
                    <Dropdown id="group_type" option-value="sid" v-model="createForm.group_type" :options="options.group_type" optionLabel="name" placeholder="Select a Group Type"  />
                    <template v-if="validationErrors.region">
                      <small style="color: red">{{ validationErrors.region }}</small>
                    </template>
                  </div>
 
-                    <div class="field col-12">
-                      <label for="min_age">Min Age</label>
-                      <InputNumber  id="min_age" v-model="createForm.min_age"  showButtons buttonLayout="vertical" class="m-5" style="width: 3rem" :min="0" :max="99">
-                        <template #incrementbuttonicon>
-                            <span class="pi pi-plus" />
-                        </template>
-                        <template #decrementbuttonicon>
-                            <span class="pi pi-minus" />
-                        </template>
-                      </InputNumber>
-                      <label for="max_age">Max Age</label>
-                      <InputNumber v-model="createForm.max_age" showButtons buttonLayout="vertical" class="m-5" style="width: 3rem" :min="0" :max="99">
-                        <template #incrementbuttonicon>
-                            <span class="pi pi-plus" />
-                        </template>
-                        <template #decrementbuttonicon>
-                            <span class="pi pi-minus" />
-                        </template>
-                      </InputNumber>
-                      <template v-if="validationErrors.min_age">
-                        <small style="color: red">{{ validationErrors.min_age }}</small>
-                      </template>
-                      <template v-if="validationErrors.max_age">
-                        <small style="color: red">{{ validationErrors.max_age }}</small>
-                      </template>
-                  </div>
-
                   <div class="field col-12">
-                    <label for="region">Description</label>
+                    <label  for="region"><b>Description</b></label>
                     <Textarea id="description" placeholder="Group Description" v-model="createForm.description" autoResize rows="5" cols="30" />
                     <template v-if="validationErrors.description">
                       <small style="color: red">{{ validationErrors.description }}</small>
                     </template>
                   </div>
                  <div class="field col-12">
-                   <label for="reason_for_creation">Reason For Creation</label>
+                   <label for="reason_for_creation"><b>Reason For Creation</b></label>
                    <Textarea id="reason_for_creation" placeholder="Reason For Creation" v-model="createForm.reason_for_creation" autoResize rows="5" cols="30" />
                    <template v-if="validationErrors.reason_for_creation">
                      <small style="color: red">{{ validationErrors.reason_for_creation }}</small>

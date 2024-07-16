@@ -225,13 +225,8 @@ const saveUser = async() => {
       saved.value = false;
    };
 
-   const filters = ref({
-     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-   });
 
-const isFiltersEnabled = computed(() => {
-  return filters.value['global'].value || filters.value['moderation_status'].value;
-})
+
 
 </script>
 
@@ -258,24 +253,13 @@ const isFiltersEnabled = computed(() => {
                      paginator :rows="5"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
-                     :globalFilterFields="['email', 'group_admin', 'group_name', 'action', 'reason']"
                      data-key="sid"
+                     sortField="email" :sortOrder="-1"
                      selection-mode="single"
                      @rowClick="selectEditUser"
 
                   >
-                    <template #header>
-                      <div class="flex justify-content-end">
-                        <IconField iconPosition="left">
-                          <InputIcon>
-                            <i class="pi pi-search" />
-                          </InputIcon>
-                          <InputText v-model="filters['global'].value" placeholder="Search" />
-                        </IconField>
-                      </div>
-                    </template>
-
-                     <Column field="email" header="Email"></Column>
+                     <Column sortable field="email" header="Email"></Column>
                      <Column field="is_admin" header="User Role">
 
                         <template #body="slotProps">
@@ -283,7 +267,7 @@ const isFiltersEnabled = computed(() => {
                         </template>
 
                      </Column>
-                     <Column field="last_login" header="Last Login"></Column>
+                     <Column field="last_login" sortable header="Last Login"></Column>
 
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">

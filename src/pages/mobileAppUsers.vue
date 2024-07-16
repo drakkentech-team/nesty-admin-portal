@@ -79,7 +79,7 @@ onMounted(() => {
                   <DataTable
                      :value="userData"
                      paginator :rows="5"
-                     sortMode="multiple"
+                     sortField="username" :sortOrder="-1"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
                      dataKey="sid"
@@ -100,13 +100,14 @@ onMounted(() => {
                       </IconField>
                     </div>
                     </template>
+                      <Column sortable  field="username" header="User Name"></Column>
                      <Column sortable  field="first_name" header="Name"></Column>
                      <Column sortable  field="last_name" header="Surname"></Column>
-                     <Column field="email" header="Email"></Column>
+                     <Column sortable field="email" header="Email"></Column>
                      <Column field="mobile_number" header="Contact"></Column>
-                     <Column field="date_of_birth" header="Date Of Birth"></Column>
+                     <Column sortable field="date_of_birth" header="Date Of Birth"></Column>
                      <Column field="gender" header="Gender"></Column>
-                     <Column sortable  field="username" header="User Name"></Column>
+
                      <Column sortable  field="province" header="Province"></Column>
 
                   </DataTable>
