@@ -43,36 +43,37 @@
 
 <template>
   <div class="form grid my-5">
-    <FloatLabel class="field col-6 my-3">
+    <div class="field col-6 my-3">
+      <label for="keyword"><b>Keyword Search</b></label>
       <InputText class="w-full md:w-80" type="text" v-model="searchForm.keyword_search" placeholder="Keyword Search" />
-      <label for="keyword">Keyword Search</label>
-    </FloatLabel>
-    <FloatLabel class="field col-6 my-3">
-      <label for="username">Username</label>
+
+    </div>
+    <div class="field col-6 my-3">
+      <label for="username"><b>Username</b></label>
       <MultiSelect class="w-full md:w-80" v-model="searchForm.username" filter display="chip" :options="users" optionLabel="username" placeholder="Select Username"  />
-    </FloatLabel>
+    </div>
 
-    <FloatLabel class="field col-6 my-3">
-      <label for="name">Name</label>
+    <div class="field col-6 my-3">
+      <label for="name"><b>Name</b></label>
       <MultiSelect class="w-full md:w-80" id="name" v-model="searchForm.first_name" filter display="chip"  :options="users" optionLabel="first_name" placeholder="Select Name" />
-    </FloatLabel>
+    </div>
 
-    <FloatLabel class="field col-6 my-3">
-      <label for="last_name">Last Name</label>
+    <div class="field col-6 my-3">
+      <label for="last_name"><b>Last Name</b></label>
       <MultiSelect class="w-full md:w-80" id="last_name" v-model="searchForm.last_name" filter display="chip"  :options="users" optionLabel="last_name " placeholder="Select Name" />
 
-    </FloatLabel>
-    <FloatLabel class="field col-6 my-3">
-      <label for="email">Email</label>
+    </div>
+    <div class="field col-6 my-3">
+      <label for="email"><b>Email</b>></label>
       <MultiSelect class="w-full md:w-80" id="email"  v-model="searchForm.email" filter display="chip"  :options="users" optionLabel="email" placeholder="Select Email" :maxSelectedLabels="3"  />
-    </FloatLabel>
-    <FloatLabel class="field col-6 my-3">
-      <label for="group">Group</label>
+    </div>
+    <div class="field col-6 my-3">
+      <label for="group"><b>Group</b></label>
       <MultiSelect class="w-full md:w-80" id="group" v-model="searchForm.group" filter display="chip"  :options="groups" optionLabel="group_name" placeholder="Select Group"  />
-    </FloatLabel>
+    </div>
 
     <FloatLabel class="field col-12 my-5">
-      <label for="date">Date Filter</label>
+      <label for="date"><b>Date Filter</b></label>
       <Calendar class="w-full md:w-80" id="date" v-model="searchForm.date" selectionMode="range"  :manualInput="false" showIcon iconDisplay="input" />
     </FloatLabel>
 

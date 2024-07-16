@@ -3,9 +3,9 @@
    import {ref, onMounted, computed} from 'vue';
    import { fetchAdminPortalUsers, createAdminPortalUser, updateAdminPortalUser ,deleteAdminPortalUser} from '@/api/adminPortalUsers';
    import { useToast } from "primevue/usetoast";
-   import {FilterMatchMode} from "primevue/api";
    import ConfirmationDialog from "../components/ConfirmationDialog2.vue";
    import ConfirmationDialogClose from "../components/ConfirmationDialogClose2.vue"
+   import {FilterMatchMode} from "primevue/api";
 
    const users = ref([]);
    const user = ref();
@@ -223,15 +223,12 @@ const saveUser = async() => {
    const closeDialog = () => {
       editDialog.value = false;
       saved.value = false;
+      filters['global'].value = ''
+
    };
+   const filters = ref({global: { value: null, matchMode: FilterMatchMode.CONTAINS }});
 
-   const filters = ref({
-     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-   });
 
-const isFiltersEnabled = computed(() => {
-  return filters.value['global'].value || filters.value['moderation_status'].value;
-})
 
 </script>
 
@@ -258,24 +255,26 @@ const isFiltersEnabled = computed(() => {
                      paginator :rows="5"
                      :rowsPerPageOptions="[5, 10, 20, 50]"
                      tableStyle="min-width: 50rem"
-                     :globalFilterFields="['email', 'group_admin', 'group_name', 'action', 'reason']"
                      data-key="sid"
+                     sortField="email" :sortOrder="-1"
                      selection-mode="single"
                      @rowClick="selectEditUser"
+                     :globalFilterFields="['email']"
+                     filterDisplay="menu"
+                     v-model:filters="filters"
+                       >
 
-                  >
                     <template #header>
-                      <div class="flex justify-content-end">
-                        <IconField iconPosition="left">
+                      <div class="flex  justify-content-end">
+                        <IconField>
                           <InputIcon>
                             <i class="pi pi-search" />
                           </InputIcon>
-                          <InputText v-model="filters['global'].value" placeholder="Search" />
+                          <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
                         </IconField>
                       </div>
                     </template>
-
-                     <Column field="email" header="Email"></Column>
+                     <Column sortable field="email" header="Email"></Column>
                      <Column field="is_admin" header="User Role">
 
                         <template #body="slotProps">
@@ -283,7 +282,7 @@ const isFiltersEnabled = computed(() => {
                         </template>
 
                      </Column>
-                     <Column field="last_login" header="Last Login"></Column>
+                     <Column field="last_login" sortable header="Last Login"></Column>
 
                      <Column header="Actions" :exportable="false" style="min-width:8rem">
                         <template #body="slotProps">

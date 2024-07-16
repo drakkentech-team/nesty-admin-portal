@@ -157,12 +157,14 @@ onMounted(() => {
 
   options.value = {...params.options}
 
+
   getGroupInfo(params.group.group_sid).then((data) => {
     groupData.value = data.group_info[0];
     users.value = data.user_info;
 
     for (const dataKey in options.value.provinces) {
       if( options.value.provinces[dataKey].name=== groupData.value.province){
+        groupData.value.province_name = groupData.value.province
         groupData.value.province = options.value.provinces[dataKey].sid;
         break;
       }
@@ -170,6 +172,8 @@ onMounted(() => {
 
     for (const dataKey in options.value.regions) {
       if( options.value.regions[dataKey].name=== groupData.value.region){
+
+        groupData.value.region_name = groupData.value.region;
         groupData.value.region = options.value.regions[dataKey].sid;
         break;
       }
@@ -192,51 +196,54 @@ onMounted(() => {
     <Divider/>
     <div style="display: flex; align-items: center; justify-content: space-between;">
       <span class="font-bold white-space-nowrap"></span>
-      <Button icon="pi pi-pencil" rounded @click="editable=true" :disabled="editable" />
+      <div>
+        <Button class="m-2" icon="pi pi-trash" severity="danger" rounded @click="confirmDeleteGroup" v-show="!editable"/>
+        <Button class="m-2" icon="pi pi-pencil" rounded @click="editable=true" v-show="!editable"/>
+      </div>
     </div>
 
       <div class="grid grid-cols-3 gap-4">
-        <div class="col">
-          <span><b>Group Name : </b> </span>
-          <InputText :disabled="!editable" id="group_name" v-model="groupData.group_name" aria-describedby="group-help" />
+        <div class="flex flex-column col">
+          <label  for="group_name"><b>Group Name</b> </label>
+          <InputText  v-if="editable" id="group_name" v-model="groupData.group_name" aria-describedby="group-help" />
+          <div v-else>{{groupData.group_name}}</div>
         </div>
-        <div class="col" >
-          <span><b>Number of Members : </b>  </span>
-          <InputText disabled id="group_name" placeholder="Enter Number of Member" v-model="groupData.user_count" aria-describedby="group-help" />
-        </div>
-
-        <div class="col" >
-          <span><b>Created : </b> </span>
-          <InputText disabled id="date_created" placeholder="Enter Date Created" v-model="groupData.date_created" aria-describedby="group-help" />
+        <div v-show="!editable" class="col" >
+          <label for="number_of_members"><b>Number of Members </b>  </label>
+          <div>{{groupData.user_count}}</div>
         </div>
 
+        <div v-show="!editable" class="col" >
+          <label for="date_created"><b>Created</b> </label>
+          <div>{{groupData.date_created}}</div>
+        </div>
       </div>
 
     <Divider/>
 
-    <div>
-      <span><b>Province : </b></span>
-      <Dropdown :disabled="!editable" option-value="sid" id="province" v-model="groupData.province" :options="options.provinces" optionLabel="name" placeholder="Select a Province" />
+    <div class="flex flex-column">
+      <label for="province"><b>Province </b></label>
+      <Dropdown v-if="editable"   :disabled="!editable" option-value="sid" id="province" v-model="groupData.province" :options="options.provinces" optionLabel="name" placeholder="Select a Province" />
+      <div v-else>{{groupData.province_name}}</div>
     </div>
-    <div class="my-5">
-      <span><b>Region : </b></span>
-      <Dropdown :disabled="!editable" option-value="sid" id="region" v-model="groupData.region"  :options="options.regions" optionLabel="name" placeholder="Select a Religion"  />
+    <div class="flex flex-column  my-5">
+      <label for="region"><b>Region </b></label>
+      <Dropdown v-if="editable"  :disabled="!editable" option-value="sid" id="region" v-model="groupData.region"  :options="options.regions" optionLabel="name" placeholder="Select a Religion"  />
+      <div v-else>{{groupData.region_name}}</div>
     </div>
 
-    <div class="flex justify-content-center m-5">
-      <Button v-if="!editable" severity="danger"   label="Delete Group" icon="pi pi-trash" iconPos="right" @click="confirmDeleteGroup" />
+    <div class="flex justify-content-end m-5">
       <Button class="m-2" v-if="editable" severity="danger" label="Cancel" icon="pi pi-times" iconPos="right" @click="editable=false" />
       <Button class="m-2" v-if="editable" label="Save" icon="pi pi-check" iconPos="right" @click="submitNewGroupDetails" />
 
     </div>
     <Divider/>
 
-    <DataTable :value="users" paginator :rows="5" showGridlines sortMode="multiple" tableStyle="min-width: 50rem">
+    <DataTable  v-show="!editable" :value="users" paginator :rows="5" showGridlines sortMode="multiple" tableStyle="min-width: 50rem">
       <Column field="user_username"  sortable header="Username"></Column>
       <Column field="user_email"  sortable header="Email"></Column>
       <Column field="user_mobile_number"  sortable header="Contact Number"></Column>
       <Column field="user_region"  sortable header="Region"></Column>
-      <Column field="child_age_group"  sortable header="Child Age Group"></Column>
     </DataTable>
   </div>
 
