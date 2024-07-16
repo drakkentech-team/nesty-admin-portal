@@ -58,6 +58,7 @@ export default {
                   ]
                },
                {label: 'Group Life Cycle Log', icon: 'pi pi-list', to: 'group-life-cycle-log'},
+              {label: 'Logout', icon: 'pi pi-power-off', to: 'logout'},
 
             ]
         }
