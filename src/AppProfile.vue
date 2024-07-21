@@ -1,8 +1,6 @@
 <template>
 	<div class="layout-profile">
-
-
-    <span class="username text-center text-white text-overflow-clip">{{email}}</span>
+    <div class="username m-5 text-center text-white text-ellipsis overflow-hidden ...">{{email}}</div>
     <!--
         <button class="p-link layout-profile-link align my-2" @click="onClick">
           <i class="pi pi-fw pi-cog"></i>
@@ -15,7 +13,6 @@
             </ul>
         </transition>
         -->
-
 	</div>
 </template>
 
